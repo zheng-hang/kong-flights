@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/your_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/your_database' # Replace with your database connection string
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 
@@ -21,7 +23,7 @@ class Users(db.Model):
     def __init__(self,name, email, password):
         self.name = name
         self.email = email
-        self.password = password
+        self.password = generate_password_hash(password).decode('utf-8')
 
     def json(self):
         return {"userid": self.id, "username": self.name, "email": self.email, "password": self.password}
@@ -31,7 +33,6 @@ class Users(db.Model):
 def get_all():
     users = db.session.scalars(db.select(Users)).all()
     return [user.json() for user in users]
-
 
 
 @app.route('/register', methods=['POST'])
@@ -51,7 +52,7 @@ def register():
             return jsonify({'error': 'Username or email already exists'}), 400
 
         # Create a new user and add to the database
-        new_user = Users(name=username, email=email, password=password)
+        new_user = Users(name=username, email=email, password= Bcrypt().generate_password_hash(password).decode('utf-8'))
         db.session.add(new_user)
         db.session.commit()
 
@@ -61,6 +62,33 @@ def register():
         # Log the exception for debugging purposes
         print(f"Exception during registration: {str(e)}")
         return jsonify({'error': 'Internal Server Error'}), 500
+    
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
+
+        # Perform login logic here (e.g., verify user credentials)
+        email = data.get('email')
+        password = data.get('password')
+
+        # Check if the user exists in the database
+        user = Users.query.filter(Users.email == email).first()
+        if not user:
+            return jsonify({'error': 'Invalid email or password'}), 400
+
+        # Check if the password is correct
+        if not Bcrypt().check_password_hash(user.password, password):
+            return jsonify({'error': 'Invalid email or password'}), 400
+
+        return jsonify({'message': 'Login successful'})
+
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print(f"Exception during login: {str(e)}")
+        return jsonify({'error': 'Internal Server Error'}), 500
+
     
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
