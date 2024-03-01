@@ -23,7 +23,7 @@ class Users(db.Model):
     def __init__(self,name, email, password):
         self.name = name
         self.email = email
-        self.password = generate_password_hash(password).decode('utf-8')
+        self.password = password
 
     def json(self):
         return {"userid": self.id, "username": self.name, "email": self.email, "password": self.password}
@@ -76,10 +76,12 @@ def login():
         # Check if the user exists in the database
         user = Users.query.filter(Users.email == email).first()
         if not user:
+            print("incorrect user")
             return jsonify({'error': 'Invalid email or password'}), 400
 
         # Check if the password is correct
         if not Bcrypt().check_password_hash(user.password, password):
+            print("incorrect password")
             return jsonify({'error': 'Invalid email or password'}), 400
 
         return jsonify({'message': 'Login successful'})

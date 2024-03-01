@@ -57,6 +57,10 @@ export default {
         window.location.href = '/login';
       } catch (error) {
         console.error('Error registering:', error.message);
+
+        // Display error message to the user here ()
+        
+
       }
     }
   }
