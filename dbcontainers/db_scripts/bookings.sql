@@ -1,0 +1,16 @@
+CREATE DATABASE IF NOT EXISTS bookings_db;
+USE bookings_db;
+
+CREATE TABLE IF NOT EXISTS bookings (
+    BID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    email VARCHAR(255),
+    FID VARCHAR(6),
+    SeatNum VARCHAR(4)
+);
+
+LOAD DATA INFILE '/var/lib/mysql-files/data.csv'
+INTO TABLE bookings
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
