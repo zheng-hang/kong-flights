@@ -4,6 +4,8 @@ import Regis from '../views/RegisterView.vue'
 import Login from '../views/LoginView.vue'
 import SearchFlights from '../views/SearchFlights.vue'
 import MyFlights from '../views/MyFlights.vue'
+import BookingView from '../views/BookingView.vue'
+
 
 const routes = [
   {
@@ -33,6 +35,11 @@ const routes = [
     name: 'MyFlights',
     component: MyFlights
   
+  },
+  {
+    path: '/booking',
+    name: 'booking',
+    component: BookingView
   }
 ]
 
