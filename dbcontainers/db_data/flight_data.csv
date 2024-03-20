@@ -1,0 +1,4 @@
+﻿FID,Airline,DepartureLoc,ArrivalLoc,Date,DepartureTime,Duration,Price
+SQ 123,Singapore Airlines,Singapore,Berlin,2024-03-15,10:30:00,6000,1035.2
+SQ 124,Singapore Airlines,Johor Bahru,Berlin,2024-05-15,20:20:20,7000,3035.2
+LH 520,Lufthansa,Singapore,Kuala Lumpur,2024-04-13,07:45:23,75,221

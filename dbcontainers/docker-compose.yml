@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  mysql-flight:
+    build:
+      context: .
+      dockerfile: flight.Dockerfile
+    restart: always
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stop_grace_period: 15s
+    volumes:
+      - ./mysql_data_f:/var/lib/mysql
+      - ./db_data/flight_data.csv:/var/lib/mysql-files/data.csv:rw
+
+  mysql-passenger:
+    build:
+      context: .
+      dockerfile: passenger.Dockerfile
+    restart: always
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stop_grace_period: 15s
+    volumes:
+      - ./mysql_data_p:/var/lib/mysql
+      - ./db_data/passenger_data.csv:/var/lib/mysql-files/data.csv:rw
+
+  mysql-booking:
+    build:
+      context: .
+      dockerfile: booking.Dockerfile
+    restart: always
+    ports:
+      - "3312:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stop_grace_period: 15s
+    volumes:
+      - ./mysql_data_b:/var/lib/mysql
+      - ./db_data/booking_data.csv:/var/lib/mysql-files/data.csv:rw
+
+  mysql-seat:
+    build:
+      context: .
+      dockerfile: seat.Dockerfile
+    restart: always
+    ports:
+      - "3313:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stop_grace_period: 15s
+    volumes:
+      - ./mysql_data_s:/var/lib/mysql
+      - ./db_data/seat_data.csv:/var/lib/mysql-files/data.csv:rw
+
+
+# networks:
+#   my_network:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 192.168.48.0/24
+
