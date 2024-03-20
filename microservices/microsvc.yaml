@@ -17,6 +17,17 @@ services:
     depends_on:
       - rabbitmq
 
+  amqp_connection:
+    image: python:3.9-slim
+    volumes:
+      - .:/app
+    environment:
+      - HOSTNAME=localhost
+      - PORT=5672
+    command: python amqp_connection.py
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq-mgmt
