@@ -7,7 +7,7 @@
 import RegisterPage from '@/components/RegisterProcess.vue'
 
 export default {
-  name: 'Register',
+  name: 'RegisterView',
   components: {
     RegisterPage
   }
