@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     BID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     email VARCHAR(255),
     FID VARCHAR(6),
-    SeatNum VARCHAR(4)
+    seatcol VARCHAR(1) NOT NULL,
+    seatnum INT NOT NULL,
 );
 
 LOAD DATA INFILE '/var/lib/mysql-files/data.csv'

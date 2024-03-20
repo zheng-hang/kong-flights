@@ -3,7 +3,8 @@ USE seats_db;
 
 CREATE TABLE IF NOT EXISTS seats (
     fid VARCHAR(255) NOT NULL,
-    seatnum VARCHAR(255) NOT NULL,
+    seatcol VARCHAR(1) NOT NULL,
+    seatnum INT NOT NULL,
     available BOOLEAN,
     price DOUBLE,
     class VARCHAR(255),

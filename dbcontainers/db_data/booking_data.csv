@@ -1,5 +1,5 @@
-bid,email,fid,seatnum
-1,emily.jones987@example.org,SQ 123,A1
-2,emily.jones987@example.org,SQ 124,C3
-3,lisa.brown2468@hotmail.com,SQ 123,B2
-4,daniel.kim321@example.com,LH 520,A3
+bid,email,fid,seatcol,seatnum
+1,emily.jones987@example.org,SQ 123,A,1
+2,emily.jones987@example.org,SQ 124,C,3
+3,lisa.brown2468@hotmail.com,SQ 123,B,2
+4,daniel.kim321@example.com,LH 520,C,1
