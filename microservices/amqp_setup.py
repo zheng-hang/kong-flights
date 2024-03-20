@@ -2,18 +2,18 @@ import time
 import pika
 from os import environ
 
-hostname = "localhost" # default hostname
-port = 5672            # default port
-exchangename = "order_topic" # exchange name
-exchangetype = "topic" # - use a 'topic' exchange to enable interaction
+# hostname = "localhost" # default hostname
+# port = 5672            # default port
+# exchangename = "order_topic" # exchange name
+# exchangetype = "topic" # - use a 'topic' exchange to enable interaction
 
 # Instead of hardcoding the values, we can also get them from the environ as shown below
-# hostname = environ.get('hostname') #localhost
-# port = environ.get('port')         #5672 
-# exchangename = environ.get('exchangename') #order_topic
-# exchangetype = environ.get('exchangetype') #topic
-# a_queue_name = environ.get('a_queue_name') #Activity_Log
-# e_queue_name = environ.get('e_queue_name') #Error
+hostname = environ.get('hostname') #localhost
+port = environ.get('port')         #5672 
+exchangename = environ.get('exchangename') #order_topic
+exchangetype = environ.get('exchangetype') #topic
+seatUpdate_queue_name = environ.get('seatUpdate_queue_name') #Activity_Log
+bCreation_queue_name = environ.get('bCreation_queue_name') #Error
 
 #to create a connection to the broker
 def create_connection(max_retries=12, retry_interval=5):
@@ -67,17 +67,23 @@ def create_queues(channel):
 # function to create Booking_SeatUpdate queue  
 def create_b_seatno_update(channel):
     print('amqp_setup:create_b_seatno_update')
-    a_queue_name = 'Booking_SeatUpdate'
-    channel.queue_declare(queue=a_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
-    channel.queue_bind(exchange=exchangename, queue=a_queue_name, routing_key='*.seatupdate')
+    # seatUpdate_queue_name = 'Booking_SeatUpdate'
+    channel.queue_declare(queue=seatUpdate_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
+    channel.queue_bind(exchange=exchangename, queue=seatUpdate_queue_name, routing_key='*.seatupdate')
         # bind the queue to the exchange via the key
         # 'routing_key=#' => any routing_key would be matched
 
 # function to create Booking_Creation queue  
 def create_b_create_booking(channel):
     print('amqp_setup:create_b_create_booking')
-    a_queue_name = 'Booking_Creation'
-    channel.queue_declare(queue=a_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
-    channel.queue_bind(exchange=exchangename, queue=a_queue_name, routing_key='*.createbooking')
+    # bCreation_queue_name = 'Booking_Creation'
+    channel.queue_declare(queue=bCreation_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
+    channel.queue_bind(exchange=exchangename, queue=bCreation_queue_name, routing_key='*.createbooking')
         # bind the queue to the exchange via the key
         # 'routing_key=#' => any routing_key would be matched
+
+
+if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')   
+    connection = create_connection()
+    channel = create_channel(connection)
+    create_queues(channel)

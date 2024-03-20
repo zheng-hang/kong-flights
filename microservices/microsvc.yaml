@@ -2,7 +2,21 @@ version: '3.8'
 
 services:
 
-  # RabbitMQ service container
+  amqp_setup:
+    image: python:3.9-slim
+    volumes:
+      - .:/app
+    environment:
+      - HOSTNAME=localhost
+      - PORT=5672
+      - EXCHANGENAME=seat_topic
+      - EXCHANGETYPE=topic
+      - seatUpdate_queue_name = 'Booking_SeatUpdate'
+      - bCreation_queue_name = 'Booking_Creation'
+    command: python amqp_setup.py
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq-mgmt
