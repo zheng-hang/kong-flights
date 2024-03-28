@@ -38,11 +38,15 @@ class Flight(db.Model):
     
     def getPrice(self):
         return {"Price": self.Price}
-
-# Get all flights
+    
+# Search Flights, returns ALL flights if no user inputs
 @app.route("/flight")
-def get_all():
-    flightList = db.session.scalars(db.select(Flight)).all()
+def find_by_FID(FID):
+    DepartureLoc = request.args.get('DepartureLoc', None)
+    ArrivalLoc = request.args.get('ArrivalLoc', None)
+    DepartureDate = request.args.get('DepartureDate', None)
+
+    flightList = db.session.scalars(db.select(Flight).filter_by(DepartureLoc=DepartureLoc, ArrivalLoc=ArrivalLoc, DepartureDate=DepartureDate)).all()
     if len(flightList):
         return jsonify(
             {
@@ -56,25 +60,6 @@ def get_all():
         {
             "code": 404,
             "message": "There are no flights."
-        }
-    ), 404
-
-
-# Search by Flight ID
-@app.route("/flight/<string:FID>")
-def find_by_FID(FID):
-    flight = db.session.scalars(db.select(Flight).filter_by(FID=FID).limit(1)).first()
-    if flight:
-        return jsonify(
-            {
-                "code": 200,
-                "data": flight.json()
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Flight not found."
         }
     ), 404
 
