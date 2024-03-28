@@ -8,9 +8,37 @@ import json
 import pika
 from os import environ
 
-
 seatchange_queue_name = environ.get('avail_queue_name') or 'SeatUpdate'
 new_queue_name = environ.get('new_queue_name') or 'NewBooking'
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
+
+db = SQLAlchemy(app)
+
+CORS(app)
+
+class Bookings(db.Model):
+    __tablename__ = 'bookings'
+
+    bid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    pid = db.Column(db.Integer, nullable=False)
+    fid = db.Column(db.String(6), nullable=False)
+    seatcol = db.Column(db.String(1), nullable=False)
+    seatnum = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, bid, pid, fid, seatcol, seatnum):
+        self.bid = bid
+        self.pid = pid
+        self.fid = fid
+        self.seatcol = seatcol
+        self.seatnum = seatnum
+
+    def json(self):
+        return {"bid": self.bid, "pid": self.pid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
+
 
 
 # Receive seat change
@@ -31,7 +59,7 @@ def receiveUpdateLog(channel):
 ## FORMAT FOR BODY - Update Seat    ##
 ## Routing Key: #.seatUpdate             ##
 # {
-#     "email": "emily.jones987@example.org",
+#     "pid": 1,
 #     "fid": "SQ 123",
 #     "seatcol": "A",
 #     "seatno": 1
@@ -56,7 +84,7 @@ def receiveCreationLog(channel):
         channel.basic_consume(queue=new_queue_name, on_message_callback=callback_creation, auto_ack=True)
         print('bookings: Consuming from queue:', new_queue_name)
         channel.start_consuming()  # an implicit loop waiting to receive messages;
-             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+            #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
     
     except pika.exceptions.AMQPError as e:
         print(f"bookings: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
@@ -68,7 +96,7 @@ def receiveCreationLog(channel):
 ## FORMAT FOR BODY - CreateBooking    ##
 ## Routing Key: *.newBooking          ##
 # {
-#     "email": "emily.jones987@example.org",
+#     "pid": 1,
 #     "fid": "SQ 123",
 #     "seatcol": "A",
 #     "seatno": 1
@@ -85,7 +113,21 @@ def processCreation(update):
 
 
 # GET passenger bookings
-
+def search_by_pid(pid):
+    booking = db.session.query(Bookings).filter(Bookings.pid == pid).all()
+    if booking:
+        return jsonify(
+            {
+                "code": 200,
+                "data": booking.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Booking not found."
+        }
+    ), 404
 
 
 

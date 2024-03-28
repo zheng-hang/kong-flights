@@ -2,7 +2,8 @@ CREATE DATABASE IF NOT EXISTS passengers_db;
 USE passengers_db;
 
 CREATE TABLE IF NOT EXISTS passenger (
-    email VARCHAR(255) NOT NULL PRIMARY KEY,
+    pid INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
     password VARCHAR(255)
 );
 
