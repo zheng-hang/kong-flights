@@ -43,11 +43,11 @@ services:
 
 
 # Seat Selection: Update Availablitiy, Insert Seat, Get seat
-  seat_selection:
+  bookings:
     build:
       context: ./
-      dockerfile: seat_selection.Dockerfile
-    image: <dockerid>/seat_selection:esd
+      dockerfile: bookings.Dockerfile
+    image: <dockerid>/bookings:esd
     restart: always
     depends_on:
       - rabbitmq
