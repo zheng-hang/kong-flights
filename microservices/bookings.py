@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+
 import amqp_connection
 import json
 import pika
@@ -80,6 +84,7 @@ def processCreation(update):
     print(update)
 
 
+# GET passenger bookings
 
 
 
