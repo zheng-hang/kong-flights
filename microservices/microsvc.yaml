@@ -2,38 +2,58 @@ version: '3.8'
 
 services:
 
-  amqp_setup:
-    image: python:3.9-slim
-    volumes:
-      - .:/app
-    environment:
-      - HOSTNAME=localhost
-      - PORT=5672
-      - EXCHANGENAME=seat_topic
-      - EXCHANGETYPE=topic
-      - seatUpdate_queue_name = 'Booking_SeatUpdate'
-      - bCreation_queue_name = 'Booking_Creation'
-    command: python amqp_setup.py
-    depends_on:
-      - rabbitmq
+  # amqp_setup:
+  #   image: python:3.9-slim
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     - HOSTNAME=localhost
+  #     - PORT=5672
+  #     - EXCHANGENAME=seat_topic
+  #     - EXCHANGETYPE=topic
+  #     - seatUpdate_queue_name = 'Booking_SeatUpdate'
+  #     - bCreation_queue_name = 'Booking_Creation'
+  #   command: python amqp_setup.py
+  #   depends_on:
+  #     - rabbitmq
 
-  amqp_connection:
-    image: python:3.9-slim
-    volumes:
-      - .:/app
-    environment:
-      - HOSTNAME=localhost
-      - PORT=5672
-    command: python amqp_connection.py
-    depends_on:
-      - rabbitmq
+  # amqp_connection:
+  #   image: python:3.9-slim
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     - HOSTNAME=localhost
+  #     - PORT=5672
+  #   command: python amqp_connection.py
+  #   depends_on:
+  #     - rabbitmq
 
+# RabbitMQ: Msging broker
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq-mgmt
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes: 
+      - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
+      - rabbitmq_data:/var/lib/rabbitmq
+
+
+# Seat Selection: Update Availablitiy, Insert Seat, Get seat
+  seat_selection:
+    build:
+      context: ./
+      dockerfile: seat_selection.Dockerfile
+    image: <dockerid>/seat_selection:esd
+    restart: always
+    depends_on:
+      - rabbitmq
     environment:
-      - HOSTNAME=esd-rabbit
-    hostname: esd-rabbit
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      avail_queue_name: SeatAvailUpdate
+      new_queue_name: NewSeatUpdate
+      PYTHONUNBUFFERED: 1
