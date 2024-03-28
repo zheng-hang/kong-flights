@@ -12,7 +12,7 @@ seatchange_queue_name = environ.get('avail_queue_name') or 'SeatUpdate'
 new_queue_name = environ.get('new_queue_name') or 'NewBooking'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.cGonfig['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -29,8 +29,7 @@ class Bookings(db.Model):
     seatcol = db.Column(db.String(1), nullable=False)
     seatnum = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, bid, pid, fid, seatcol, seatnum):
-        self.bid = bid
+    def __init__(self, pid, fid, seatcol, seatnum):
         self.pid = pid
         self.fid = fid
         self.seatcol = seatcol
@@ -59,8 +58,7 @@ def receiveUpdateLog(channel):
 ## FORMAT FOR BODY - Update Seat    ##
 ## Routing Key: #.seatUpdate             ##
 # {
-#     "pid": 1,
-#     "fid": "SQ 123",
+#     "bid",
 #     "seatcol": "A",
 #     "seatno": 1
 # }
@@ -73,6 +71,25 @@ def callback_update(channel, method, properties, body): # required signature for
 def processUpdate(update):
     print("bookings: Recording an update:")
     print(update)
+    
+    # Retrieve the bid from the update
+    bid = update.get('bid')
+
+    # Retrieve the seatcol and seatnum from the update
+    seatcol = update.get('seatcol')
+    seatnum = update.get('seatno')  # 'seatno' in the message, update to match the key used in the message
+
+    # Query the database for the booking with the given bid
+    booking = Bookings.query.filter_by(bid=bid).first()
+
+    if booking:
+        # Update the seatcol and seatnum for the booking
+        booking.seatcol = seatcol
+        booking.seatnum = seatnum
+        db.session.commit()
+        print(f"Updated seatcol to '{seatcol}' and seatnum to '{seatnum}' for booking with bid '{bid}'")
+    else:
+        print(f"Booking with bid '{bid}' not found")
 
 
 
@@ -110,6 +127,10 @@ def callback_creation(channel, method, properties, body): # required signature f
 def processCreation(update):
     print("bookings: Recording a creation:")
     print(update)
+    booking = Bookings(pid=update['pid'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatno'])
+    db.session.add(booking)
+    db.session.commit()
+    print("bookings: Recorded the creation in the database")
 
 
 # GET passenger bookings
@@ -145,3 +166,5 @@ if __name__ == "__main__":  # execute this program only if it is run as a script
     print("bookings: Connection established successfully")
     channel = connection.channel()
     receiveUpdateLog(channel)
+
+    app.run(host='0.0.0.0', port=5000, debug=True)
