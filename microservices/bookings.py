@@ -116,21 +116,22 @@ def processCreation(update):
     print("bookings: Recorded the creation in the database")
 
 
-# GET passenger bookings
 @app.route("/book/<int:pid>")
 def search_by_pid(pid):
-    booking = db.session.query(Bookings).filter(Bookings.pid == pid).all()
-    if booking:
+    bookings = db.session.query(Bookings).filter(Bookings.pid == pid).all()
+    if bookings:
+        # Convert each booking to a dictionary using the json method
+        data = [booking.json() for booking in bookings]
         return jsonify(
             {
                 "code": 200,
-                "data": booking.json()
+                "data": data
             }
         )
     return jsonify(
         {
             "code": 404,
-            "message": "Booking not found."
+            "message": "Bookings not found for passenger ID {}.".format(pid)
         }
     ), 404
 
