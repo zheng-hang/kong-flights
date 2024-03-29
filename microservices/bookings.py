@@ -117,6 +117,7 @@ def processCreation(update):
 
 
 # GET passenger bookings
+@app.route("/book/<int:pid>")
 def search_by_pid(pid):
     booking = db.session.query(Bookings).filter(Bookings.pid == pid).all()
     if booking:
@@ -134,10 +135,12 @@ def search_by_pid(pid):
     ), 404
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
     print("bookings: Getting Connection")
     connection = amqp_connection.create_connection() #get the connection to the broker
     print("bookings: Connection established successfully")
     channel = connection.channel()
     receiveUpdateLog(channel)
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    
