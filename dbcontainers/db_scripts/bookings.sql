@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     email VARCHAR(255),
     FID VARCHAR(6),
     seatcol VARCHAR(1) NOT NULL,
-    seatnum INT NOT NULL,
+    seatnum INT NOT NULL
 );
 
 LOAD DATA INFILE '/var/lib/mysql-files/data.csv'

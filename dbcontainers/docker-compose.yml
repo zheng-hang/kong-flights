@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  my-network:
+    name: my-network
+
 services:
   mysql-flight:
     build:
@@ -75,6 +79,4 @@ services:
 
 
 
-networks:
-  default:
-    name: my_network
+

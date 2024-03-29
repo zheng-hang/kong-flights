@@ -8,11 +8,10 @@ import json
 import pika
 from os import environ
 
-seatchange_queue_name = environ.get('avail_queue_name') or 'SeatUpdate'
-new_queue_name = environ.get('new_queue_name') or 'NewBooking'
+booking_queue_name = environ.get('avail_queue_name') or 'BookingUpdate'
 
 app = Flask(__name__)
-app.cGonfig['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -44,8 +43,8 @@ class Bookings(db.Model):
 def receiveUpdateLog(channel):
     try:
         # set up a consumer and start to wait for coming messages
-        channel.basic_consume(queue=seatchange_queue_name, on_message_callback=callback_update, auto_ack=True)
-        print('bookings: Consuming from queue:', seatchange_queue_name)
+        channel.basic_consume(queue=booking_queue_name, on_message_callback=callback, auto_ack=True)
+        print('bookings: Consuming from queue:', booking_queue_name)
         channel.start_consuming()  # an implicit loop waiting to receive messages;
              #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
     
@@ -55,6 +54,19 @@ def receiveUpdateLog(channel):
     except KeyboardInterrupt:
         print("bookings: Program interrupted by user.")
 
+
+# Run function based on the message
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nbookings: Received an update by " + __file__)
+    message = json.loads(body)
+    if 'seatno' in message:
+        processUpdate(message)
+    elif 'pid' in message and 'fid' in message and 'seatcol' in message and 'seatno' in message:
+        processCreation(message)
+    else:
+        print("bookings: Unknown message format")
+    print()
+
 ## FORMAT FOR BODY - Update Seat    ##
 ## Routing Key: #.seatUpdate             ##
 # {
@@ -62,11 +74,6 @@ def receiveUpdateLog(channel):
 #     "seatcol": "A",
 #     "seatno": 1
 # }
-
-def callback_update(channel, method, properties, body): # required signature for the callback; no return
-    print("\nbookings: Received an update by " + __file__)
-    processUpdate(json.loads(body))
-    print()
 
 def processUpdate(update):
     print("bookings: Recording an update:")
@@ -91,25 +98,6 @@ def processUpdate(update):
     else:
         print(f"Booking with bid '{bid}' not found")
 
-
-
-
-# Receive new booking
-def receiveCreationLog(channel):
-    try:
-        # set up a consumer and start to wait for coming messages
-        channel.basic_consume(queue=new_queue_name, on_message_callback=callback_creation, auto_ack=True)
-        print('bookings: Consuming from queue:', new_queue_name)
-        channel.start_consuming()  # an implicit loop waiting to receive messages;
-            #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
-    
-    except pika.exceptions.AMQPError as e:
-        print(f"bookings: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
-
-    except KeyboardInterrupt:
-        print("bookings: Program interrupted by user.")
-
-
 ## FORMAT FOR BODY - CreateBooking    ##
 ## Routing Key: *.newBooking          ##
 # {
@@ -118,11 +106,6 @@ def receiveCreationLog(channel):
 #     "seatcol": "A",
 #     "seatno": 1
 # }
-
-def callback_creation(channel, method, properties, body): # required signature for the callback; no return
-    print("\nbookings: Received an creation by " + __file__)
-    processCreation(json.loads(body))
-    print()
 
 def processCreation(update):
     print("bookings: Recording a creation:")
@@ -149,16 +132,6 @@ def search_by_pid(pid):
             "message": "Booking not found."
         }
     ), 404
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
     print("bookings: Getting Connection")

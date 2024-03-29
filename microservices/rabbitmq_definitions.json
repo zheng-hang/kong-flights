@@ -39,14 +39,7 @@
     "policies": [],
     "queues": [
         {
-            "name": "seatUpdate",
-            "vhost": "/",
-            "durable": true,
-            "auto_delete": false,
-            "arguments": {}
-        },
-        {
-            "name": "NewBooking",
+            "name": "BookingUpdate",
             "vhost": "/",
             "durable": true,
             "auto_delete": false,
@@ -68,17 +61,9 @@
         {
             "source": "booking_topic",
             "vhost": "/",
-            "destination": "SeatUpdate",
+            "destination": "BookingUpdate",
             "destination_type": "queue",
-            "routing_key": "#.seatUpdate",
-            "arguments": {}
-        },
-        {
-            "source": "booking_topic",
-            "vhost": "/",
-            "destination": "NewBooking",
-            "destination_type": "queue",
-            "routing_key": "*.newBooking",
+            "routing_key": "#.booking",
             "arguments": {}
         }
     ]

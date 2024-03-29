@@ -1,0 +1,51 @@
+version: '3.8'
+
+networks:
+  my-network:
+    name: my-network
+
+
+volumes:
+  rabbitmq_data:
+
+services:
+
+# RabbitMQ: Msging broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-mgmt
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - ./rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - my-network
+
+
+# Seat Selection: Update Availablitiy, Insert Seat, Get seat
+  bookings:
+    build:
+      context: ./
+      dockerfile: bookings.dockerfile
+    image: warkionw/bookings:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      booking_queue_name: BookingUpdate
+      dbURL: mysql+mysqlconnector://root:root@mysql-booking:3312/mysql-booking
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+
+# Flights: service
+
+
+
