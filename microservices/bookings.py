@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import threading
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -135,13 +136,33 @@ def search_by_pid(pid):
         }
     ), 404
 
-if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
-    app.run(host='0.0.0.0', port=5000, debug=True)
+def start_flask():
+    try:
+        app.run(host='0.0.0.0', port=5000)
+    finally:
+        print("Flask thread exiting")
 
-    print("bookings: Getting Connection")
-    connection = amqp_connection.create_connection() #get the connection to the broker
-    print("bookings: Connection established successfully")
-    channel = connection.channel()
-    receiveUpdateLog(channel)
+def start_amqp():
+    try:
+        print("bookings: Getting Connection")
+        connection = amqp_connection.create_connection()  # get the connection to the broker
+        print("bookings: Connection established successfully")
+        channel = connection.channel()
+        receiveUpdateLog(channel)
+    finally:
+        print("AMQP thread exiting")
+
+if __name__ == "__main__":
+    flask_thread = threading.Thread(target=start_flask)
+    amqp_thread = threading.Thread(target=start_amqp)
+
+    flask_thread.start()
+    amqp_thread.start()
+    
+    try:
+        flask_thread.join()
+        amqp_thread.join()
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received, exiting threads")
 
     
