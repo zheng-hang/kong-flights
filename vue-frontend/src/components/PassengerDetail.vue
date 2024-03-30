@@ -27,7 +27,7 @@
                                     <option value="4">Mdm.</option>
                                 </select>
                             </div>
-                            <div class="col-4 ms-5">
+                            <div class="col-3 ms-5">
                                 <input class="text p-1 ps-2" name="firstName" size="60" type="text" placeholder="First/Given name (as in passport)" required>
                             </div>
                             <div class="col-1 ms-2">
@@ -51,7 +51,7 @@
                             </div> 
                         </div>
                         <h5 class="mt-4">Contact details</h5>
-                        <div class="col-5 mb-3">
+                        <div class="col-2 mb-3">
                             <label for="userEmail" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="userEmail1" required>
                         </div>

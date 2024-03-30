@@ -5,6 +5,7 @@ import Login from '../views/LoginView.vue'
 import SearchFlights from '../views/SearchFlights.vue'
 import MyFlights from '../views/MyFlights.vue'
 import BookingView from '../views/BookingView.vue'
+import BookingSeatsView from '@/views/BookingSeatsView.vue'
 
 
 const routes = [
@@ -41,6 +42,11 @@ const routes = [
     path: '/booking',
     name: 'booking',
     component: BookingView
+  },
+  {
+    path: '/bookseats',
+    name: 'BookSeats',
+    component: BookingSeatsView
   }
 ]
 

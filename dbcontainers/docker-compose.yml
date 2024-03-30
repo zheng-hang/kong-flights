@@ -57,7 +57,6 @@ services:
       - ./mysql_data_s:/var/lib/mysql
       - ./db_data/seat_data.csv:/var/lib/mysql-files/data.csv:rw
 
-
 # networks:
 #   my_network:
 #     driver: bridge
