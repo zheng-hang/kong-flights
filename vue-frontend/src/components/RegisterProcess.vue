@@ -94,6 +94,32 @@ export default {
       script.async = true;
       document.body.appendChild(script);
     },
+    async register(){
+      try {
+                const response = await fetch('http://localhost:8080/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: this.email,
+                        password: this.password
+                    }),
+                    mode: 'cors' // no-cors, *cors, same-origin
+                });
+
+                if(response){
+                    console.log('Login successful');
+                    window.location.href = '/login';
+                } 
+                else {
+                    throw new Error('Failed to login');
+                }
+
+            } catch (error) {
+                console.error('Error logging in:', error.message);
+            }
+    }
   }
 };
 </script>

@@ -1,3 +1,7 @@
+<script setup>
+// import axios from 'axios';
+</script>
+
 <template>
     <div class="background">
         <div class="rounded-rectangle">
@@ -48,7 +52,7 @@ export default {
     methods: {
         async submitForm() {
             try {
-                const response = await fetch('http://localhost:5000/login', {
+                const response = await fetch('http://localhost:8080/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -60,20 +64,18 @@ export default {
                     mode: 'cors' // no-cors, *cors, same-origin
                 });
 
-                if (!response.ok) {
+                if(response){
+                    console.log('Login successful');
+                    window.location.href = '/searchFlights';
+                } 
+                else {
                     throw new Error('Failed to login');
                 }
 
-                console.log('Login successful');
-                // Optionally, you can redirect the user to another page upon successful login
-                window.location.href = '/searchFlights';
             } catch (error) {
                 console.error('Error logging in:', error.message);
 
             }
-        },
-        login(){
-            this.submitForm(); 
         },
         loadCss(url) {
             const link = document.createElement('link');
@@ -94,6 +96,9 @@ export default {
             script.async = true;
             document.body.appendChild(script);
         },
+        login(){
+            this.submitForm(); 
+        }
     }
 };
 
