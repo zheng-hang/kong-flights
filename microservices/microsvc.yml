@@ -79,7 +79,7 @@ services:
   flight:
     build:
       context: ./
-      dockerfile: flight.dockerfile
+      dockerfile: flight.DockerFile
     image: warkionw/flight:esd
     restart: always
     ports:
