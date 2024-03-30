@@ -4,7 +4,8 @@ USE passengers_db;
 CREATE TABLE IF NOT EXISTS passenger (
     pid INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255)
+    salt VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
 );
 
 LOAD DATA INFILE '/var/lib/mysql-files/data.csv'
