@@ -4,9 +4,11 @@ from flask_cors import CORS
 import os, sys
 from os import environ
 
+# To call HTTP
 import requests
 from invokes import invoke_http
 
+# To call AMQP
 import pika
 import json
 import amqp_connection
