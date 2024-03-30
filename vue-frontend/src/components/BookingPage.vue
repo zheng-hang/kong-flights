@@ -16,14 +16,6 @@ import PassengerDetail from './PassengerDetail.vue'
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <body style="background-color: #FAFAFA; margin:0; padding:0;">
     <!-- Nav -->
-    <div style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); 
-        background-color: white; height: 65px;display: flex;align-items: center;justify-content: center;">
-        <ul style="list-style-type: none; text-align: center;">
-            <li style="display: inline; margin: 10px;"><a href="">Search Flights</a></li>
-            <li style="display: inline; margin: 10px; font-weight: bold;"><a href="">My Flights</a></li>
-            <li style="display: inline; margin: 10px;"><a href="">My Payment</a></li>
-        </ul>
-    </div>
     
     <!-- Selected Flight banner -->
         <BookingBanner :bookingData="bookingData"/>
