@@ -40,7 +40,10 @@ class Passenger(db.Model):
         self.password = bcrypt.hashpw(password.encode(), self.salt)
 
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode(), self.password.encode())
+        hashed_password = bcrypt.hashpw(password.encode(), self.salt.encode())
+        print(hashed_password)
+        print(self.password.encode())
+        return hashed_password == self.password.encode()
 
 
 ## METHODS AND PATH FOR PASSENGER ##
