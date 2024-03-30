@@ -44,11 +44,43 @@
             "durable": true,
             "auto_delete": false,
             "arguments": {}
+        },
+        {
+            "name": "Notif",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "FlightInsert",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
         }
     ],
     "exchanges": [
         {
             "name": "booking_topic",
+            "vhost": "/",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "notif_topic",
+            "vhost": "/",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "flight_topic",
             "vhost": "/",
             "type": "topic",
             "durable": true,
@@ -64,6 +96,22 @@
             "destination": "BookingUpdate",
             "destination_type": "queue",
             "routing_key": "#.booking",
+            "arguments": {}
+        },
+        {
+            "source": "notif_topic",
+            "vhost": "/",
+            "destination": "Notif",
+            "destination_type": "queue",
+            "routing_key": "#.notif",
+            "arguments": {}
+        },
+        {
+            "source": "flight_topic",
+            "vhost": "/",
+            "destination": "FlightInsert",
+            "destination_type": "queue",
+            "routing_key": "#.flight",
             "arguments": {}
         }
     ]

@@ -1,8 +1,15 @@
+import threading
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_cors import CORS
 from datetime import datetime
+
+import amqp_connection
+import json
+import pika
+
+flight_queue_name = environ.get('flight_queue_name') or 'FlightInsert'
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -130,7 +137,86 @@ def get_price_by_FID(FID):
         }
     ), 404
 
-# Insert new flights (AMQP)
+# Insert new flights (AMQP) Queue: FlightInsert, Routing Key: #.flight
+# Receive message
+def receiveLog(channel):
+    try:
+        # set up a consumer and start to wait for coming messages
+        channel.basic_consume(queue=flight_queue_name, on_message_callback=callback, auto_ack=True)
+        print('flights: Consuming from queue:', flight_queue_name)
+        channel.start_consuming()  # an implicit loop waiting to receive messages;
+             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+    
+    except pika.exceptions.AMQPError as e:
+        print(f"flights: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    except KeyboardInterrupt:
+        print("flights: Program interrupted by user.")
+
+
+# Run function based on the message
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nflights: Received an update by " + __file__)
+    processInsert(json.loads(body))
+    print()
+
+
+        # self.FID = FID
+        # self.Airline = Airline
+        # self.DepartureLoc = DepartureLoc
+        # self.ArrivalLoc = ArrivalLoc
+        # self.Date = Date
+        # self.DepartureTime = DepartureTime
+        # self.Duration = Duration
+        # self.Price = Price
+
+def processInsert(new):
+    with app.app_context():
+        required_keys = ['fid', 'airline', 'departureLoc', 'arrivalLoc', 'date', 'departureTime', 'duration', 'price']
+        if not all(key in new for key in required_keys):
+            return jsonify(
+                {
+                    "code": 400,
+                    "message": "Missing or incorrect keys in the message."
+                }
+            ), 400
+
+        flight = Flight(FID=new['fid'], Airline=new['airline'], DepartureLoc=new['departureLoc'],
+                        ArrivalLoc=new['arrivalLoc'], Date=new['date'], DepartureTime=new['departureTime'],
+                        Duration=new['duration'], Price=new['price'])
+        db.session.add(flight)
+        db.session.commit()
+        print("flights: Recorded the creation in the database")
+
+
+
+## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
+
+def start_flask():
+    try:
+        app.run(host='0.0.0.0', port=5000)
+    finally:
+        print("Flask thread exiting")
+
+def start_amqp():
+    try:
+        print("flights: Getting Connection")
+        connection = amqp_connection.create_connection()  # get the connection to the broker
+        print("flights: Connection established successfully")
+        channel = connection.channel()
+        receiveLog(channel)
+    finally:
+        print("AMQP thread exiting")
+
+if __name__ == "__main__":
+    flask_thread = threading.Thread(target=start_flask)
+    amqp_thread = threading.Thread(target=start_amqp)
+
+    flask_thread.start()
+    amqp_thread.start()
+    
+    try:
+        flask_thread.join()
+        amqp_thread.join()
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received, exiting threads")
