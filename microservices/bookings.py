@@ -10,10 +10,10 @@ import pika
 from os import environ
 
 booking_queue_name = environ.get('avail_queue_name') or 'BookingUpdate'
-exchangename = environ.get('avail_queue_name') or 'BookingUpdate'
+exchangename = environ.get('exchangename') or 'notif_topic'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -102,9 +102,7 @@ def processUpdate(update, channel):
             print(f"Booking with bid '{bid}' not found")
 
         booking_updated = Bookings.query.filter_by(bid=bid).first()
-        message =   {
-                    booking_updated.json()
-                    }
+        message = json.dumps(booking_updated.json())
 
         channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -128,9 +126,7 @@ def processCreation(update, channel):
         db.session.commit()
         print("bookings: Recorded the creation in the database")
 
-        message =   {
-                    booking.json()
-                    }
+        message =   json.dumps(booking.json())
 
         channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
