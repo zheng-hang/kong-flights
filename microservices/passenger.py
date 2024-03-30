@@ -17,30 +17,30 @@ class Passenger(db.Model):
     __tablename__ = 'passenger'
 
     pid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    _email = db.Column(db.String(255), nullable=False)
-    _password = db.Column('password', db.String(255), nullable=False)
-    _salt = db.Column('salt', db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)  # Updated column name
+    password = db.Column('password', db.String(255), nullable=False)  # Updated column name
+    salt = db.Column('salt', db.String(255), nullable=False)  # Updated column name
 
     def __init__(self, email, password):
-        self._email = email
+        self.email = email
         self.set_password(password)
 
     def json(self):
         return {
             "PID": self.pid,
-            "email": self._email,
-            "password": self._password
+            "email": self.email,
+            "password": self.password
         }
 
     def get_email(self):
-        return self._email
+        return self.email
 
     def set_password(self, password):
-        self._salt = bcrypt.gensalt()
-        self._password = bcrypt.hashpw(password.encode(), self._salt)
+        self.salt = bcrypt.gensalt()
+        self.password = bcrypt.hashpw(password.encode(), self.salt)
 
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode(), self._password.encode())
+        return bcrypt.checkpw(password.encode(), self.password.encode())
 
 
 ## METHODS AND PATH FOR PASSENGER ##
@@ -51,7 +51,7 @@ def get_email(PID):
         return jsonify(
             {
                 "code": 200,
-                "data": passenger.getemail()
+                "data": passenger.get_email()
             }
         )
     return jsonify(
@@ -72,7 +72,11 @@ def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    passenger = Passenger.query.filter_by(_email=email).first()
+    
+    app.logger.info(f"Attempting login for email: {email}")
+    
+    passenger = Passenger.query.filter_by(email=email).first()
+    
     if passenger and passenger.check_password(password):
         return jsonify(
             {
@@ -80,6 +84,9 @@ def login():
                 "message": "Login successful."
             }
         )
+    
+    app.logger.warning(f"Login failed for email: {email}")
+    
     return jsonify(
         {
             "code": 401,
@@ -90,7 +97,7 @@ def login():
 
 # JSON FORMAT #
 # {
-#     "email": 'emily.jones987@example.org'
+#     "email": 'pain@example.org'
 #     "password": "abc123"
 # }
 
@@ -99,7 +106,7 @@ def new_account():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    if Passenger.query.filter_by(_email=email).first():
+    if Passenger.query.filter_by(email=email).first():
         return jsonify(
             {
                 "code": 400,
