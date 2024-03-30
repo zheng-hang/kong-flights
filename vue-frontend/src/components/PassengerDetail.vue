@@ -28,10 +28,10 @@
                                 </select>
                             </div>
                             <div class="col-4 ms-5">
-                                <input class="text p-1 ps-2" name="firstName" size="40" type="text" placeholder="First/Given name (as in passport)" required>
+                                <input class="text p-1 ps-2" name="firstName" size="60" type="text" placeholder="First/Given name (as in passport)" required>
                             </div>
-                            <div class="col-1 ms-1">
-                                <input class="text p-1 ps-2" name="lastName" size="40" type="text" placeholder="Last/Family name (as in passport)" required>
+                            <div class="col-1 ms-2">
+                                <input class="text p-1 ps-2" name="lastName" size="60" type="text" placeholder="Last/Family name (as in passport)" required>
                             </div>
                         </div>
                         <div class="row">

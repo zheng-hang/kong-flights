@@ -1,7 +1,7 @@
 <template>
     <div style="background-color: #FAFAFA;margin:0;padding:0;text-align: left;">
       <!-- Nav -->
-      <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center;justify-content: space-between;">
+      <!-- <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center;justify-content: space-between;">
         <div>
           <img src="@/assets/SMOOth Airlines Logo - Flat.png" style="height: 50px;">
         </div>
@@ -13,7 +13,7 @@
         <div>
           <router-link to="/signOut" style="text-decoration: none;">Sign Out</router-link>
         </div>
-      </nav>
+      </nav> -->
 
       <!-- Title -->
         <div style="text-align: left; margin-left: 60px; margin-top: 20px">
