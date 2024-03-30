@@ -1,5 +1,15 @@
 version: '3.8'
 
+networks:
+  my-network:
+    name: my-network
+
+volumes:
+  mysql_data_f:
+  mysql_data_p:
+  mysql_data_b:
+  mysql_data_s:
+
 services:
   mysql-flight:
     build:
@@ -12,8 +22,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     stop_grace_period: 15s
     volumes:
-      - ./mysql_data_f:/var/lib/mysql
+      - mysql_data_f:/var/lib/mysql
       - ./db_data/flight_data.csv:/var/lib/mysql-files/data.csv:rw
+    networks:
+      - my-network
 
   mysql-passenger:
     build:
@@ -26,8 +38,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     stop_grace_period: 15s
     volumes:
-      - ./mysql_data_p:/var/lib/mysql
+      - mysql_data_p:/var/lib/mysql
       - ./db_data/passenger_data.csv:/var/lib/mysql-files/data.csv:rw
+    networks:
+      - my-network
 
   mysql-booking:
     build:
@@ -40,8 +54,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     stop_grace_period: 15s
     volumes:
-      - ./mysql_data_b:/var/lib/mysql
+      - mysql_data_b:/var/lib/mysql
       - ./db_data/booking_data.csv:/var/lib/mysql-files/data.csv:rw
+    networks:
+      - my-network
 
   mysql-seat:
     build:
@@ -54,8 +70,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     stop_grace_period: 15s
     volumes:
-      - ./mysql_data_s:/var/lib/mysql
+      - mysql_data_s:/var/lib/mysql
       - ./db_data/seat_data.csv:/var/lib/mysql-files/data.csv:rw
+    networks:
+      - my-network
 
 # networks:
 #   my_network:
@@ -63,4 +81,7 @@ services:
 #     ipam:
 #       config:
 #         - subnet: 192.168.48.0/24
+
+
+
 

@@ -3,10 +3,10 @@ USE bookings_db;
 
 CREATE TABLE IF NOT EXISTS bookings (
     BID INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    email VARCHAR(255),
+    PID INT NOT NULL,
     FID VARCHAR(6),
     seatcol VARCHAR(1) NOT NULL,
-    seatnum INT NOT NULL,
+    seatnum INT NOT NULL
 );
 
 LOAD DATA INFILE '/var/lib/mysql-files/data.csv'

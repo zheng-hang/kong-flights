@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS seats (
     available BOOLEAN,
     price DOUBLE,
     class VARCHAR(255),
-    PRIMARY KEY (fid,seatnum)
+    PRIMARY KEY (fid,seatcol,seatnum)
 );
 
 LOAD DATA INFILE '/var/lib/mysql-files/data.csv'
