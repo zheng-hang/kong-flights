@@ -60,9 +60,9 @@ def receiveUpdateLog(channel):
 def callback(channel, method, properties, body): # required signature for the callback; no return
     print("\nbookings: Received an update by " + __file__)
     message = json.loads(body)
-    if 'seatno' in message:
+    if 'bid' in message:
         processUpdate(message)
-    elif 'pid' in message and 'fid' in message and 'seatcol' in message and 'seatno' in message:
+    elif 'pid' in message and 'fid' in message and 'seatcol' in message and 'seatnum' in message:
         processCreation(message)
     else:
         print("bookings: Unknown message format")
@@ -73,31 +73,32 @@ def callback(channel, method, properties, body): # required signature for the ca
 # {
 #     "bid",
 #     "seatcol": "A",
-#     "seatno": 1
+#     "seatnum": 1
 # }
 
 def processUpdate(update):
-    print("bookings: Recording an update:")
-    print(update)
-    
-    # Retrieve the bid from the update
-    bid = update.get('bid')
+    with app.app_context():
+        print("bookings: Recording an update:")
+        print(update)
+        
+        # Retrieve the bid from the update
+        bid = update.get('bid')
 
-    # Retrieve the seatcol and seatnum from the update
-    seatcol = update.get('seatcol')
-    seatnum = update.get('seatno')  # 'seatno' in the message, update to match the key used in the message
+        # Retrieve the seatcol and seatnum from the update
+        seatcol = update.get('seatcol')
+        seatnum = update.get('seatnum')  # 'seatnum' in the message, update to match the key used in the message
 
-    # Query the database for the booking with the given bid
-    booking = Bookings.query.filter_by(bid=bid).first()
+        # Query the database for the booking with the given bid
+        booking = Bookings.query.filter_by(bid=bid).first()
 
-    if booking:
-        # Update the seatcol and seatnum for the booking
-        booking.seatcol = seatcol
-        booking.seatnum = seatnum
-        db.session.commit()
-        print(f"Updated seatcol to '{seatcol}' and seatnum to '{seatnum}' for booking with bid '{bid}'")
-    else:
-        print(f"Booking with bid '{bid}' not found")
+        if booking:
+            # Update the seatcol and seatnum for the booking
+            booking.seatcol = seatcol
+            booking.seatnum = seatnum
+            db.session.commit()
+            print(f"Updated seatcol to '{seatcol}' and seatnum to '{seatnum}' for booking with bid '{bid}'")
+        else:
+            print(f"Booking with bid '{bid}' not found")
 
 ## FORMAT FOR BODY - CreateBooking    ##
 ## Routing Key: *.newBooking          ##
@@ -105,19 +106,20 @@ def processUpdate(update):
 #     "pid": 1,
 #     "fid": "SQ 123",
 #     "seatcol": "A",
-#     "seatno": 1
+#     "seatnum": 1
 # }
 
 def processCreation(update):
-    print("bookings: Recording a creation:")
-    print(update)
-    booking = Bookings(pid=update['pid'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatno'])
-    db.session.add(booking)
-    db.session.commit()
-    print("bookings: Recorded the creation in the database")
+    with app.app_context():
+        print("bookings: Recording a creation:")
+        print(update)
+        booking = Bookings(pid=update['pid'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatnum'])
+        db.session.add(booking)
+        db.session.commit()
+        print("bookings: Recorded the creation in the database")
 
 
-@app.route("/book/<int:pid>")
+@app.route("/booking/<int:pid>")
 def search_by_pid(pid):
     bookings = db.session.query(Bookings).filter(Bookings.pid == pid).all()
     if bookings:

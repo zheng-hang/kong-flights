@@ -7,7 +7,6 @@ networks:
 
 volumes:
   rabbitmq_data:
-  mysql_data_b:
 
 services:
 
@@ -25,6 +24,11 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - my-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 
 # Seat Selection: Update Availablitiy, Insert Seat, Get seat
@@ -44,6 +48,29 @@ services:
       booking_queue_name: BookingUpdate
       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
       PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+    
+
+
+  # testing amqp in bookings
+  testamqp:
+    build:
+      context: ./
+      dockerfile: amqptest.dockerfile
+    image: warkionw/testamqp:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+      - bookings
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      exchangename: booking_topic
+      exchangetype: topic
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5100:5100"
     networks:
       - my-network
 

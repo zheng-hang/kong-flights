@@ -1,4 +1,4 @@
-bid,email,fid,seatcol,seatnum
+bid,pid,fid,seatcol,seatnum
 1,1,SQ 123,A,1
 2,1,SQ 124,C,3
 3,5,SQ 123,B,2
