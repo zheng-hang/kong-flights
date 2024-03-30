@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS seats (
     seatnum INT NOT NULL,
     available BOOLEAN,
     price DOUBLE,
-    class VARCHAR(255),
+    seat_class VARCHAR(255),
     PRIMARY KEY (fid,seatcol,seatnum)
 );
 

@@ -50,7 +50,25 @@ services:
       PYTHONUNBUFFERED: 1
     networks:
       - my-network
-    
+
+
+# Seat
+  seat:
+    build:
+      context: ./
+      dockerfile: seat.dockerfile
+    image: ray/seat:esd
+    restart: always
+    ports:
+      - "5002:5000"
+    depends_on:
+      - rabbitmq
+    environment:
+      booking_queue_name: SeatUpdate
+      dbURL: mysql+mysqlconnector://root:root@localhost:3313/seats_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
 
 
 # testing amqp in bookings
@@ -76,19 +94,19 @@ services:
 
 
 # Flights: service
-  flight:
-    build:
-      context: ./
-      dockerfile: flight.dockerfile
-    image: warkionw/flight:esd
-    restart: always
-    ports:
-      - "5001:5000"
-    environment:
-      booking_queue_name: BookingUpdate
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3310/flights_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+  # flight:
+  #   build:
+  #     context: ./
+  #     dockerfile: flight.dockerfile
+  #   image: warkionw/flight:esd
+  #   restart: always
+  #   ports:
+  #     - "5001:5000"
+  #   environment:
+  #     booking_queue_name: BookingUpdate
+  #     dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3310/flights_db
+  #     PYTHONUNBUFFERED: 1
+  #   networks:
+  #     - my-network
 
 
