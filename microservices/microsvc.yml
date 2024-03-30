@@ -85,10 +85,24 @@ services:
     ports:
       - "5001:5000"
     environment:
-      booking_queue_name: BookingUpdate
       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3310/flights_db
       PYTHONUNBUFFERED: 1
     networks:
       - my-network
 
+
+# Passenger Microservice
+  flight:
+    build:
+      context: ./
+      dockerfile: passenger.dockerfile
+    image: warkionw/passenger:esd
+    restart: always
+    ports:
+      - "5002:5000"
+    environment:
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3311/passengers_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
 
