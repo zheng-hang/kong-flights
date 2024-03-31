@@ -31,25 +31,25 @@ services:
       retries: 3
 
 
-# Seat Selection: Update Availablitiy, Insert Seat, Get seat
-  bookings:
-    build:
-      context: ./
-      dockerfile: bookings.dockerfile
-    image: warkionw/bookings:esd
-    restart: always
-    ports:
-      - "5000:5000"
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      booking_queue_name: BookingUpdate
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+# # Seat Selection: Update Availablitiy, Insert Seat, Get seat
+#   bookings:
+#     build:
+#       context: ./
+#       dockerfile: bookings.dockerfile
+#     image: warkionw/bookings:esd
+#     restart: always
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - rabbitmq
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       booking_queue_name: BookingUpdate
+#       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
+#       PYTHONUNBUFFERED: 1
+#     networks:
+#       - my-network
 
 
 # Seat

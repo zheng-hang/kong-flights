@@ -2,7 +2,7 @@ import threading
 from flask import Flask, jsonify, request  
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from flask import current_app
+
 
 import amqp_connection
 import json
@@ -63,33 +63,40 @@ def receiveSeat(channel):
 def callback(channel, method, properties, body):
     print("\nseats: Received an update by " + __file__)
     message = json.loads(body)
-    if 'fid' in message:
-        with current_app.app_context():
-            seat = db.session.scalars(db.select(Seats).filter_by(fid=message['fid']).limit(1)).first()
-            if seat:
-                updateDatabase(message)
-                print("seats: Seat updated successfully.")
-            else:
-                print("seats: Seat not found.")
-    else:
-        print("seats: Invalid message format.")
+    updateDatabase(message)
 
 
 def updateDatabase(message):
-    fid = message['fid']
-    seatcol = message['seatcol']
-    seatnum = message['seatnum']
-    available = message['available']
-    price = message['price']
-    seat_class = message['seat_class']
-    # get the seat with the fid
-    seat = db.session.scalars(db.select(Seats).filter_by(fid=fid,seatcol=seatcol, seatnum=seatnum).limit(1)).first()
-    if seat:
-        seat.available = not seat.available
-        db.session.commit()
-        print("seats: Seat updated successfully.")
-    else:
-        print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
+    with app.app_context():
+        print("updating db")
+        fid = message['fid']
+        seatcol = message['seatcol']
+        seatnum = message['seatnum']
+        # get the seat with the fid
+        seat = db.session.scalars(db.select(Seats).filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).limit(1)).first()
+        if seat:
+            seat.available = not seat.available
+            db.session.commit()
+            print("seats: Seat updated successfully.")
+        else:
+            print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
+
+def updateDatabase(message):
+    with app.app_context():
+        print("updating db")
+        fid = message['fid']
+        seatcol = message['seatcol']
+        seatnum = message['seatnum']
+        # get the seat with the fid
+        seat = Seats.query.filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).limit(1)
+        if seat:
+            print(seat.json())
+            seat.available = not seat.available
+            db.session.commit()
+            print("seats: Seat updated successfully.")
+        else:
+            print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
+
 
 
 
