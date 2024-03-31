@@ -1,4 +1,4 @@
-fid,seatcol,seatnum,available,price,class
+fid,seatcol,seatnum,available,price,seat_class
 SQ 123,A,1,0,30.00,first
 SQ 123,B,1,1,30.00,first
 SQ 123,C,1,1,30.00,first

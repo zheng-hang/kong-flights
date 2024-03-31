@@ -78,8 +78,13 @@ print(email_password)
 # get from booking microservice (from passengers.sql)
 email_receiver = 'bckf2000@gmail.com' 
 
+<<<<<<< HEAD
 subject = "Payment Successful"
 body = """
+=======
+subject_payment = "Payment Successful"
+body_payment = """
+>>>>>>> main
 Dear customer,
 
 Thank you for your purchase with SMOOth Airlines. Your payment is successful. This is not a receipt.
