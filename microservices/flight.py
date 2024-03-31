@@ -51,7 +51,7 @@ class Flight(db.Model):
         return {"Price": self.Price}
 
 
-@app.route("/flight")
+@app.route("/flight", methods=['GET'])
 def get_all_flights():
     flightlist = db.session.scalars(db.select(Flight)).all()
     if len(flightlist):
@@ -86,7 +86,7 @@ def get_all_flights():
 # }
 
 
-@app.route("/flight",  methods=['POST'])
+@app.route("/flight", methods=['POST'])
 def searchflights():
     DepartureLoc = request.json.get('DepartureLoc', None)
     ArrivalLoc = request.json.get('ArrivalLoc', None)

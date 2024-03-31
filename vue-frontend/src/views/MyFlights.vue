@@ -37,63 +37,63 @@
             </div>
             
             <!-- Display all bookings -->
-            <div class="row" style="display:flex; justify-content: center; margin:250px; margin-top: 20px;">
-                <!--Booking 1-->
-                <table class="table table-bordered" style="border-style:solid; border-color: #0D6FE5; border-width: thin;">
-                    <thead style="background-color: #0DB4F3;">
-                    <tr>
-                        <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
-                            <h6 style="font-weight: bold">1. SQ216 | Singapore to Tokyo</h6>
-                            <h6 style="font-weight: bold">Economy | <a href="#" style="color:black">Change Seat</a></h6>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody style="background-color: white;">
-                    <tr>
-                        <td style="padding: 40px; padding-top:20px;">
-                            <!-- Add flight duration -->
-                            <span style="font-weight: bold;">6 hr 40 min</span>
-                            <div class="row" style="margin-top: 15px">
-                                <!-- Departure -->
-                                <div class="col-3">
-                                    <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
-                                    <h3>SIN 08:05</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
+            <div v-for="(flight, i) in pastFlights.data.flights" :key="i">
+                <div v-if="getArrivalDate(flight.Date, flight.Duration) <= new Date().toUTCString()" class="row" style="display:flex; justify-content: center; margin:250px; margin-top: 20px; margin-bottom: 20px;">
+                    <!--Booking-->
+                    <table class="table table-bordered" style="border-style:solid; border-color: #0D6FE5; border-width: thin;">
+                        <thead style="background-color: #0DB4F3;">
+                        <tr>
+                            <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
+                                <h6 style="font-weight: bold">{{ flight.FID }} | {{ flight.DepartureLoc }} to {{ flight.ArrivalLoc }}</h6>
+                                <h6 style="font-weight: bold">Economy | <a href="#" style="color:black"><i class="fas fa-edit"></i> Change Seat</a></h6>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody style="background-color: white;">
+                        <tr>
+                            <td style="padding: 40px; padding-top:20px;">
+                                <!-- Add flight duration -->
+                                <span style="font-weight: bold;">{{ flight.Duration }} min</span>
+                                <div class="row" style="margin-top: 15px">
+                                    <!-- Departure -->
+                                    <div class="col-3">
+                                        <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
+                                        <h3>SIN {{ flight.DepartureTime }}</h3>
+                                        <p>
+                                            <span style="font-weight: bold;">{{ flight.DepartureLoc }}</span><br/>
+                                            {{ formatDate(flight.Date) }}
+                                        </p>
+                                    </div>
+                                    <div class="col-1 d-flex align-items-center justify-content-start">
+                                        <!-- <font-awesome-icon icon="plane" /> -->
+                                        <i class="fa-solid fa-plane fa-2xl"></i>
+                                    </div>
+                                    <!-- Arrival -->
+                                    <div class="col-5">
+                                        <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
+                                        <h3>NRT {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
+                                        <p>
+                                            <span style="font-weight: bold;">Tokyo</span><br/>
+                                            {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
+                                        </p>
+                                    </div>
+                                    <!-- Others -->
+                                    <div class="col-3">
+                                        <!-- Status -->
+                                        <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
+                                        <p>
+                                            <span style="font-weight: bold;">{{ flight.Airline }} | {{ flight.FID }}</span><br/>
+                                            Airbus Industrie A380-800
+                                        </p>
+                                        <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
+                                    </div>
                                 </div>
-                                <div class="col-1 d-flex align-items-center justify-content-start">
-                                    <!-- <font-awesome-icon icon="plane" /> -->
-                                    <i class="fa-solid fa-plane fa-2xl"></i>
-                                </div>
-                                <!-- Arrival -->
-                                <div class="col-5">
-                                    <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                    <h3>NRT 15:45</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Tokyo</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
-                                </div>
-                                <!-- Others -->
-                                <div class="col-3">
-                                    <!-- Status -->
-                                    <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore Airlines | SQ216</span><br/>
-                                        Airbus Industrie A380-800
-                                    </p>
-                                    <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!--Booking 2-->
-                
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    
+                </div>
             </div>
         </div>
         <!-- Past Flights -->
@@ -112,120 +112,71 @@
             </div>
             
             <!-- Display all bookings -->
-            <div class="row" style="display:flex; justify-content: center; margin:250px; margin-top: 20px;">
-                <!--Booking 1-->
-                <table class="table table-bordered" style="border-style:solid; border-color: #0D6FE5; border-width: thin;">
-                    <thead style="background-color: #0DB4F3;">
-                    <tr>
-                        <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
-                            <h6 style="font-weight: bold">1. SQ216 | Singapore to Tokyo</h6>
-                            <h6 style="font-weight: bold">Economy | <a href="#" style="color:black">Change Seat</a></h6>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody style="background-color: white;">
-                    <tr>
-                        <td style="padding: 40px; padding-top:20px;">
-                            <!-- Add flight duration -->
-                            <span style="font-weight: bold;">6 hr 40 min</span>
-                            <div class="row" style="margin-top: 15px">
-                                <!-- Departure -->
-                                <div class="col-3">
-                                    <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
-                                    <h3>SIN 08:05</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
+            <div v-for="(flight, i) in pastFlights.data.flights" :key="i">
+                <div v-if="getArrivalDate(flight.Date, flight.Duration) > new Date().toUTCString()" class="row" style="display:flex; justify-content: center; margin:250px; margin-top: 20px; margin-bottom: 20px;">
+                    <!--Booking-->
+                    <table class="table table-bordered" style="border-style:solid; border-color: #0D6FE5; border-width: thin;">
+                        <thead style="background-color: #0DB4F3;">
+                        <tr>
+                            <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
+                                <h6 style="font-weight: bold">{{ flight.FID }} | {{ flight.DepartureLoc }} to {{ flight.ArrivalLoc }}</h6>
+                                <h6 style="font-weight: bold">Economy | <a href="#" style="color:black"><i class="fas fa-edit"></i> Change Seat</a></h6>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody style="background-color: white;">
+                        <tr>
+                            <td style="padding: 40px; padding-top:20px;">
+                                <!-- Add flight duration -->
+                                <span style="font-weight: bold;">{{ flight.Duration }} min</span>
+                                <div class="row" style="margin-top: 15px">
+                                    <!-- Departure -->
+                                    <div class="col-3">
+                                        <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
+                                        <h3>SIN {{ flight.DepartureTime }}</h3>
+                                        <p>
+                                            <span style="font-weight: bold;">{{ flight.DepartureLoc }}</span><br/>
+                                            {{ formatDate(flight.Date) }}
+                                        </p>
+                                    </div>
+                                    <div class="col-1 d-flex align-items-center justify-content-start">
+                                        <!-- <font-awesome-icon icon="plane" /> -->
+                                        <i class="fa-solid fa-plane fa-2xl"></i>
+                                    </div>
+                                    <!-- Arrival -->
+                                    <div class="col-5">
+                                        <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
+                                        <h3>NRT {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
+                                        <p>
+                                            <span style="font-weight: bold;">Tokyo</span><br/>
+                                            {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
+                                        </p>
+                                    </div>
+                                    <!-- Others -->
+                                    <div class="col-3">
+                                        <!-- Status -->
+                                        <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
+                                        <p>
+                                            <span style="font-weight: bold;">{{ flight.Airline }} | {{ flight.FID }}</span><br/>
+                                            Airbus Industrie A380-800
+                                        </p>
+                                        <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
+                                    </div>
                                 </div>
-                                <div class="col-1 d-flex align-items-center justify-content-start">
-                                    <!-- <font-awesome-icon icon="plane" /> -->
-                                    <i class="fa-solid fa-plane fa-2xl"></i>
-                                </div>
-                                <!-- Arrival -->
-                                <div class="col-5">
-                                    <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                    <h3>NRT 15:45</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Tokyo</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
-                                </div>
-                                <!-- Others -->
-                                <div class="col-3">
-                                    <!-- Status -->
-                                    <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore Airlines | SQ216</span><br/>
-                                        Airbus Industrie A380-800
-                                    </p>
-                                    <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!--Booking 2-->
-                <table class="table table-bordered" style="border-style:solid; border-color: #0D6FE5; border-width: thin;">
-                    <thead style="background-color: #0DB4F3;">
-                    <tr>
-                        <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
-                            <h6 style="font-weight: bold">2. SQ216 | Singapore to Tokyo</h6>
-                            <h6 style="font-weight: bold">Economy | <a href="#" style="color:black">Change Seat</a></h6>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody style="background-color: white;">
-                    <tr>
-                        <td style="padding: 40px; padding-top:20px;">
-                            <!-- Add flight duration -->
-                            <span style="font-weight: bold;">6 hr 40 min</span>
-                            <div class="row" style="margin-top: 15px">
-                                <!-- Departure -->
-                                <div class="col-3">
-                                    <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
-                                    <h3>SIN 08:05</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
-                                </div>
-                                <div class="col-1 d-flex align-items-center justify-content-start">
-                                    <!-- <font-awesome-icon icon="plane" /> -->
-                                    <i class="fa-solid fa-plane fa-2xl"></i>
-                                </div>
-                                <!-- Arrival -->
-                                <div class="col-5">
-                                    <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                    <h3>NRT 15:45</h3>
-                                    <p>
-                                        <span style="font-weight: bold;">Tokyo</span><br/>
-                                        Thursday, 28 Mar 2024
-                                    </p>
-                                </div>
-                                <!-- Others -->
-                                <div class="col-3">
-                                    <!-- Status -->
-                                    <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
-                                    <p>
-                                        <span style="font-weight: bold;">Singapore Airlines | SQ216</span><br/>
-                                        Airbus Industrie A380-800
-                                    </p>
-                                    <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    
+                </div>
             </div>
+            
         </div>
     </div>
 </template>
   
 <script>
+  import axios from 'axios';
   export default {
     async mounted() {
       // Load Bootstrap CSS
@@ -241,7 +192,8 @@
     },
     data() {
         return {
-            toggle: 'upcoming'
+            toggle: 'upcoming',
+            pastFlights: ''
         };
     },
     methods: {
@@ -263,7 +215,55 @@
         }
         script.async = true;
         document.body.appendChild(script);
-      }
+      },
+      formatDate(dateInput) {
+        const dateObject = new Date(dateInput);
+        const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+        return dateObject.toLocaleDateString('en-US', options);
+      },
+      calculateArrivalTime(departureTime, duration){
+        // Split the time string into hours, minutes, and seconds
+        const [hours, minutes, seconds] = departureTime.split(':').map(Number);
+
+        // Calculate total minutes
+        let totalMinutes = hours * 60 + minutes + duration;
+
+        // Calculate new hours and minutes
+        const newHours = Math.floor(totalMinutes / 60) % 24;
+        const newMinutes = totalMinutes % 60;
+
+        // Format the result
+        const formattedResult = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        return formattedResult;
+      },
+      getArrivalDate(departureTime, duration){
+        // Convert the date string to a Date object
+        const date = new Date(departureTime);
+
+        // Add the minutes to the date
+        date.setMinutes(date.getMinutes() + duration);
+
+        // Format the date back into the desired string format
+        const formattedDate = date.toUTCString();
+
+        return formattedDate;
+      },
+      loadPastFlights(){
+        axios.get('http://localhost:5001/flight')
+          .then(response => {
+            // Handle the response data here
+            this.pastFlights = response.data; // flight data
+          })
+          .catch(error => {
+            // Handle errors here
+            this.pastFlights = error;
+            console.error('There was an error fetching flight data:', error);
+        });
+      },
+    },
+    beforeMount() {
+        this.loadPastFlights()
     }
   };
 </script>
