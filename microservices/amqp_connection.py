@@ -3,6 +3,7 @@ import pika
 from os import environ
 
 hostname = "rabbitmq-mgmt" # default hostname
+# hostname = "localhost" # ray
 port = 5672            # default port
 
 # # Instead of hardcoding the values, we can also get them from the environ as shown below

@@ -113,3 +113,43 @@ services:
     networks:
       - my-network
 
+# Seat
+  seat:
+    build:
+      context: ./
+      dockerfile: seat.dockerfile
+    image: ray/seat:esd
+    restart: always
+    ports:
+      - "5002:5000"
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      booking_queue_name: SeatUpdate
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3313/seats_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+#test seat amqp
+  testseatamqp:
+    build:
+      context: ./
+      dockerfile: seatamqptest.dockerfile
+    image: ray/testseatamqp:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+      - seat
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      exchangename: seat_topic
+      exchangetype: topic
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5101:5101"
+    networks:
+      - my-network
