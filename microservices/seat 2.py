@@ -27,8 +27,8 @@ class Seats(db.Model):
     # CHANGE ACCORDINGLY TO YOUR DATABASE SCHEMA --ray
 
     fid = db.Column(db.String(255), primary_key=True)
-    seatcol = db.Column(db.String(1), primary_key=True)
-    seatnum = db.Column(db.Integer, primary_key=True)
+    seatcol = db.Column(db.String(1), nullable=False)
+    seatnum = db.Column(db.Integer, nullable=False)
     available = db.Column(db.Boolean, nullable=False)
     price = db.Column(db.Float, nullable=False)
     seat_class = db.Column(db.String(255), nullable=False)
@@ -102,13 +102,12 @@ def updateDatabase(message):
 
 @app.route("/seat", methods=['GET'])
 def get_all():
-    seats = db.session.scalars(db.select(Seats)).all()
-    seats = [seat.json() for seat in seats]
+    seats = Seats.query.all()
     if len(seats):
         return jsonify(
             {
                 "code":200,
-                "data": seats
+                "data": [seat.json() for seat in seats]
             }
         )
     return jsonify(
@@ -120,12 +119,12 @@ def get_all():
 
 @app.route("/seat/<string:fid>", methods=['GET'])
 def get_seat(fid):
-    seats = db.session.scalars(db.select(Seats).filter_by(fid=fid)).all()
-    if seats:
+    seat = db.session.scalars(db.select(Seats).filter_by(fid=fid).limit(1)).first()
+    if seat:
         return jsonify(
             {
                 "code":200,
-                "data": [seat.json() for seat in seats]
+                "data": seat.json()
             }
         )
     return jsonify(
