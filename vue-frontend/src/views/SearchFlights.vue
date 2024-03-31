@@ -43,7 +43,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">From</span>
                       </div>
-                      <input type="text" class="form-control" placeholder="Your current location" value="Singapore">
+                      <input type="text" class="form-control" placeholder="Your current location" v-model="form.departLoc">
                   </div>
               </div>
               <div class="col-4">
@@ -51,7 +51,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">To</span>
                       </div>
-                      <input type="text" class="form-control" placeholder="Your Destination">
+                      <input type="text" class="form-control" placeholder="Your Destination" v-model="form.arrLoc">
                   </div>
               </div>
               <div class="col-4">
@@ -59,7 +59,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">Departure Date</span>
                       </div>
-                      <input class="form-control" type="date" id="departureDate" name="departureDate">
+                      <input class="form-control" type="date" id="departureDate" name="departureDate" v-model="form.departDate">
                   </div>
               </div>
           </div>
