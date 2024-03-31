@@ -4,9 +4,9 @@ SQ 123,B,1,1,30.00,first
 SQ 123,C,1,1,30.00,first
 SQ 123,A,2,1,20.00,business
 SQ 123,B,2,0,20.00,business
-SQ 123,C,3,1,20.00,business
-SQ 123,C,1,1,10.00,economy
-SQ 123,C,2,1,10.00,economy
+SQ 123,C,2,1,20.00,business
+SQ 123,A,3,1,10.00,economy
+SQ 123,B,3,1,10.00,economy
 SQ 123,C,3,1,10.00,economy
 SQ 124,A,1,1,30.00,first
 SQ 124,B,1,1,30.00,first
@@ -14,8 +14,8 @@ SQ 124,C,1,1,30.00,first
 SQ 124,A,2,1,20.00,business
 SQ 124,B,2,1,20.00,business
 SQ 124,C,2,1,20.00,business
-SQ 124,C,1,1,10.00,economy
-SQ 124,C,2,1,10.00,economy
+SQ 124,A,3,1,10.00,economy
+SQ 124,B,3,1,10.00,economy
 SQ 124,C,3,0,10.00,economy
 LH 520,A,1,1,25.00,first
 LH 520,B,1,1,25.00,first
