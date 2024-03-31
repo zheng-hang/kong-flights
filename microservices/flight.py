@@ -172,21 +172,42 @@ def callback(channel, method, properties, body): # required signature for the ca
 
 def processInsert(new):
     with app.app_context():
-        required_keys = ['fid', 'airline', 'departureLoc', 'arrivalLoc', 'date', 'departureTime', 'duration', 'price']
-        if not all(key in new for key in required_keys):
-            return jsonify(
-                {
-                    "code": 400,
-                    "message": "Missing or incorrect keys in the message."
-                }
-            ), 400
+        if not isinstance(new, list):
+            return jsonify({
+                "code": 400,
+                "message": "Expected a list of flight records."
+            }), 400
 
-        flight = Flight(FID=new['fid'], Airline=new['airline'], DepartureLoc=new['departureLoc'],
-                        ArrivalLoc=new['arrivalLoc'], Date=new['date'], DepartureTime=new['departureTime'],
-                        Duration=new['duration'], Price=new['price'])
-        db.session.add(flight)
-        db.session.commit()
-        print("flights: Recorded the creation in the database")
+        required_keys = ['FID', 'Airline', 'DepartureLoc', 'ArrivalLoc', 'Date', 'DepartureTime', 'Duration', 'Price']
+
+        for flight_info in new:
+            if not all(key in flight_info for key in required_keys):
+                return jsonify({
+                    "code": 400,
+                    "message": "Missing or incorrect keys in a flight record."
+                }), 400
+
+            flight = Flight(
+                FID=flight_info['FID'],
+                Airline=flight_info['Airline'],
+                DepartureLoc=flight_info['DepartureLoc'],
+                ArrivalLoc=flight_info['ArrivalLoc'],
+                Date=flight_info['Date'],
+                DepartureTime=flight_info['DepartureTime'],
+                Duration=flight_info['Duration'],
+                Price=flight_info['Price']
+            )
+
+            db.session.add(flight)
+
+        try:
+            db.session.commit()
+            print("Flights: Recorded the creation in the database")
+            return jsonify({"code": 200, "message": "Successfully inserted all flight records."}), 200
+        except Exception as e:
+            db.session.rollback()
+            print(f"An error occurred: {e}")
+            return jsonify({"code": 500, "message": "Internal server error"}), 500
 
 
 

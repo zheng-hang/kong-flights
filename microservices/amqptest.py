@@ -87,8 +87,35 @@ def amqptest_booking():
     })
     
 
+# CREATE TABLE IF NOT EXISTS flights (
+#     FID VARCHAR(6) NOT NULL PRIMARY KEY,
+#     Airline VARCHAR(255),
+#     DepartureLoc VARCHAR(255),
+#     ArrivalLoc VARCHAR(255),
+#     Date DATE,
+#     DepartureTime TIME,
+#     Duration INT,
+#     Price DOUBLE
+# );
 
-insertFlights = {}
+insertFlights = [{  "FID": "LH111",
+                    "Airline": "Lufthansa",
+                    "DepartureLoc": "Johor Bahru",
+                    "ArrivalLoc": "Singapore",
+                    "Date": "2024-03-15",
+                    "DepartureTime": "10:30:00",
+                    "Duration": 60,
+                    "Price": 140.50
+                },
+                {   "FID": "LH112",
+                    "Airline": "Lufthansa",
+                    "DepartureLoc": "Jakarta",
+                    "ArrivalLoc": "Singapore",
+                    "Date": "2024-03-15",
+                    "DepartureTime": "10:30:00",
+                    "Duration": 120,
+                    "Price": 280.50
+                }]
 
 @app.route("/testamqp/flights")
 def amqptest_flight():
