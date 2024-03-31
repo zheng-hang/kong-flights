@@ -2,18 +2,19 @@ import threading
 from flask import Flask, jsonify, request  
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask import current_app
 
 import amqp_connection
 import json
 import pika
 from os import environ
 
-# seat_queue_name = environ.get('seat_queue_name') or 'SeatUpdate'
-seat_queue_name = 'SeatUpdate'
+seat_queue_name = environ.get('seat_queue_name') or 'SeatUpdate'
+# seat_queue_name = 'SeatUpdate'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3313/seats_db' # Replace with your database connection string
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3313/seats_db' # Replace with your database connection string
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 CORS(app)
@@ -63,13 +64,13 @@ def callback(channel, method, properties, body):
     print("\nseats: Received an update by " + __file__)
     message = json.loads(body)
     if 'fid' in message:
-        seat = db.session.scalars(db.select(Seats).filter_by(fid=message['fid']).limit(1)).first()
-        if seat:
-            seat.available = False
-            db.session.commit()
-            print("seats: Seat updated successfully.")
-        else:
-            print("seats: Seat not found.")
+        with current_app.app_context():
+            seat = db.session.scalars(db.select(Seats).filter_by(fid=message['fid']).limit(1)).first()
+            if seat:
+                updateDatabase(message)
+                print("seats: Seat updated successfully.")
+            else:
+                print("seats: Seat not found.")
     else:
         print("seats: Invalid message format.")
 
@@ -139,7 +140,7 @@ def start_amqp():
     try:
         print("bookings: Getting Connection")
         connection = amqp_connection.create_connection()  # get the connection to the broker
-        print("bookings: Connection established successfully")
+        print("seats: Connection established successfully")
         channel = connection.channel()
         receiveSeat(channel)
     finally:
