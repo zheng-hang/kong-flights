@@ -54,26 +54,26 @@ services:
   #     - my-network
 
 
-# Seat Selection: Update Availablitiy, Insert Seat, Get seat
-  bookings:
-    build:
-      context: ./
-      dockerfile: bookings.dockerfile
-    image: warkionw/bookings:esd
-    restart: always
-    ports:
-      - "5000:5000"
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      booking_queue_name: BookingUpdate
-      exchangename: notif_topic
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+# # Seat Selection: Update Availablitiy, Insert Seat, Get seat
+#   bookings:
+#     build:
+#       context: ./
+#       dockerfile: bookings.dockerfile
+#     image: warkionw/bookings:esd
+#     restart: always
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - rabbitmq
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       booking_queue_name: BookingUpdate
+#       exchangename: notif_topic
+#       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
+#       PYTHONUNBUFFERED: 1
+#     networks:
+#       - my-network
     
 
 
@@ -98,40 +98,40 @@ services:
       - my-network
 
 
-# Passenger Microservice
-  passenger:
-    build:
-      context: ./
-      dockerfile: passenger.dockerfile
-    image: warkionw/passenger:esd
-    restart: always
-    ports:
-      - "5002:5000"
-    environment:
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3311/passengers_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+# # Passenger Microservice
+#   passenger:
+#     build:
+#       context: ./
+#       dockerfile: passenger.dockerfile
+#     image: warkionw/passenger:esd
+#     restart: always
+#     ports:
+#       - "5002:5000"
+#     environment:
+#       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3311/passengers_db
+#       PYTHONUNBUFFERED: 1
+#     networks:
+#       - my-network
 
-# Seat
-  seat:
-    build:
-      context: ./
-      dockerfile: seat.dockerfile
-    image: ray/seat:esd
-    restart: always
-    ports:
-      - "5003:5000"
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      booking_queue_name: SeatUpdate
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3313/seats_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+# # Seat
+#   seat:
+#     build:
+#       context: ./
+#       dockerfile: seat.dockerfile
+#     image: ray/seat:esd
+#     restart: always
+#     ports:
+#       - "5003:5000"
+#     depends_on:
+#       - rabbitmq
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       booking_queue_name: SeatUpdate
+#       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3313/seats_db
+#       PYTHONUNBUFFERED: 1
+#     networks:
+#       - my-network
 
 # #test seat amqp
 #   testseatamqp:

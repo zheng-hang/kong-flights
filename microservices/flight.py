@@ -23,7 +23,7 @@ CORS(app)
 class Flight(db.Model):
     __tablename__ = 'flights'
 
-    FID = db.Column(db.String(6), primary_key=True)
+    FID = db.Column(db.String(10), primary_key=True)
     Airline = db.Column(db.String(255))
     DepartureLoc = db.Column(db.String(255), nullable=False)
     ArrivalLoc = db.Column(db.String(255), nullable=False)
@@ -62,6 +62,17 @@ class Flight(db.Model):
     
     def getPrice(self):
         return {"Price": self.Price}
+
+
+with app.app_context():
+    # Reflect the tables and print their column names
+    meta = db.metadata
+    meta.reflect(bind=db.engine)
+
+    for table in meta.sorted_tables:
+        print(f"Table: {table.name}")
+        for column in table.columns:
+            print(f" - {column.name}")
 
 
 @app.route("/flight", methods=['GET'])
