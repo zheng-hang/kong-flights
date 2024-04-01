@@ -1,30 +1,20 @@
 import requests
 import json
 import time
+from datetime import datetime, timedelta
 
-# When
-def extract_airport_codes(json_data):
-    airports = json_data.get('AirportResource', {}).get('Airports', {}).get('Airport', [])
-    airport_codes = [airport.get('AirportCode', '') for airport in airports]
-    return airport_codes
+from geopy.distance import geodesic
+from pyairports.airports import Airports
+import random
 
-def getResponse(url, headers):
-    return requests.get(url, headers=headers)
+airports = Airports()
 
+with open("./arrDep.json", 'r') as f:
+    airportcodes = json.load(f)
+    print("loaded")
 
 # Replace 'YOUR_API_KEY' with your actual Lufthansa API key
-API_KEY = '35h82u5sty2qzdem97yjfsg9'
-
-offset = 200
-origin = "FRA"
-destination = 'HAM'
-datetime = '2024-04-01'
-
-airportcodes_url = 'https://api.lufthansa.com/v1/operations/schedules/'+origin+'/'+destination+'/'+datetime+'?directFlights=1'
-headers = {
-    'Authorization': f'Bearer {API_KEY}',
-    'Accept': 'application/json'
-}
+API_KEY = 'm39t36wvcpdhzn9ta7hkswk9'
 
 # Current airlines
 # LH - Lufthansa
@@ -34,48 +24,152 @@ headers = {
 # WK - Edelweiss
 # SN - Brussels Airlines
 
-# airportcodes = ['AAA', 'AAB', 'AAC', 'AAD', 'AAE', 'AAF', 'AAG', 'AAH', 'AAI', 'AAJ', 'AAK', 'AAL', 'AAM', 'AAN', 'AAO', 'AAP', 'AAQ', 'AAR', 'AAS', 'AAT', 'AAU', 'AAV', 'AAW', 'AAX', 'AAY', 'AAZ', 'ABA', 'ABB', 'ABC', 'ABD', 'ABE', 'ABF', 'ABG', 'ABH', 'ABI', 'ABJ', 'ABK', 'ABL', 'ABM', 'ABN', 'ABO', 'ABP', 'ABQ', 'ABR', 'ABS', 'ABT', 'ABU', 'ABV', 'ABW', 'ABX', 'ABY', 'ABZ', 'ACA', 'ACB', 'ACC', 'ACD', 'ACE', 'ACF', 'ACH', 'ACI', 'ACJ', 'ACK', 'ACL', 'ACM', 'ACN', 'ACO', 'ACP', 'ACQ', 'ACR', 'ACS', 'ACT', 'ACU', 'ACV', 'ACX', 'ACY', 'ACZ', 'ADA', 'ADB', 'ADC', 'ADD', 'ADE', 'ADF', 'ADG', 'ADH', 'ADI', 'ADJ', 'ADK', 'ADL', 'ADM', 'ADN', 'ADO', 'ADP', 'ADQ', 'ADR', 'ADS', 'ADT', 'ADU', 'ADV', 'ADW', 'ADX', 'ADX', 'ADY', 'ADZ', 'AEA', 'AEB', 'AED', 'AEE', 'AEG', 'AEH', 'AEI', 'AEJ', 'AEK', 'AEL', 'AEM', 'AEN', 'AEO', 'AEP', 'AEQ', 'AER', 'AES', 'AET', 'AEU', 'AEX', 'AEY', 'AFA', 'AFD', 'AFF', 'AFI', 'AFK', 'AFL', 'AFN', 'AFO', 'AFR', 'AFS', 'AFT', 'AFU', 'AFW', 
-# 'AFY', 'AFZ', 'AGA', 'AGB', 'AGC', 'AGD', 'AGE', 'AGF', 'AGG', 'AGH', 'AGI', 'AGJ', 'AGK', 'AGL', 'AGM', 'AGN', 'AGO', 'AGP', 'AGQ', 'AGR', 'AGS', 'AGT', 'AGU', 'AGV', 'AGW', 'AGX', 'AGY', 'AGZ', 'AHA', 'AHB', 'AHC', 'AHD', 'AHE', 'AHF', 'AHH', 'AHI', 'AHJ', 'AHL', 'AHM', 'AHN', 'AHO', 'AHS', 'AHT', 'AHU', 'AHW', 'AHY', 'AHZ', 'AIA', 'AIB', 'AIC', 'AID', 'AIE', 'AIF', 'AIG', 'AIH', 'AII', 'AIK', 'AIL', 'AIM', 'AIN', 'AIO', 'AIP', 'AIR', 'AIS', 'AIT', 'AIU', 'AIV', 'AIW', 'AIX']
-with open("./arrDep.json", 'r') as f:
-    airportcodes = json.load(f)
-    print("loaded")
-
-
-# response = getResponse(airportcodes_url, headers)
-
-
-# if response.status_code == 200:
-#     data = response.json()
-#     # Process the data as needed
-#     # airportcodes.extend(extract_airport_codes(data))
-#     print(data)
-# else:
-#     print(f'Failed to fetch data: {response.status_code}, {response.text}')
     
 
-def get_flight_schedules(airportcodes, datetime, api_key):
+# Randomise Price
+def get_distance(airport1, airport2):
+    lat1 = airports.airport_iata(airport1).lat
+    lon1 = airports.airport_iata(airport1).lon
+    lat2 = airports.airport_iata(airport2).lat
+    lon2 = airports.airport_iata(airport2).lon
+    coords1 = (lat1, lon1)
+    coords2 = (lat2, lon2)
+    distance = geodesic(coords1, coords2).kilometers
+    return distance
+
+def estimate_price(distance, price_per_km):
+    return distance * price_per_km
+
+def randomize_price(price_estimate):
+    max_variation = price_estimate * 0.05  # 5% of the estimated price
+    return price_estimate + random.uniform(-max_variation, max_variation)
+
+def calculate_and_randomize_price(airport1, airport2):
+    PRICE_PER_KM = 0.15
+
+    distance = get_distance(airport1, airport2)
+    price_estimate = estimate_price(distance, PRICE_PER_KM)
+    randomized_price = randomize_price(price_estimate)
+    return round(randomized_price,2)
+
+
+
+
+
+# Get relevant details from passed schedule
+def extract_flight_info(schedule):
+    try:
+        if 'Flight' in schedule:  # Check if schedule is a single flight
+            flight = schedule['Flight']
+            flight_number = f"{flight['MarketingCarrier']['AirlineID']} {flight['MarketingCarrier']['FlightNumber']}"
+            departure_time = flight['Departure']['ScheduledTimeLocal']['DateTime']
+            duration_parts = schedule['TotalJourney']['Duration'].split('H')
+            hours = int(duration_parts[0][2:]) if duration_parts[0] else 0  # Handle empty duration
+            minutes = int(duration_parts[1][:-1]) if duration_parts[1] else 0  # Handle empty duration
+            dep_airport_code = flight['Departure']['AirportCode']
+            arr_airport_code = flight['Arrival']['AirportCode']
+            
+            return flight_number, {
+                'Airline': flight['MarketingCarrier']['AirlineID'],
+                'DepartureLoc': airports.airport_iata(dep_airport_code)[1],
+                'ArrivalLoc': airports.airport_iata(arr_airport_code)[1],
+                'Date': departure_time[:10],
+                'DepartureTime': departure_time[11:16],
+                'Duration': hours * 60 + minutes,
+                'Price': calculate_and_randomize_price(dep_airport_code, arr_airport_code),
+                'DepAirportCode': dep_airport_code,
+                'ArrAirportCode': arr_airport_code
+            }
+        elif isinstance(schedule, list):  # Check if schedule is a list of flights
+            flights_data = []
+            for flight_schedule in schedule:
+                flight_data = extract_flight_info(flight_schedule)
+                if flight_data:
+                    flights_data.append(flight_data)
+            return flights_data
+        else:
+            print("Invalid schedule format.")
+            return None
+    except KeyError as e:
+        print(f"KeyError: {e}")
+        return None
+    except ValueError as e:
+        print(f"ValueError: {e}")
+        return None
+
+
+
+# Call API to get flight schedules
+def get_flight_schedules(airport_pairs, datetime, api_key):
     headers = {
         'Authorization': f'Bearer {api_key}',
         'Accept': 'application/json'
     }
     
-    for airline, pairs in airportcodes.items():
+    all_flights = {}
+    for airline, pairs in airport_pairs.items():
         for pair in pairs:
             origin = pair['Departure']
             destination = pair['Arrival']
             airportcodes_url = f'https://api.lufthansa.com/v1/operations/schedules/{origin}/{destination}/{datetime}?directFlights=1'
             
             response = requests.get(airportcodes_url, headers=headers)
-            if response.status_code in [200,206]:
-                print(f"Schedule for {airline} flight from {origin} to {destination}:")
-                print(response.json())
+            if response.status_code == 200:
+                try:
+                    schedule = response.json()['ScheduleResource']['Schedule']
+                    print(type(schedule))
+                    if isinstance(schedule, list):
+                        print('list')
+                        for flight_schedule in schedule:
+                            flightNum, flight_info = extract_flight_info(flight_schedule)
+                            if flight_info:
+                                all_flights[flightNum] = flight_info
+                    elif isinstance(schedule, dict):  # Only one flight for the path
+                        print('dict')
+                        flightNum, flight_info = extract_flight_info(schedule)
+                        if flight_info:
+                            all_flights[flightNum] = flight_info
+                    else:
+                        print("Invalid schedule format.")
+                except KeyError:
+                    print(schedule)
+                    print(response.json())
+                    print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}.")
             else:
-                print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}.")
-            
+                print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}. {response.status_code}")
+
             # Ensure no more than 5 calls per second
             time.sleep(0.2)
+    
+    return all_flights
 
 
-datetime = '2024-04-01'
 
-get_flight_schedules(airportcodes, datetime, API_KEY)
+
+
+
+
+
+def getFlightTdyTo7days():
+    # Define the date range
+    datetime_format = '%Y-%m-%d'
+    start_date = datetime.now().date()
+    end_date = start_date + timedelta(days=7)
+
+    # Convert dates to the required format
+    start_date_str = start_date.strftime(datetime_format)
+    end_date_str = end_date.strftime(datetime_format)
+    date_range = [start_date + timedelta(days=i) for i in range((end_date - start_date).days + 1)]
+
+    # Call the function for each date and store the results
+    all_flights_data = {}
+    for date in date_range:
+        formatted_date = date.strftime('%Y-%m-%d')
+        flights_data = get_flight_schedules(airportcodes, formatted_date, API_KEY)
+        all_flights_data[formatted_date] = flights_data
+
+    # Save the data to a JSON file
+    with open('flightsLH.json', 'w') as outfile:
+        json.dump(all_flights_data, outfile, indent=4)
+
+    print("Flight data saved to 'flightsLH.json'")

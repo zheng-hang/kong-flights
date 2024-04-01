@@ -1,0 +1,502 @@
+{
+    "2024-04-01": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-01",
+            "DepartureTime": "11:25",
+            "Duration": 225,
+            "Price": 392.92,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-01",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1361.2,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-01",
+            "DepartureTime": "10:35",
+            "Duration": 110,
+            "Price": 154.69,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-01",
+            "DepartureTime": "20:50",
+            "Duration": 110,
+            "Price": 154.88,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-01",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1489.12,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-01",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1546.48,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-02": {
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-02",
+            "DepartureTime": "10:25",
+            "Duration": 110,
+            "Price": 146.56,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-02",
+            "DepartureTime": "20:40",
+            "Duration": 110,
+            "Price": 157.88,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-02",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1457.79,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-02",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1450.47,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-03": {
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-03",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1447.35,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-03",
+            "DepartureTime": "10:35",
+            "Duration": 110,
+            "Price": 151.16,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-03",
+            "DepartureTime": "20:50",
+            "Duration": 110,
+            "Price": 150.94,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-03",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1441.97,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-03",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1562.42,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-04": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-04",
+            "DepartureTime": "11:05",
+            "Duration": 225,
+            "Price": 412.62,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 1294": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-04",
+            "DepartureTime": "21:25",
+            "Duration": 225,
+            "Price": 415.24,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-04",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1394.69,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-04",
+            "DepartureTime": "10:25",
+            "Duration": 110,
+            "Price": 147.63,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-04",
+            "DepartureTime": "20:40",
+            "Duration": 110,
+            "Price": 148.92,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-04",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1557.21,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-04",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1524.24,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-05": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-05",
+            "DepartureTime": "11:05",
+            "Duration": 225,
+            "Price": 386.02,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 1294": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-05",
+            "DepartureTime": "21:30",
+            "Duration": 225,
+            "Price": 402.2,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-05",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1452.77,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-05",
+            "DepartureTime": "10:25",
+            "Duration": 110,
+            "Price": 152.72,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-05",
+            "DepartureTime": "20:50",
+            "Duration": 110,
+            "Price": 156.16,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-05",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1492.04,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-05",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1440.95,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-06": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-06",
+            "DepartureTime": "11:05",
+            "Duration": 225,
+            "Price": 403.03,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 1294": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-06",
+            "DepartureTime": "21:35",
+            "Duration": 225,
+            "Price": 378.46,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-06",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1378.52,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-06",
+            "DepartureTime": "10:10",
+            "Duration": 110,
+            "Price": 151.26,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-06",
+            "DepartureTime": "20:50",
+            "Duration": 110,
+            "Price": 144.59,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-06",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1518.98,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-07": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-07",
+            "DepartureTime": "11:05",
+            "Duration": 225,
+            "Price": 397.99,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-07",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1491.17,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-07",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1483.87,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    },
+    "2024-04-08": {
+        "LH 1292": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Larnaca",
+            "Date": "2024-04-08",
+            "DepartureTime": "11:25",
+            "Duration": 225,
+            "Price": 403.17,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "LCA"
+        },
+        "LH 742": {
+            "Airline": "LH",
+            "DepartureLoc": "Munich",
+            "ArrivalLoc": "Osaka",
+            "Date": "2024-04-08",
+            "DepartureTime": "11:55",
+            "Duration": 720,
+            "Price": 1428.34,
+            "DepAirportCode": "MUC",
+            "ArrAirportCode": "KIX"
+        },
+        "LH 878": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-08",
+            "DepartureTime": "10:35",
+            "Duration": 110,
+            "Price": 154.09,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 894": {
+            "Airline": "LH",
+            "DepartureLoc": "Frankfurt",
+            "ArrivalLoc": "Stavanger",
+            "Date": "2024-04-08",
+            "DepartureTime": "20:50",
+            "Duration": 110,
+            "Price": 152.93,
+            "DepAirportCode": "FRA",
+            "ArrAirportCode": "SVG"
+        },
+        "LH 9791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-08",
+            "DepartureTime": "00:30",
+            "Duration": 750,
+            "Price": 1526.05,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        },
+        "LH 791": {
+            "Airline": "LH",
+            "DepartureLoc": "Singapore",
+            "ArrivalLoc": "Munich",
+            "Date": "2024-04-08",
+            "DepartureTime": "23:25",
+            "Duration": 755,
+            "Price": 1520.32,
+            "DepAirportCode": "SIN",
+            "ArrAirportCode": "MUC"
+        }
+    }
+}
