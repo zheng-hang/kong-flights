@@ -1,3 +1,7 @@
+from flask import Flask, request, jsonify
+from os import environ
+from flask_cors import CORS
+
 import requests
 import json
 import time
@@ -7,8 +11,11 @@ from geopy.distance import geodesic
 from pyairports.airports import Airports
 import random
 
+app = Flask(__name__)
 airports = Airports()
 
+
+# Get previously loaded Arrival Departure codes from Lufthansa API
 with open("./arrDep.json", 'r') as f:
     airportcodes = json.load(f)
     print("loaded")
@@ -149,7 +156,7 @@ def get_flight_schedules(airport_pairs, datetime, api_key):
 
 
 
-
+@app.route("/getLHflights")
 def getFlightTdyTo7days():
     # Define the date range
     datetime_format = '%Y-%m-%d'
@@ -173,3 +180,13 @@ def getFlightTdyTo7days():
         json.dump(all_flights_data, outfile, indent=4)
 
     print("Flight data saved to 'flightsLH.json'")
+    return jsonify(
+            {
+                "code": 200,
+                "data": all_flights_data
+            }
+        )
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
