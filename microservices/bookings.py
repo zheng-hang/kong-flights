@@ -24,7 +24,7 @@ CORS(app)
 class Bookings(db.Model):
     __tablename__ = 'bookings'
 
-    pid = db.Column(db.Integer, nullable=False)
+    email = db.Column(db.String(255), nullable=False)
     fid = db.Column(db.String(6), nullable=False)
     seatcol = db.Column(db.String(1), nullable=False)
     seatnum = db.Column(db.Integer, nullable=False)
@@ -118,7 +118,7 @@ def processCreation(update, channel):
     with app.app_context():
         print("bookings: Recording a creation:")
         print(update)
-        booking = Bookings(pid=update['pid'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatnum'])
+        booking = Bookings(email=update['email'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatnum'])
         db.session.add(booking)
         db.session.commit()
         print("bookings: Recorded the creation in the database")

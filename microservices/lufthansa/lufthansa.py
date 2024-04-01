@@ -8,14 +8,14 @@ from datetime import datetime, timedelta
 
 from geopy.distance import geodesic
 from pyairports.airports import Airports
+from pyairports.airports import AirportNotFoundException
 import random
 import os
 
 # Specify the path to the .env file
-env_path = '/path/to/your/.env'
 
 # Load environment variables from the specified .env file
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 # Access environment variables
 API_KEY = os.getenv('API_KEY')
@@ -27,10 +27,12 @@ airports = Airports()
 
 
 
-# Get previously loaded Arrival Departure codes from Lufthansa API
-with open("./arrDep.json", 'r') as f:
-    airportcodes = json.load(f)
-    print("loaded")
+with open("./arrDep.json", 'r') as file:
+    data = json.load(file)
+    airportcodes = data['LH']
+    print('loaded')
+
+
 
 
 
@@ -82,15 +84,23 @@ def extract_flight_info(schedule):
             flight_number = f"{flight['MarketingCarrier']['AirlineID']} {flight['MarketingCarrier']['FlightNumber']}"
             departure_time = flight['Departure']['ScheduledTimeLocal']['DateTime']
             duration_parts = schedule['TotalJourney']['Duration'].split('H')
-            hours = int(duration_parts[0][2:]) if duration_parts[0] else 0  # Handle empty duration
-            minutes = int(duration_parts[1][:-1]) if duration_parts[1] else 0  # Handle empty duration
+            if len(duration_parts) == 1:  # Duration only contains minutes
+                hours = 0
+                minutes = int(duration_parts[0][2:-1])
+            else:
+                hours = int(duration_parts[0][2:]) if duration_parts[0] else 0  # Handle empty duration
+                minutes = int(duration_parts[1][:-1]) if duration_parts[1] else 0  # Handle empty duration
             dep_airport_code = flight['Departure']['AirportCode']
             arr_airport_code = flight['Arrival']['AirportCode']
+
+            # Handle if airport location not found
+            departure_loc = airports.airport_iata(dep_airport_code)[1]
+            arrival_loc = airports.airport_iata(arr_airport_code)[1]
             
             return flight_number, {
                 'Airline': flight['MarketingCarrier']['AirlineID'],
-                'DepartureLoc': airports.airport_iata(dep_airport_code)[1],
-                'ArrivalLoc': airports.airport_iata(arr_airport_code)[1],
+                'DepartureLoc': departure_loc,
+                'ArrivalLoc': arrival_loc,
                 'Date': departure_time[:10],
                 'DepartureTime': departure_time[11:16],
                 'Duration': hours * 60 + minutes,
@@ -98,13 +108,6 @@ def extract_flight_info(schedule):
                 'DepAirportCode': dep_airport_code,
                 'ArrAirportCode': arr_airport_code
             }
-        elif isinstance(schedule, list):  # Check if schedule is a list of flights
-            flights_data = []
-            for flight_schedule in schedule:
-                flight_data = extract_flight_info(flight_schedule)
-                if flight_data:
-                    flights_data.append(flight_data)
-            return flights_data
         else:
             print("Invalid schedule format.")
             return None
@@ -114,7 +117,9 @@ def extract_flight_info(schedule):
     except ValueError as e:
         print(f"ValueError: {e}")
         return None
-
+    except AirportNotFoundException as e:
+        print(f"AirportNotFoundException: {e}")
+        raise e  # Raise the exception to exit and not store the flight details
 
 
 # Call API to get flight schedules
@@ -125,39 +130,47 @@ def get_flight_schedules(airport_pairs, datetime, api_key):
     }
     
     all_flights = {}
-    for airline, pairs in airport_pairs.items():
-        for pair in pairs:
-            origin = pair['Departure']
-            destination = pair['Arrival']
-            airportcodes_url = f'https://api.lufthansa.com/v1/operations/schedules/{origin}/{destination}/{datetime}?directFlights=1'
-            
-            response = requests.get(airportcodes_url, headers=headers)
-            if response.status_code == 200:
-                try:
-                    schedule = response.json()['ScheduleResource']['Schedule']
-                    print(type(schedule))
-                    if isinstance(schedule, list):
-                        print('list')
-                        for flight_schedule in schedule:
+    for pair in airport_pairs:
+        print(pair)
+        origin = pair['Departure']
+        destination = pair['Arrival']
+        print(f"Retrieving schedule for flight from {origin} to {destination}.")
+
+        airportcodes_url = f'https://api.lufthansa.com/v1/operations/schedules/{origin}/{destination}/{datetime}?directFlights=1'
+        
+        response = requests.get(airportcodes_url, headers=headers)
+        if response.status_code == 200:
+            try:
+                schedule = response.json()['ScheduleResource']['Schedule']
+                print(type(schedule))
+                if isinstance(schedule, list):
+                    print('list')
+                    for flight_schedule in schedule:
+                        try:
                             flightNum, flight_info = extract_flight_info(flight_schedule)
                             if flight_info:
                                 all_flights[flightNum] = flight_info
-                    elif isinstance(schedule, dict):  # Only one flight for the path
-                        print('dict')
+                        except AirportNotFoundException:
+                            pass  # Do nothing if AirportNotFoundException occurs
+                elif isinstance(schedule, dict):  # Only one flight for the path
+                    print('dict')
+                    try:
                         flightNum, flight_info = extract_flight_info(schedule)
                         if flight_info:
                             all_flights[flightNum] = flight_info
-                    else:
-                        print("Invalid schedule format.")
-                except KeyError:
-                    print(schedule)
-                    print(response.json())
-                    print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}.")
-            else:
-                print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}. {response.status_code}")
+                    except AirportNotFoundException:
+                        pass  # Do nothing if AirportNotFoundException occurs
+                else:
+                    print("Invalid schedule format.")
+            except KeyError:
+                print(schedule)
+                print(response.json())
+                print(f"Failed to retrieve schedule for flight from {origin} to {destination}.")
+        else:
+            print(f"Failed to retrieve schedule for flight from {origin} to {destination}. {response.status_code}")
 
-            # Ensure no more than 5 calls per second
-            time.sleep(0.2)
+        # Ensure no more than 5 calls per second
+        time.sleep(0.2)
     
     return all_flights
 
@@ -167,7 +180,7 @@ def get_flight_schedules(airport_pairs, datetime, api_key):
 
 # Flask path to call API and get flights from Lufthansa
 
-@app.route("/getLHflights")
+@app.route("/getLHflights/7days")
 def getFlightTdyTo7days():
     # Define the date range
     datetime_format = '%Y-%m-%d'
@@ -197,6 +210,31 @@ def getFlightTdyTo7days():
             {
                 "code": 200,
                 "data": all_flights_data
+            }
+        )
+
+
+@app.route("/getLHflights/today")
+def getFlightToday():
+    # Define the date range to only include today
+    datetime_format = '%Y-%m-%d'
+    today_date = datetime.now().date()
+
+    # Call the function for today's date and store the results
+    print(airportcodes)
+    flights_data = get_flight_schedules(airportcodes, today_date.strftime(datetime_format), API_KEY)
+
+    # Save the data to a JSON file
+    with open('flightsLH.json', 'w') as outfile:
+        json.dump({today_date.strftime(datetime_format): flights_data}, outfile, indent=4)
+
+    print("Flight data for today saved to 'flightsLH.json'")
+
+    # Return values to Scraper
+    return jsonify(
+            {
+                "code": 200,
+                "data": {today_date.strftime(datetime_format): flights_data}
             }
         )
 

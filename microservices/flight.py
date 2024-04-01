@@ -120,7 +120,7 @@ def searchflights():
     ), 404
 
 # Get specific flight price by FID
-@app.route("/flight/<string:FID>/Price")
+@app.route("/flight/price/<string:FID>")
 def get_price_by_FID(FID):
     flight = db.session.scalars(db.select(Flight).filter_by(FID=FID).limit(1)).first()
     if flight:
