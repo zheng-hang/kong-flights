@@ -97,7 +97,7 @@ services:
       context: ../payment_paypal
       dockerfile: ../payment_paypal/payment.dockerfile
     ports:
-      - "3000:8888"
+      - "8888:8888"
     volumes:
       - ../payment_paypal/standard-integration:/app/standard-integration
     networks:
