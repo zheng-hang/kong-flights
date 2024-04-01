@@ -20,8 +20,7 @@ with open("./arrDep.json", 'r') as f:
     airportcodes = json.load(f)
     print("loaded")
 
-# Replace 'YOUR_API_KEY' with your actual Lufthansa API key
-API_KEY = 'm39t36wvcpdhzn9ta7hkswk9'
+
 
 # Current airlines
 # LH - Lufthansa
