@@ -54,25 +54,25 @@ services:
 
 
 # testing amqp in bookings
-  # testamqp:
-  #   build:
-  #     context: ./
-  #     dockerfile: amqptest.dockerfile
-  #   image: warkionw/testamqp:esd
-  #   restart: always
-  #   depends_on:
-  #     - rabbitmq
-  #     - bookings
-  #   environment:
-  #     rabbit_host: rabbitmq
-  #     rabbit_port: 5672
-  #     exchangename: booking_topic
-  #     exchangetype: topic
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5100:5100"
-  #   networks:
-  #     - my-network
+#   testamqp:
+#     build:
+#       context: ./
+#       dockerfile: amqptest.dockerfile
+#     image: warkionw/testamqp:esd
+#     restart: always
+#     depends_on:
+#       - rabbitmq
+#       - bookings
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       exchangename: booking_topic
+#       exchangetype: topic
+#       PYTHONUNBUFFERED: 1
+#     ports:
+#       - "5100:5100"
+#     networks:
+#       - my-network
 
 
 # Flights: service
@@ -92,3 +92,13 @@ services:
       - my-network
 
 
+  payment:
+    build:
+      context: ../payment_paypal
+      dockerfile: ../payment_paypal/payment.dockerfile
+    ports:
+      - "3000:8888"
+    volumes:
+      - ../payment_paypal/standard-integration:/app/standard-integration
+    networks:
+      - my-network
