@@ -154,7 +154,7 @@ def get_flight_schedules(airport_pairs, datetime, api_key):
 
 
 
-
+# Flask path to call API and get flights from Lufthansa
 
 @app.route("/getLHflights")
 def getFlightTdyTo7days():
@@ -180,6 +180,8 @@ def getFlightTdyTo7days():
         json.dump(all_flights_data, outfile, indent=4)
 
     print("Flight data saved to 'flightsLH.json'")
+
+    # Return values to Scraper
     return jsonify(
             {
                 "code": 200,
