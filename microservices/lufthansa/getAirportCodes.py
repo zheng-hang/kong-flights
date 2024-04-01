@@ -15,7 +15,7 @@ url = "https://api.lufthansa.com/v1/flight-schedules/flightschedules/passenger"
 
 # Set the parameters for the GET request
 params = {
-    "airlines": "SN",
+    "airlines": "LH",
     "startDate": "01APR24",
     "endDate": "08APR24",
     "daysOfOperation": "1234567",
@@ -40,44 +40,31 @@ else:
     print(f"Failed to retrieve data: {response.status_code}")
 
 
-import json
-import os
 
-def update_flight_file_with_new_airline(data, output_filename):
-    # Try to load existing data if the file exists
-    if os.path.exists(output_filename):
-        with open(output_filename, 'r') as outfile:
-            try:
-                existing_flights = json.load(outfile)
-            except json.JSONDecodeError:  # In case the file is empty or invalid
-                existing_flights = {}
-    else:
-        existing_flights = {}
+def filter_flights(data, output_file):
 
-
+    filtered_data = {}
     for entry in data:
-        airline = entry['airline']
-        legs = entry['legs']
+        legs = entry.get('legs', [])
+        if len(legs) == 1:
+            airline = entry['airline']
+            departure = legs[0]['origin']
+            arrival = legs[0]['destination']
+            pair = {"Departure": departure, "Arrival": arrival}
 
-        if len(legs) != 1:
-            continue
+            if airline not in filtered_data:
+                filtered_data[airline] = set()
 
-        if airline not in existing_flights:
-            existing_flights[airline] = {'Departure': set(), 'Arrival': set()}
+            filtered_data[airline].add((departure, arrival))
 
-        existing_flights[airline]['Departure'].add(legs[0]['origin'])
-        existing_flights[airline]['Arrival'].add(legs[0]['destination'])
+    for airline, pairs in filtered_data.items():
+        filtered_data[airline] = [{"Departure": dep, "Arrival": arr} for dep, arr in pairs]
 
-    # Prepare the data for JSON serialization
-    for airline in existing_flights:
-        existing_flights[airline]['Departure'] = list(existing_flights[airline]['Departure'])
-        existing_flights[airline]['Arrival'] = list(existing_flights[airline]['Arrival'])
-
-    # Write the updated information back to the .json file
-    with open(output_filename, 'w') as outfile:
-        json.dump(existing_flights, outfile, indent=4)
+    with open(output_file, 'w') as f:
+        json.dump(filtered_data, f, indent=4)
 
 
-# Example usage
-output_filename = 'processed_flights.json'
-update_flight_file_with_new_airline(data, output_filename)
+# Usage example
+filter_flights(data, './arrDep.json')
+
+

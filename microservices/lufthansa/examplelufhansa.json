@@ -1,0 +1,73 @@
+{
+    "ScheduleResource": {
+      "Schedule": {
+        "TotalJourney": {
+          "Duration": "PT3H45M"
+        },
+        "Flight": {
+          "Departure": {
+            "AirportCode": "FRA",
+            "ScheduledTimeLocal": {
+              "DateTime": "2024-04-01T11:25"
+            },
+            "Terminal": {
+              "Name": "1"
+            }
+          },
+          "Arrival": {
+            "AirportCode": "LCA",
+            "ScheduledTimeLocal": {
+              "DateTime": "2024-04-01T16:10"
+            }
+          },
+          "MarketingCarrier": {
+            "AirlineID": "LH",
+            "FlightNumber": "1292"
+          },
+          "Equipment": {
+            "AircraftCode": "32Q"
+          },
+          "Details": {
+            "Stops": {
+              "StopQuantity": 0
+            },
+            "DaysOfOperation": "1",
+            "DatePeriod": {
+              "Effective": "2024-04-01",
+              "Expiration": "2024-04-01"
+            }
+          }
+        }
+      },
+      "Meta": {
+        "@Version": "1.0.0",
+        "Link": [
+          {
+            "@Href": "https://api.lufthansa.com/v1/operations/schedules/FRA/LCA/2024-04-01?directFlights=1",
+            "@Rel": "self"
+          },
+          {
+            "@Href": "https://api.lufthansa.com/v1/operations/schedules/FRA/LCA/2024-03-31?directFlights=1&offset=0&limit=20",
+            "@Rel": "previousRange"
+          },
+          {
+            "@Href": "https://api.lufthansa.com/v1/operations/schedules/FRA/LCA/2024-04-01?directFlights=1&offset=20&limit=20",
+            "@Rel": "next"
+          },
+          {
+            "@Href": "https://api.lufthansa.com/v1/operations/schedules/FRA/LCA/2024-04-06T21:35?directFlights=1&offset=0&limit=20",
+            "@Rel": "nextRange"
+          },
+          {
+            "@Href": "https://api.lufthansa.com/v1/mds-references/airports/{airportCode}",
+            "@Rel": "related"
+          },
+          {
+            "@Href": "https://api.lufthansa.com/v1/mds-references/aircraft/{aircraftCode}",
+            "@Rel": "related"
+          }
+        ]
+      }
+    }
+  }
+  

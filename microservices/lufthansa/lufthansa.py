@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 # When
 def extract_airport_codes(json_data):
@@ -35,16 +36,46 @@ headers = {
 
 # airportcodes = ['AAA', 'AAB', 'AAC', 'AAD', 'AAE', 'AAF', 'AAG', 'AAH', 'AAI', 'AAJ', 'AAK', 'AAL', 'AAM', 'AAN', 'AAO', 'AAP', 'AAQ', 'AAR', 'AAS', 'AAT', 'AAU', 'AAV', 'AAW', 'AAX', 'AAY', 'AAZ', 'ABA', 'ABB', 'ABC', 'ABD', 'ABE', 'ABF', 'ABG', 'ABH', 'ABI', 'ABJ', 'ABK', 'ABL', 'ABM', 'ABN', 'ABO', 'ABP', 'ABQ', 'ABR', 'ABS', 'ABT', 'ABU', 'ABV', 'ABW', 'ABX', 'ABY', 'ABZ', 'ACA', 'ACB', 'ACC', 'ACD', 'ACE', 'ACF', 'ACH', 'ACI', 'ACJ', 'ACK', 'ACL', 'ACM', 'ACN', 'ACO', 'ACP', 'ACQ', 'ACR', 'ACS', 'ACT', 'ACU', 'ACV', 'ACX', 'ACY', 'ACZ', 'ADA', 'ADB', 'ADC', 'ADD', 'ADE', 'ADF', 'ADG', 'ADH', 'ADI', 'ADJ', 'ADK', 'ADL', 'ADM', 'ADN', 'ADO', 'ADP', 'ADQ', 'ADR', 'ADS', 'ADT', 'ADU', 'ADV', 'ADW', 'ADX', 'ADX', 'ADY', 'ADZ', 'AEA', 'AEB', 'AED', 'AEE', 'AEG', 'AEH', 'AEI', 'AEJ', 'AEK', 'AEL', 'AEM', 'AEN', 'AEO', 'AEP', 'AEQ', 'AER', 'AES', 'AET', 'AEU', 'AEX', 'AEY', 'AFA', 'AFD', 'AFF', 'AFI', 'AFK', 'AFL', 'AFN', 'AFO', 'AFR', 'AFS', 'AFT', 'AFU', 'AFW', 
 # 'AFY', 'AFZ', 'AGA', 'AGB', 'AGC', 'AGD', 'AGE', 'AGF', 'AGG', 'AGH', 'AGI', 'AGJ', 'AGK', 'AGL', 'AGM', 'AGN', 'AGO', 'AGP', 'AGQ', 'AGR', 'AGS', 'AGT', 'AGU', 'AGV', 'AGW', 'AGX', 'AGY', 'AGZ', 'AHA', 'AHB', 'AHC', 'AHD', 'AHE', 'AHF', 'AHH', 'AHI', 'AHJ', 'AHL', 'AHM', 'AHN', 'AHO', 'AHS', 'AHT', 'AHU', 'AHW', 'AHY', 'AHZ', 'AIA', 'AIB', 'AIC', 'AID', 'AIE', 'AIF', 'AIG', 'AIH', 'AII', 'AIK', 'AIL', 'AIM', 'AIN', 'AIO', 'AIP', 'AIR', 'AIS', 'AIT', 'AIU', 'AIV', 'AIW', 'AIX']
-airportcodes = []
-response = getResponse(airportcodes_url, headers)
+with open("./arrDep.json", 'r') as f:
+    airportcodes = json.load(f)
+    print("loaded")
 
 
-if response.status_code == 200:
-    data = response.json()
-    # Process the data as needed
-    # airportcodes.extend(extract_airport_codes(data))
-    print(data)
-else:
-    print(f'Failed to fetch data: {response.status_code}, {response.text}')
+# response = getResponse(airportcodes_url, headers)
 
 
+# if response.status_code == 200:
+#     data = response.json()
+#     # Process the data as needed
+#     # airportcodes.extend(extract_airport_codes(data))
+#     print(data)
+# else:
+#     print(f'Failed to fetch data: {response.status_code}, {response.text}')
+    
+
+def get_flight_schedules(airportcodes, datetime, api_key):
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Accept': 'application/json'
+    }
+    
+    for airline, pairs in airportcodes.items():
+        for pair in pairs:
+            origin = pair['Departure']
+            destination = pair['Arrival']
+            airportcodes_url = f'https://api.lufthansa.com/v1/operations/schedules/{origin}/{destination}/{datetime}?directFlights=1'
+            
+            response = requests.get(airportcodes_url, headers=headers)
+            if response.status_code in [200,206]:
+                print(f"Schedule for {airline} flight from {origin} to {destination}:")
+                print(response.json())
+            else:
+                print(f"Failed to retrieve schedule for {airline} flight from {origin} to {destination}.")
+            
+            # Ensure no more than 5 calls per second
+            time.sleep(0.2)
+
+
+datetime = '2024-04-01'
+
+get_flight_schedules(airportcodes, datetime, API_KEY)
