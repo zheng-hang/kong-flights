@@ -4,11 +4,11 @@
 
 <template>
     <div class="container-fluid">
-        <h1>Seat Selection</h1>
         <div class="row">
             <div class="col-1"></div>
                 <!-- Front Exit -->
                 <div class="col-10">
+                    <h1>Seat Selection</h1>
                     <div class="exit exit--front fuselage"></div>
                     
                     <ol v-for="(row, index) in rows" :key="index" class="cabin fuselage">
@@ -103,6 +103,9 @@
             color: white;
             top: 50%;
             transform: translate(0, -50%);
+        }
+        &:after {
+            margin-right: 3%;
         }
         &:before {
             left: 0;
