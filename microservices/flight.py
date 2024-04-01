@@ -20,10 +20,11 @@ db = SQLAlchemy(app)
 
 CORS(app)
 
+
 class Flight(db.Model):
     __tablename__ = 'flights'
 
-    FID = db.Column(db.String(6), primary_key=True)
+    FID = db.Column(db.String(10), primary_key=True)
     Airline = db.Column(db.String(255))
     DepartureLoc = db.Column(db.String(255), nullable=False)
     ArrivalLoc = db.Column(db.String(255), nullable=False)
@@ -31,8 +32,10 @@ class Flight(db.Model):
     DepartureTime = db.Column(db.Time, nullable=False)
     Duration = db.Column(db.Integer, nullable=False)
     Price = db.Column(db.Float(precision=2), nullable=False)
+    DepAirportCode = db.Column(db.String(3), nullable=False)
+    ArrAirportCode = db.Column(db.String(3), nullable=False)
 
-    def __init__(self, FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime, Duration, Price):
+    def __init__(self, FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime, Duration, Price, DepAirportCode, ArrAirportCode):
         self.FID = FID
         self.Airline = Airline
         self.DepartureLoc = DepartureLoc
@@ -41,6 +44,8 @@ class Flight(db.Model):
         self.DepartureTime = DepartureTime
         self.Duration = Duration
         self.Price = Price
+        self.DepAirportCode = DepAirportCode
+        self.ArrAirportCode = ArrAirportCode
 
     def json(self):
         return {
@@ -51,11 +56,25 @@ class Flight(db.Model):
                 "Date": self.Date,
                 "DepartureTime": str(self.DepartureTime), 
                 "Duration": self.Duration, 
-                "Price": self.Price
+                "Price": self.Price,
+                "DepAirportCode": self.DepAirportCode,
+                "ArrAirportCode": self.ArrAirportCode
                 }
     
     def getPrice(self):
         return {"Price": self.Price}
+
+
+
+with app.app_context():
+    # Reflect the tables and print their column names
+    meta = db.metadata
+    meta.reflect(bind=db.engine)
+
+    for table in meta.sorted_tables:
+        print(f"Table: {table.name}")
+        for column in table.columns:
+            print(f" - {column.name}")
 
 
 @app.route("/flight")
@@ -66,7 +85,7 @@ def get_all_flights():
             {
                 "code": 200,
                 "data": {
-                    "flights": [(flight.json()) for flight in flightlist]
+                    "flights": [(flight.json()) for flight in flightlist],
                 }
             }
         )
