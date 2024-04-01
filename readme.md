@@ -43,9 +43,13 @@ We created `components` that were reused in various places and imported them whe
 We made use of the `12-point grid system` to help make our application responsive. 
 
 # API Used
-We incorporated [SIA API] (https://developer.singaporeair.com/api_flight_schedule) and [Lufthansa API] (https://developer.lufthansa.com/docs/read/api_details/flight_schedules) into our project to obtain all new available flights from SIA and Lufthansa for passengers to view and book. This is done through our Scraper complex microservice through a HTTP GET request. 
+We incorporated `SIA API` (https://developer.singaporeair.com/api_flight_schedule) and `Lufthansa API` (https://developer.lufthansa.com/docs/read/api_details/flight_schedules) into our Scraper complex microservice.
 
-We also incorporated [Paypal API] (https://developer.paypal.com/api/rest/) into our project to enable passengers to do payment through Paypal at the end of their booking process. This is done through our Payment service. 
+This allows us to obtain all new available flights from SIA and Lufthansa for passengers to view and book. This is done through our Scraper complex microservice through a HTTP GET request. 
+
+We also incorporated `Paypal API` (https://developer.paypal.com/api/rest/) into Payment service.
+
+This enables passengers to do payment through Paypal at the end of their booking process. This is done through our Payment service. 
 
 # Beyond The Lab
 
