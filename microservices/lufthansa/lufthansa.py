@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify
-from os import environ
-from flask_cors import CORS
+from flask import Flask, jsonify
 
+from dotenv import load_dotenv
 import requests
 import json
 import time
@@ -10,9 +9,22 @@ from datetime import datetime, timedelta
 from geopy.distance import geodesic
 from pyairports.airports import Airports
 import random
+import os
+
+# Specify the path to the .env file
+env_path = '/path/to/your/.env'
+
+# Load environment variables from the specified .env file
+load_dotenv(dotenv_path=env_path)
+
+# Access environment variables
+API_KEY = os.getenv('API_KEY')
+
+print(API_KEY)
 
 app = Flask(__name__)
 airports = Airports()
+
 
 
 # Get previously loaded Arrival Departure codes from Lufthansa API
