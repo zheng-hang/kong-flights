@@ -1,3 +1,71 @@
+<script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+
+
+const loadCss = (url) => {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = url;
+  if (url.includes('bootstrap')) {
+    link.integrity = 'sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx';
+    link.crossOrigin = 'anonymous';
+    }
+  document.head.appendChild(link);
+};
+
+const loadScript = (url) => {
+  const script = document.createElement('script');
+  script.src = url;
+  script.async = true;
+  if (url.includes('kit.fontawesome')) {
+    script.crossOrigin = 'anonymous';
+  }
+  script.async = true;
+  document.body.appendChild(script);
+};
+
+onMounted(() => {
+  // Load Bootstrap CSS
+  loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css');
+  
+  // Load Font Awesome CSS
+  loadCss('path/to/font-awesome/css/font-awesome.min.css');
+  
+  // Load Font Awesome JavaScript
+  loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
+});
+
+const submitForm = async() =>{
+    errorMessage.value = "";
+
+    const email = document.querySelector("input[type='text']").value;
+    const password = document.querySelector("input[type='password']").value;
+    try {
+        const response = await axios.post('http://localhost:5000/register', {
+            email: email,
+            password: password
+        })
+        if(response && response.data && response.status === 200){
+            console.log('Register successful');
+            this.$router.push('/login');
+        } 
+        else {
+            errorMessage.value = 'Invalid credentials. Please try again.';
+        }
+    }
+    catch (error) {
+        if (error.response && error.response.data.error) {
+            errorMessage.value = error.response.data.error;
+        } else {
+            errorMessage.value = "Register request failed";
+        }
+        console.error("Register error:", error);
+    }
+};
+const errorMessage = ref("");
+</script>
+
 <template>
     <div class="background">
         <div class="rounded-rectangle">
@@ -31,97 +99,14 @@
 
 <script>
 export default {
-  async mounted() {
-      // Load Bootstrap CSS
-      this.loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css');
-       // Load Font Awesome CSS and JavaScript
-       this.loadCss('path/to/font-awesome/css/font-awesome.min.css');
-      this.loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
-    },
   data() {
     return {
       username: '',
       email: '',
       password: ''
     };
-  },
-  methods: {
-    async submitForm() {
-      try {
-        const response = await fetch('http://localhost:5000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: this.username,
-            email: this.email,
-            password: this.password
-          }),
-          mode: 'cors' // no-cors, *cors, same-origin
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to register');
-        }
-
-        console.log('Registration successful');
-        // Optionally, you can redirect the user to another page upon successful registration
-        window.location.href = '/login';
-      } catch (error) {
-        console.error('Error registering:', error.message);
-
-        // Display error message to the user here ()
-
-      }
-    },
-    loadCss(url) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url;
-      if (url.includes('bootstrap')) {
-        link.integrity = 'sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx';
-        link.crossOrigin = 'anonymous';
-      }
-      document.head.appendChild(link);
-    },
-    loadScript(url) {
-      const script = document.createElement('script');
-      script.src = url;
-      if (url.includes('kit.fontawesome')) {
-        script.crossOrigin = 'anonymous';
-      }
-      script.async = true;
-      document.body.appendChild(script);
-    },
-    async register(){
-      try {
-                const response = await fetch('http://localhost:8080/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: this.email,
-                        password: this.password
-                    }),
-                    mode: 'cors' // no-cors, *cors, same-origin
-                });
-
-                if(response){
-                    console.log('Login successful');
-                    window.location.href = '/login';
-                } 
-                else {
-                    throw new Error('Failed to login');
-                }
-
-            } catch (error) {
-                console.error('Error logging in:', error.message);
-            }
-    }
   }
-};
+}
 </script>
 
 <style scoped>

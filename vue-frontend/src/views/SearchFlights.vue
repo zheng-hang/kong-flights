@@ -66,7 +66,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">Class</span>
                       </div>
-                      <select class="form-select form-select-sm" aria-label=".form-select-sm example" v-model="form.classtype">
+                      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
                           <option selected>Select a Class</option>
                           <option value="1">First Class</option>
                           <option value="2">Business</option>
@@ -187,8 +187,7 @@
         form:{
           departLoc: 'Singapore', 
           arrLoc:'',
-          classtype:'', 
-          departDate: '03/03/2024',
+          departDate: '2024-03-03',
         }
       }
     },
@@ -215,9 +214,10 @@
       submitForm() {
       // Navigate to the next page with form data
         this.$router.push({
-        name: 'flight'
-        // params: { formData: this.formData }
+          name: 'flight',
+          params: this.form
       });
+      // console.log(this.form)
       },
     },
     // computed: {
