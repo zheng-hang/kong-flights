@@ -31,6 +31,7 @@ services:
       retries: 3
 
 
+
 # Seat Selection: Update Availablitiy, Insert Seat, Get seat
   bookings:
     build:
@@ -46,6 +47,7 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       booking_queue_name: BookingUpdate
+      exchangename: notif_topic
       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
       PYTHONUNBUFFERED: 1
     networks:
@@ -53,7 +55,77 @@ services:
     
 
 
-# testing amqp in bookings
+# Flights: service
+  flight:
+    build:
+      context: ./
+      dockerfile: flight.DockerFile
+    image: warkionw/flight:esd
+    restart: always
+    ports:
+      - "5001:5000"
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      flight_queue_name: FlightInsert
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3310/flights_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+
+# Passenger Microservice
+  passenger:
+    build:
+      context: ./
+      dockerfile: passenger.dockerfile
+    image: warkionw/passenger:esd
+    restart: always
+    ports:
+      - "5002:5000"
+    environment:
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3311/passengers_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+# Seat
+  seat:
+    build:
+      context: ./
+      dockerfile: seat.dockerfile
+    image: ray/seat:esd
+    restart: always
+    ports:
+      - "5002:5000"
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      booking_queue_name: SeatUpdate
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3313/seats_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+
+# Payment/Paypal access API Microservice
+  payment:
+    build:
+      context: ../payment_paypal
+      dockerfile: ../payment_paypal/payment.dockerfile
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../payment_paypal/standard-integration:/app/standard-integration
+    networks:
+      - my-network
+
+
+# # testing amqp in bookings & flight
 #   testamqp:
 #     build:
 #       context: ./
@@ -66,7 +138,8 @@ services:
 #     environment:
 #       rabbit_host: rabbitmq
 #       rabbit_port: 5672
-#       exchangename: booking_topic
+#       exchangename_booking: booking_topic
+#       exchangename_flight: flight_topic
 #       exchangetype: topic
 #       PYTHONUNBUFFERED: 1
 #     ports:
@@ -75,30 +148,23 @@ services:
 #       - my-network
 
 
-# Flights: service
-  flight:
-    build:
-      context: ./
-      dockerfile: flight.dockerfile
-    image: warkionw/flight:esd
-    restart: always
-    ports:
-      - "5001:5000"
-    environment:
-      booking_queue_name: BookingUpdate
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3310/flights_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
-
-
-  payment:
-    build:
-      context: ../payment_paypal
-      dockerfile: ../payment_paypal/payment.dockerfile
-    ports:
-      - "8888:8888"
-    volumes:
-      - ../payment_paypal/standard-integration:/app/standard-integration
-    networks:
-      - my-network
+# #test seat amqp
+#   testseatamqp:
+#     build:
+#       context: ./
+#       dockerfile: seatamqptest.dockerfile
+#     image: ray/testseatamqp:esd
+#     restart: always
+#     depends_on:
+#       - rabbitmq
+#       - seat
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       exchangename: seat_topic
+#       exchangetype: topic
+#       PYTHONUNBUFFERED: 1
+#     ports:
+#       - "5101:5101"
+#     networks:
+#       - my-network

@@ -10,9 +10,10 @@ import pika
 from os import environ
 
 booking_queue_name = environ.get('avail_queue_name') or 'BookingUpdate'
+exchangename = environ.get('exchangename') or 'notif_topic'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -23,20 +24,18 @@ CORS(app)
 class Bookings(db.Model):
     __tablename__ = 'bookings'
 
-    bid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     pid = db.Column(db.Integer, nullable=False)
     fid = db.Column(db.String(6), nullable=False)
     seatcol = db.Column(db.String(1), nullable=False)
     seatnum = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, pid, fid, seatcol, seatnum):
-        self.pid = pid
+    def __init__(self, fid, seatcol, seatnum):
         self.fid = fid
         self.seatcol = seatcol
         self.seatnum = seatnum
 
     def json(self):
-        return {"bid": self.bid, "pid": self.pid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
+        return {"bid": self.bid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
 
 
 
@@ -61,9 +60,9 @@ def callback(channel, method, properties, body): # required signature for the ca
     print("\nbookings: Received an update by " + __file__)
     message = json.loads(body)
     if 'bid' in message:
-        processUpdate(message)
-    elif 'pid' in message and 'fid' in message and 'seatcol' in message and 'seatnum' in message:
-        processCreation(message)
+        processUpdate(message, channel)
+    elif 'fid' in message and 'seatcol' in message and 'seatnum' in message:
+        processCreation(message, channel)
     else:
         print("bookings: Unknown message format")
     print()
@@ -76,7 +75,7 @@ def callback(channel, method, properties, body): # required signature for the ca
 #     "seatnum": 1
 # }
 
-def processUpdate(update):
+def processUpdate(update, channel):
     with app.app_context():
         print("bookings: Recording an update:")
         print(update)
@@ -100,16 +99,22 @@ def processUpdate(update):
         else:
             print(f"Booking with bid '{bid}' not found")
 
+        booking_updated = Bookings.query.filter_by(bid=bid).first()
+        message = json.dumps(booking_updated.json())
+
+        channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+
 ## FORMAT FOR BODY - CreateBooking    ##
 ## Routing Key: *.newBooking          ##
 # {
-#     "pid": 1,
 #     "fid": "SQ 123",
 #     "seatcol": "A",
 #     "seatnum": 1
 # }
 
-def processCreation(update):
+def processCreation(update, channel):
     with app.app_context():
         print("bookings: Recording a creation:")
         print(update)
@@ -118,10 +123,15 @@ def processCreation(update):
         db.session.commit()
         print("bookings: Recorded the creation in the database")
 
+        message =   json.dumps(booking.json())
 
-@app.route("/booking/<int:pid>")
-def search_by_pid(pid):
-    bookings = db.session.query(Bookings).filter(Bookings.pid == pid).all()
+        channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+
+@app.route("/booking/<str:email>")
+def search_by_email(email):
+    bookings = db.session.query(Bookings).filter(Bookings.email == email).all()
     if bookings:
         # Convert each booking to a dictionary using the json method
         data = [booking.json() for booking in bookings]
@@ -134,9 +144,13 @@ def search_by_pid(pid):
     return jsonify(
         {
             "code": 404,
-            "message": "Bookings not found for passenger ID {}.".format(pid)
+            "message": "Bookings not found for passenger ID {}.".format(email)
         }
     ), 404
+
+
+
+## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
 
 def start_flask():
     try:

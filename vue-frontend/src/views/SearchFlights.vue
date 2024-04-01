@@ -42,7 +42,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">From</span>
                       </div>
-                      <input type="text" class="form-control" placeholder="Your current location" value="Singapore">
+                      <input type="text" class="form-control" placeholder="Your current location" v-model="form.departLoc">
                   </div>
               </div>
               <div class="col-3">
@@ -50,7 +50,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">To</span>
                       </div>
-                      <input type="text" class="form-control" placeholder="Your Destination">
+                      <input type="text" class="form-control" placeholder="Your Destination" v-model="form.arrLoc">
                   </div>
               </div>
               <div class="col-3">
@@ -58,7 +58,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">Departure Date</span>
                       </div>
-                      <input class="form-control" type="date" id="departureDate" name="departureDate">
+                      <input class="form-control" type="date" id="departureDate" name="departureDate" v-model="form.departDate">
                   </div>
               </div>
               <div class="col-3">
@@ -66,7 +66,7 @@
                       <div class="input-group-prepend">
                           <span class="input-group-text">Class</span>
                       </div>
-                      <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+                      <select class="form-select form-select-sm" aria-label=".form-select-sm example" v-model="form.classtype">
                           <option selected>Select a Class</option>
                           <option value="1">First Class</option>
                           <option value="2">Business</option>
@@ -78,7 +78,7 @@
           </div>
           <div class="row" style="margin-top: 5px;">
               <div class="d-flex justify-content-end">
-                  <button type="button" class="btn btn-primary col-2">Search Flights</button>
+                  <button type="button" class="btn btn-primary col-2" @click="submitForm">Search Flights</button>
               </div>           
           </div>
       </div>
@@ -182,6 +182,16 @@
       this.loadCss('path/to/font-awesome/css/font-awesome.min.css');
       this.loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
     },
+    data(){
+      return{
+        form:{
+          departLoc: 'Singapore', 
+          arrLoc:'',
+          classtype:'', 
+          departDate: '03/03/2024',
+        }
+      }
+    },
     methods: {
       loadCss(url) {
         const link = document.createElement('link');
@@ -201,7 +211,24 @@
         }
         script.async = true;
         document.body.appendChild(script);
-      }
-    }
+      },
+      submitForm() {
+      // Navigate to the next page with form data
+        this.$router.push({
+        name: 'flight'
+        // params: { formData: this.formData }
+      });
+      },
+    },
+    // computed: {
+    //   departDate: {
+    //     get() {
+    //       return this.initialDate;
+    //     },
+    //     set(newValue) {
+    //       this.initialDate = newValue;
+    //     },
+    //   },
+    // },
   };
 </script>
