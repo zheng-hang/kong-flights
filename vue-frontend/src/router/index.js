@@ -6,6 +6,7 @@ import SearchFlights from '../views/SearchFlights.vue'
 import MyFlights from '../views/MyFlights.vue'
 import BookingView from '../views/BookingView.vue'
 import FlightsResult from '@/components/FlightsResult.vue'
+import PaymentPage from '@/components/PaymentPage.vue'
 
 
 const routes = [
@@ -47,6 +48,11 @@ const routes = [
     path: '/flight',
     name: 'flight',
     component: FlightsResult
+  },
+  {
+    path: '/payment',
+    name: 'payment',
+    component: PaymentPage
   }
 ]
 
