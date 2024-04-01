@@ -58,7 +58,7 @@
                                     <!-- Departure -->
                                     <div class="col-3">
                                         <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
-                                        <h3>SIN {{ flight.DepartureTime }}</h3>
+                                        <h3>{{ flight.DepAirportCode }} {{ flight.DepartureTime }}</h3>
                                         <p>
                                             <span style="font-weight: bold;">{{ flight.DepartureLoc }}</span><br/>
                                             {{ formatDate(flight.Date) }}
@@ -71,7 +71,7 @@
                                     <!-- Arrival -->
                                     <div class="col-5">
                                         <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                        <h3>NRT {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
+                                        <h3>{{ flgiht.ArrAirportCode }} {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
                                         <p>
                                             <span style="font-weight: bold;">Tokyo</span><br/>
                                             {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
@@ -83,7 +83,6 @@
                                         <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
                                         <p>
                                             <span style="font-weight: bold;">{{ flight.Airline }} | {{ flight.FID }}</span><br/>
-                                            Airbus Industrie A380-800
                                         </p>
                                         <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
                                     </div>
@@ -133,7 +132,7 @@
                                     <!-- Departure -->
                                     <div class="col-3">
                                         <p class="text-primary" style="font-weight: bold;">DEPARTURE</p>
-                                        <h3>SIN {{ flight.DepartureTime }}</h3>
+                                        <h3>{{ flight.DepAirportCode }} {{ flight.DepartureTime }}</h3>
                                         <p>
                                             <span style="font-weight: bold;">{{ flight.DepartureLoc }}</span><br/>
                                             {{ formatDate(flight.Date) }}
@@ -146,7 +145,7 @@
                                     <!-- Arrival -->
                                     <div class="col-5">
                                         <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                        <h3>NRT {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
+                                        <h3>{{ flight.ArrAirportCode }} {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
                                         <p>
                                             <span style="font-weight: bold;">Tokyo</span><br/>
                                             {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
@@ -158,7 +157,6 @@
                                         <p class="text-primary"><span style="font-weight: bold;">STATUS:</span> CONFIRMED</p>
                                         <p>
                                             <span style="font-weight: bold;">{{ flight.Airline }} | {{ flight.FID }}</span><br/>
-                                            Airbus Industrie A380-800
                                         </p>
                                         <i class="fa-solid fa-suitcase"></i> Checked Baggage: -
                                     </div>

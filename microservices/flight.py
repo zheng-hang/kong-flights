@@ -31,8 +31,10 @@ class Flight(db.Model):
     DepartureTime = db.Column(db.Time, nullable=False)
     Duration = db.Column(db.Integer, nullable=False)
     Price = db.Column(db.Float(precision=2), nullable=False)
+    DepAirportCode = db.Column(db.String(3), nullable=False)
+    ArrAirportCode = db.Column(db.String(3), nullable=False)
 
-    def __init__(self, FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime, Duration, Price):
+    def __init__(self, FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime, Duration, Price, DepAirportCode, ArrAirportCode):
         self.FID = FID
         self.Airline = Airline
         self.DepartureLoc = DepartureLoc
@@ -41,6 +43,8 @@ class Flight(db.Model):
         self.DepartureTime = DepartureTime
         self.Duration = Duration
         self.Price = Price
+        self.DepAirportCode = DepAirportCode
+        self.ArrAirportCode = ArrAirportCode
 
     def json(self):
         return {
@@ -51,7 +55,9 @@ class Flight(db.Model):
                 "Date": self.Date,
                 "DepartureTime": str(self.DepartureTime), 
                 "Duration": self.Duration, 
-                "Price": self.Price
+                "Price": self.Price,
+                "DepAirportCode": self.DepAirportCode,
+                "ArrAirportCode": self.ArrAirportCode
                 }
     
     def getPrice(self):

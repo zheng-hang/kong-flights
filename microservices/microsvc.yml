@@ -32,26 +32,26 @@ services:
 
 
 # testing amqp in bookings
-  testamqp:
-    build:
-      context: ./
-      dockerfile: amqptest.dockerfile
-    image: warkionw/testamqp:esd
-    restart: always
-    depends_on:
-      - rabbitmq
-      - bookings
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      exchangename_booking: booking_topic
-      exchangename_flight: flight_topic
-      exchangetype: topic
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5100:5100"
-    networks:
-      - my-network
+  # testamqp:
+  #   build:
+  #     context: ./
+  #     dockerfile: amqptest.dockerfile
+  #   image: warkionw/testamqp:esd
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #     - bookings
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     exchangename_booking: booking_topic
+  #     exchangename_flight: flight_topic
+  #     exchangetype: topic
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5100:5100"
+  #   networks:
+  #     - my-network
 
 
 # Seat Selection: Update Availablitiy, Insert Seat, Get seat
@@ -121,7 +121,7 @@ services:
     image: ray/seat:esd
     restart: always
     ports:
-      - "5002:5000"
+      - "5003:5000"
     depends_on:
       - rabbitmq
     environment:
@@ -133,25 +133,25 @@ services:
     networks:
       - my-network
 
-#test seat amqp
-  testseatamqp:
-    build:
-      context: ./
-      dockerfile: flight.DockerFile
-    image: warkionw/flight:esd
-      dockerfile: seatamqptest.dockerfile
-    image: ray/testseatamqp:esd
-    restart: always
-    depends_on:
-      - rabbitmq
-      - seat
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      exchangename: seat_topic
-      exchangetype: topic
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5101:5101"
-    networks:
-      - my-network
+# #test seat amqp
+#   testseatamqp:
+#     build:
+#       context: ./
+#       dockerfile: flight.DockerFile
+#     image: warkionw/flight:esd
+#       dockerfile: seatamqptest.dockerfile
+#     image: ray/testseatamqp:esd
+#     restart: always
+#     depends_on:
+#       - rabbitmq
+#       - seat
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       exchangename: seat_topic
+#       exchangetype: topic
+#       PYTHONUNBUFFERED: 1
+#     ports:
+#       - "5101:5101"
+#     networks:
+#       - my-network
