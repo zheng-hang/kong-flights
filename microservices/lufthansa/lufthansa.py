@@ -1,4 +1,5 @@
 import requests
+import json
 
 # When
 def extract_airport_codes(json_data):
@@ -8,6 +9,7 @@ def extract_airport_codes(json_data):
 
 def getResponse(url, headers):
     return requests.get(url, headers=headers)
+
 
 # Replace 'YOUR_API_KEY' with your actual Lufthansa API key
 API_KEY = '35h82u5sty2qzdem97yjfsg9'
@@ -44,3 +46,5 @@ if response.status_code == 200:
     print(data)
 else:
     print(f'Failed to fetch data: {response.status_code}, {response.text}')
+
+
