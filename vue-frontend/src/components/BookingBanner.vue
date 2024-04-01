@@ -10,9 +10,9 @@
                 <h4 class="blue fw-bold">{{ bookingData.departTime }}</h4>
                 <h6 class="fw-bold">{{ bookingData.departLoc }}</h6>
             </div>
-            <div class="col-2 pt-4 my-auto">
-                <i class="fa fa-plane fa-2x d-flex justify-content-start"></i>
-                <h6 class="text-secondary d-flex justify-content-start">{{ bookingData.flightDuration }}</h6>
+            <div class="col-1 pt-4 me-5 my-auto">
+                <i class="fa fa-plane fa-2x d-flex justify-content-center"></i>
+                <h6 class="text-secondary d-flex justify-content-center">{{ bookingData.flightDuration }}</h6>
             </div>
             <div class="col-2 ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Departing</h6>

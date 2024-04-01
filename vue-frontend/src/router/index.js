@@ -5,12 +5,8 @@ import Login from '../views/LoginView.vue'
 import SearchFlights from '../views/SearchFlights.vue'
 import MyFlights from '../views/MyFlights.vue'
 import BookingView from '../views/BookingView.vue'
-<<<<<<< HEAD
+// import FlightsResult from '@/components/FlightsResult.vue'
 import BookingSeatsView from '@/views/BookingSeatsView.vue'
-=======
-import FlightsResult from '@/components/FlightsResult.vue'
->>>>>>> main
-
 
 const routes = [
   {
@@ -47,16 +43,11 @@ const routes = [
     name: 'booking',
     component: BookingView
   },
+  
   {
-<<<<<<< HEAD
-    path: '/bookseats',
-    name: 'BookSeats',
+    path: '/seatsbooking',
+    name: 'seatsbooking',
     component: BookingSeatsView
-=======
-    path: '/flight',
-    name: 'flight',
-    component: FlightsResult
->>>>>>> main
   }
 ]
 

@@ -17,6 +17,8 @@ import pika
 # The above shebang (#!) operator tells Unix-like environments
 # to run this file as a python3 script
 
+booking_queue_name = os.environ.get('avail_queue_name') or 'BookingUpdate'
+
 app = Flask(__name__)
 
 CORS(app)
@@ -25,6 +27,10 @@ CORS(app)
 dotenv_path = 'vue-frontend/.env'
 # Load environment variables from .env file
 load_dotenv(dotenv_path)
+
+# Email details
+email_sender = 'smoothairlines@gmail.com'
+email_password = os.environ.get("EMAIL_PASSWORD")
 
 
 @app.route("/booking", methods=['POST'])
@@ -69,44 +75,34 @@ def processNotification(booking):
         'message': message
     }
 
+def sendEmail(sender=email_sender, password=email_password):
+    # get from booking microservice (from passengers.sql)
+    email_receiver = 'bckf2000@gmail.com' 
 
-email_sender = 'smoothairlines@gmail.com'
-email_password = os.environ.get("EMAIL_PASSWORD")
-print(email_password)
-# email_password = 'ahmvlesdtbkpquqi'
+    subject = "Payment Successful"
+    body = """
+    Dear customer,
 
-# get from booking microservice (from passengers.sql)
-email_receiver = 'bckf2000@gmail.com' 
+    Thank you for your purchase with SMOOth Airlines. Your payment is successful. This is not a receipt.
 
-<<<<<<< HEAD
-subject = "Payment Successful"
-body = """
-=======
-subject_payment = "Payment Successful"
-body_payment = """
->>>>>>> main
-Dear customer,
+    We look forward to serving you on your flight with us!
 
-Thank you for your purchase with SMOOth Airlines. Your payment is successful. This is not a receipt.
+    ***This message is automatically generated, please do not reply to this email.*** 
 
-We look forward to serving you on your flight with us!
+    - Your friendly SMOOth Crew   
 
-***This message is automatically generated, please do not reply to this email.*** 
+    """
 
-- Your friendly SMOOth Crew   
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    em.set_content(body)
 
-"""
+    context = ssl.create_default_context()
 
-em = EmailMessage()
-em['From'] = email_sender
-em['To'] = email_receiver
-em['Subject'] = subject
-em.set_content(body)
-
-context = ssl.create_default_context()
-
-with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:
-    smtp.login(email_sender, email_password)
-    smtp.sendmail(email_sender, email_receiver, em.as_string())
+    with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:
+        smtp.login(email_sender, email_password)
+        smtp.sendmail(email_sender, email_receiver, em.as_string())
 
 

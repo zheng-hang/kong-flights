@@ -6,7 +6,7 @@
     <ol class="cabin fuselage">
         <li class="row">
         <ol class="seats" type="A">
-            <li v-for="(column, index) in columns" :key="index" class="seat" id="{{ row }}{{ column }}">   
+            <li v-for="(column, index) in columns" :key="index" class="seat" :id="'{{ row }}{{ column }}'">   
                 <input type="checkbox"/>
                 <label for="1A">{{ row }}{{ column }}</label>
             </li>
