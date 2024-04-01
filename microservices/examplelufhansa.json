@@ -1,0 +1,48 @@
+{
+    "ScheduleResource": {
+        "Schedule": [{
+            "TotalJourney": {
+                "Duration": "PT1H5M"
+            },
+            "Flight": {
+                "Departure": {
+                    "AirportCode": "FRA",
+                    "ScheduledTimeLocal": {
+                        "DateTime": "2024-04-01T07:30"
+                    },
+                    "Terminal": {
+                        "Name": "1"
+                    }
+                },
+                "Arrival": {
+                    "AirportCode": "HAM",
+                    "ScheduledTimeLocal": {
+                        "DateTime": "2024-04-01T08:35"
+                    },
+                    "Terminal": {
+                        "Name": "2"
+                    }
+                },
+                "MarketingCarrier": {
+                    "AirlineID": "LH",
+                    "FlightNumber": "4"
+                },
+                "Equipment": {
+                    "AircraftCode": "321"
+                },
+                "Details": {
+                    "Stops": {
+                        "StopQuantity": 0
+                    },
+                    "DaysOfOperation": "145",
+                    "DatePeriod": {
+                        "Effective": "2024-04-01",
+                        "Expiration": "2024-04-05"
+                    }
+                }
+            }
+        }]
+    }
+}
+
+
