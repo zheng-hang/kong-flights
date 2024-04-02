@@ -142,6 +142,7 @@ def processSeatChange(seat):
         #SCENARIO 12: Update old flight seat to available
         # first get the fid,seatcol and seatnum of the old seat
         person_pid = seat['bid']
+        print("person_pid: ", person_pid)
         original_seat = get_original_booking(person_pid)
         original_seat.pop('bid', None)
 
@@ -177,4 +178,4 @@ def get_original_booking(person_bid):
 
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
-    app.run(host="0.0.0.0", port=5103, debug=True)
+    app.run(host="0.0.0.0", port=5105, debug=True)
