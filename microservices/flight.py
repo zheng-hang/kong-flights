@@ -60,6 +60,8 @@ class Flight(db.Model):
         return {"Price": self.Price}
 
 
+
+
 @app.route("/flight")
 def get_all_flights():
     flightlist = db.session.scalars(db.select(Flight)).all()

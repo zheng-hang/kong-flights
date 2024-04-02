@@ -32,7 +32,7 @@ services:
 
 
 
-# Bookings
+# Seat Selection: Update Availablitiy, Insert Seat, Get seat
   bookings:
     build:
       context: ./
@@ -46,7 +46,6 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      booking_queue_name: BookingUpdate
       exchangename: notif_topic
       dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
       PYTHONUNBUFFERED: 1
@@ -128,7 +127,7 @@ services:
       seat_exchangename: seat_topic
       booking_exchangename: booking_topic
       notif_exchangename: notif_topic
-      payment_URL: http://payment:8888
+      payment_URL: PAYMENT URL
       PYTHONUNBUFFERED: 1
     ports:
       - "5100:5100"
@@ -160,6 +159,7 @@ services:
       PYTHONUNBUFFERED: 1
     networks:
       - my-network
+
 
 
 # # testing amqp in bookings & flight
