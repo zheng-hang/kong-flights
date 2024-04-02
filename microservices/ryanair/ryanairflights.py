@@ -28,6 +28,9 @@ app = Flask(__name__)
 with open("./ryanair_codes.json", 'r') as file:
     data = json.load(file)
     airportcodes = data
+    airportcodes = [
+    "MRS",
+    "NUE"]
     print('loaded')
 
 
@@ -103,6 +106,8 @@ def run_today():
     # Usage example
     flights = get_flight_info(airportcodes, date)
 
+    print(flights)
+
     # Write flights to JSON file
     with open('flightsFR.json', 'w') as json_file:
         json.dump(flights, json_file, indent=4)
@@ -113,7 +118,7 @@ def run_today():
     return jsonify(
             {
                 "code": 200,
-                "data": date
+                "data": flights
             }
         )
 
@@ -127,13 +132,15 @@ def get_flight_info_for_7_days(airport_codes):
     with open('flightsFR.json', 'w') as json_file:
         json.dump(flights, json_file, indent=4)
 
+    print(flights)
+
     print("Flight data for today saved to 'flightsLH.json'")
 
     # Return values to Scraper
     return jsonify(
             {
                 "code": 200,
-                "data": date
+                "data": flights
             }
         )
 

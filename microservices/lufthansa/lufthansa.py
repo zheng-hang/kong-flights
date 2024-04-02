@@ -28,6 +28,10 @@ airports = Airports()
 with open("./arrDep.json", 'r') as file:
     data = json.load(file)
     airportcodes = data['LH']
+    airportcodes = [{
+            "Departure": "FRA",
+            "Arrival": "LCA"
+        }]
     print('loaded')
 
 
