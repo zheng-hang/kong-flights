@@ -213,10 +213,13 @@ def insert_flights():
                         }), 500
 
 
+# Get all unique serviced locations, both departure and arrival
+@app.route("/getservicedlocs")
+def servicedlocs():
 
 
 
-## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
+
 
 
 
