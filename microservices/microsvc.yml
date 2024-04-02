@@ -256,12 +256,15 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      seat_URL: http://localhost:5000/seat
-      passengerbooking_URL: "http://localhost:5000/update"
+      seatReserve_URL: http://seat:5000/reserveseat
+      seatUpdate_URL: http://seat:5000/updateseat
+      passengerbooking_URL: "http://bookings:5000/update"
       # payment_URL: "http://localhost:5000/payment"
       PYTHONUNBUFFERED: 1
     ports:
       - "5105:5105"
+    networks:
+      - my-network
 
 # Notifications
   # notification:

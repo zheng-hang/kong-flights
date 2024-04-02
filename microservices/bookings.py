@@ -87,7 +87,7 @@ def processCreationReq():
 
 
 
-@app.route("/update", methods=['POST'])
+@app.route("/update", methods=['PUT'])
 def processUpdateReq():
     print("bookings: Recording a update:")
 
@@ -107,6 +107,13 @@ def processUpdateReq():
             booking.seatcol = seatcol
             booking.seatnum = seatnum
             db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Updated booking with bid '{bid}' to seat '{seatcol}' '{seatnum}'",
+                    "data": booking.json()
+                }
+            ), 200
         except Exception as e:
             return jsonify(
                 {
@@ -149,7 +156,7 @@ def search_by_email(email):
         }
     ), 404
 
-@app.route("/booking/<string:bid>")
+@app.route("/booking/<int:bid>")
 def search_by_bid(bid):
     booking = db.session.query(Bookings).filter(Bookings.bid == bid).first()
     if booking:
