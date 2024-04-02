@@ -1,13 +1,7 @@
-import threading
 from flask import Flask, jsonify, request  
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
-
-import amqp_connection
-import json
-import pika
-from os import environ
+from os import environ, path
 
 seat_queue_name = environ.get('seat_queue_name') or 'SeatUpdate'
 # seat_queue_name = 'SeatUpdate'
@@ -45,61 +39,49 @@ class Seats(db.Model):
         return {"fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum, "available": self.available, "price": self.price, "seat_class": self.seat_class}
 
 
-# receive seat from booking
-def receiveSeat(channel):
-    try:
-        # set up a consumer and start to wait for coming messages
-        channel.basic_consume(queue=seat_queue_name, on_message_callback=callback, auto_ack=True)
-        print('seats: Consuming from queue:', seat_queue_name)
-        channel.start_consuming()  # an implicit loop waiting to receive messages;
-             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
-    
-    except pika.exceptions.AMQPError as e:
-        print(f"seats: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
+@app.route("/updateseat", methods=['POST'])
+def updateSeat():
+    print("updating db")
+    seat = request.json
+    fid = seat.get('fid', None)
+    seatcol = seat.get('seatcol', None)
+    seatnum = seat.get('seatnum', None)
 
-    except KeyboardInterrupt:
-        print("seats: Program interrupted by user.")
+    seatToUpdate = Seats.query.filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).first()
 
-def callback(channel, method, properties, body):
-    print("\nseats: Received an update by " + __file__)
-    message = json.loads(body)
-    updateDatabase(message)
-
-
-def updateDatabase(message):
-    with app.app_context():
-        print("updating db")
-        fid = message['fid']
-        seatcol = message['seatcol']
-        seatnum = message['seatnum']
-        # get the seat with the fid
-        seat = db.session.scalars(db.select(Seats).filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).limit(1)).first()
-        if seat:
-            seat.available = not seat.available
+    if seatToUpdate:
+        try:
+            print(seat)
+            print(seatToUpdate)
+            seatToUpdate.available = not seatToUpdate.available
             db.session.commit()
-            print("seats: Seat updated successfully.")
-        else:
-            print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Updated seat '{seatcol}' '{seatnum}' to {'available' if seatToUpdate.available else 'unavailable'}",
+                    "data": seatToUpdate.json()
+                }
+            ), 200
+        except Exception as e:
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while updating booking. " + str(e)
+                }
+            ), 500
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "seat": seat
+                },
+                "message": "Seat not found."
+            }
+        ), 404
 
-def updateDatabase(message):
-    with app.app_context():
-        print("updating db")
-        fid = message['fid']
-        seatcol = message['seatcol']
-        seatnum = message['seatnum']
-        # get the seat with the fid
-        seat = Seats.query.filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).first()
-        if seat:
-            print(seat.json())
-            seat.available = not seat.available
-            db.session.commit()
-            print("seats: Seat updated successfully.")
-        else:
-            print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
 
-
-
-
+# Get all seats
 @app.route("/seat", methods=['GET'])
 def get_all():
     seats = db.session.scalars(db.select(Seats)).all()
@@ -118,6 +100,7 @@ def get_all():
         }
     ), 404
 
+# Get all seats for flight
 @app.route("/seat/<string:fid>", methods=['GET'])
 def get_seat(fid):
     seats = db.session.scalars(db.select(Seats).filter_by(fid=fid)).all()
@@ -144,27 +127,10 @@ def start_flask():
     finally:
         print("Flask thread exiting")
 
-def start_amqp():
-    try:
-        print("bookings: Getting Connection")
-        connection = amqp_connection.create_connection()  # get the connection to the broker
-        print("seats: Connection established successfully")
-        channel = connection.channel()
-        receiveSeat(channel)
-    finally:
-        print("AMQP thread exiting")
+
     
 
 
 if __name__ == "__main__":
-    flask_thread = threading.Thread(target=start_flask)
-    amqp_thread = threading.Thread(target=start_amqp)
-
-    flask_thread.start()
-    amqp_thread.start()
-    
-    try:
-        flask_thread.join()
-        amqp_thread.join()
-    except KeyboardInterrupt:
-        print("Keyboard interrupt received, exiting threads")
+    print("This is flask for " + path.basename(__file__) + ": manage seats ...")
+    app.run(host='0.0.0.0', port=5000, debug=True)
