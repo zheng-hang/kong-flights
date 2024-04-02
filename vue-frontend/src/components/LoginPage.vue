@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import router from "../router/index.js";
 
 
 const loadCss = (url) => {
@@ -42,13 +43,15 @@ const submitForm = async() =>{
     const email = document.querySelector("input[type='text']").value;
     const password = document.querySelector("input[type='password']").value;
     try {
-        const response = await axios.post('http://localhost:5000/login', {
+        const response = await axios.post('http://localhost:5002/login', {
             email: email,
             password: password
         })
         if(response && response.data && response.status === 200){
             console.log('Login successful');
-            this.$router.push('/searchFlights');
+            // this.$router.push('/SearchFlights');
+            // Vue.router.push('/');
+            router.push("/SearchFlights");
         } 
         else {
             errorMessage.value = 'Invalid credentials. Please try again.';
@@ -104,7 +107,6 @@ const errorMessage = ref("");
 
 <script>
 export default {
-    
     data() {
         return {
             email: '',
