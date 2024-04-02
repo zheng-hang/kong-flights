@@ -185,25 +185,25 @@ services:
 ###############################################
 # test_seatchange: The seat change microservice
 ###############################################
-  test_seatchange:
-    build:
-      context: ./
-      dockerfile: test_seatchange.Dockerfile
-    image: rayjiet/test_seatchange:esd
-    restart: always
-    depends_on:
-      - rabbitmq
-      - seat
-      - bookings
-      # - payment
-      # - notification
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      seat_URL: http://localhost:5000/seat
-      passengerbooking_URL: "http://localhost:5000/booking"
-      # notification_URL: "http://localhost:5000/notification"
-      # payment_URL: "http://localhost:5000/payment"
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5105:5105"
+  # test_seatchange:
+  #   build:
+  #     context: ./
+  #     dockerfile: test_seatchange.Dockerfile
+  #   image: rayjiet/test_seatchange:esd
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #     - seat
+  #     - bookings
+  #     # - payment
+  #     # - notification
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     seat_URL: http://localhost:5000/seat
+  #     passengerbooking_URL: "http://localhost:5000/booking"
+  #     # notification_URL: "http://localhost:5000/notification"
+  #     # payment_URL: "http://localhost:5000/payment"
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5105:5105"

@@ -22,8 +22,8 @@ passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:
 
 
 
-exchangename_booking = "booking_topic"
-exchangename_seat_change =  "seat_change_topic"
+# exchangename_booking = "booking_topic"
+# exchangename_seat_change =  "seat_change_topic"
 # exchangename_notification = "" not done
 # exchangename_payment = "" not done
 
@@ -34,13 +34,13 @@ connection = amqp_connection.create_connection()
 channel = connection.channel()
 
 #if the exchange is not yet created, exit the program ()
-if not amqp_connection.check_exchange(channel, exchangename_seat_change, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# if not amqp_connection.check_exchange(channel, exchangename_seat_change, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
-if not amqp_connection.check_exchange(channel, exchangename_booking, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# if not amqp_connection.check_exchange(channel, exchangename_booking, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 
 
@@ -92,19 +92,23 @@ def processSeatChange(seat):
 
         # UNCOMMENT ONCE PAYMENT IS DONE
         #SCENARIO 3-7: send payment requests to payment system (NOT DONE)
-        # try:
-        #     price_result = invoke_http(payment_url, method='POST', json=seat)
-        #     print("Payment request sent to payment system")
-        # except Exception as e:
-        #     print("An error occurred:", e)
-        #     # this SCENARIO will trigger if any of the above steps have failed but if SCENARIO 2 is successful
-        #     #SCENARIO 8: If fail, updating old seat availability
-        #     channel.basic_publish(exchange=exchangename_seat_change, routing_key="Update.Failseat",
-        #                             body=seat, properties=pika.BasicProperties(delivery_mode=2))
-        #     return ##Exit the function if SCENARIO 3-7 fails
+        #
+        # price_result = invoke_http(payment_url, method='POST', json=seat)
+        # print("Payment request sent to payment system")
+        # if price_result['code'] not in range(200, 300):
+        #     this SCENARIO will trigger if any of the above steps have failed but if SCENARIO 2 is successful
+        #     SCENARIO 7: If fail, updating old seat availability
+        #     fail_update = invoke_http(seat_URL, method='PUT', json=seat_copy)
+        #     print("Seat reserved" + fail_update)
+        #     return {
+        #         "code": 500,
+        #         "data": "Payment failed"
+        #     }
+
+              
 
 
-        #SCENARIO 9: send to notification (NOT DONE)
+        #SCENARIO 9: send to notification (NOT DONE) AMQP
 
         #SCENARIO 10: update passenger bookings
         # this case is seat change so bid in message 
@@ -131,7 +135,7 @@ def processSeatChange(seat):
         original_seat.pop('bid', None)
 
         update_old_seat = invoke_http(seat_URL, method='PUT', json=original_seat)
-        print("Seat reserved" + update_old_seat)
+        print("Seat reserved" + update_old_seat) ## HTTP function for updating the old seat, scenario #
 
         if update_old_seat['code'] not in range(200, 300):
             return {
