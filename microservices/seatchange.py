@@ -18,7 +18,7 @@ CORS(app)
 seatReserve_URL = environ.get("seat_URL") or "http://localhost:5000/reserveseat"
 seatUpdate_URL = environ.get("seat_URL") or "http://localhost:5000/updateseat"
 passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
-# payment_url =
+# payment_url = "environ.get('payment_URL')"
 # notification_url = environ.get("notification_URL") 
 
 
