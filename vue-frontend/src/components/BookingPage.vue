@@ -25,12 +25,17 @@ import PassengerDetail from './PassengerDetail.vue'
         <h3>Passenger details</h3>
     </div>
 
-    <form action="">
+    <form action="/seatsbooking">
 
     <!-- Passenger Details -->
 
     <!--<PassengerDetail v-for="num in numPax" :key="bookData.numPax.adults"/> -->
     <PassengerDetail/>
+
+    <div class="d-flex justify-content-end mt-3">
+        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection">
+    </div>
+
     </form>
 
 
