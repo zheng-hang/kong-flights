@@ -23,7 +23,9 @@ CORS(app)
 
 class Bookings(db.Model):
     __tablename__ = 'bookings'
+
     bid = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(255), nullable=False)
     fid = db.Column(db.String(6), nullable=False)
     seatcol = db.Column(db.String(1), nullable=False)
     seatnum = db.Column(db.Integer, nullable=False)

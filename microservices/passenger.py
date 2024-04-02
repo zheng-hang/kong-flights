@@ -42,6 +42,7 @@ class Passenger(db.Model):
         return hashed_password == self.password.encode()
 
 
+## METHODS AND PATH FOR PASSENGER ##
 
 # JSON FORMAT #
 # {
