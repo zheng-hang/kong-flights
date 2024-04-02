@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS flights_db;
 USE flights_db;
 
 CREATE TABLE IF NOT EXISTS flights (
-    FID VARCHAR(6) NOT NULL,
+    FID VARCHAR(10) NOT NULL,
     Airline VARCHAR(255),
     DepartureLoc VARCHAR(255),
     ArrivalLoc VARCHAR(255),

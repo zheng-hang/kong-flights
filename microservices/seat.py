@@ -63,23 +63,13 @@ def receiveSeat(channel):
 def callback(channel, method, properties, body):
     print("\nseats: Received an update by " + __file__)
     message = json.loads(body)
-    updateDatabase(message)
+    routing_key = method.routing_key
 
+    if routing_key.endswith(".seat"):
+        updateDatabase(message)
+    elif routing_key.endswith(".Failseat"):
+        changeDatabase(message)  # for changing the database to not available
 
-def updateDatabase(message):
-    with app.app_context():
-        print("updating db")
-        fid = message['fid']
-        seatcol = message['seatcol']
-        seatnum = message['seatnum']
-        # get the seat with the fid
-        seat = db.session.scalars(db.select(Seats).filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).limit(1)).first()
-        if seat:
-            seat.available = not seat.available
-            db.session.commit()
-            print("seats: Seat updated successfully.")
-        else:
-            print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
 
 def updateDatabase(message):
     with app.app_context():
@@ -97,7 +87,17 @@ def updateDatabase(message):
         else:
             print(f"seats: Seat not found. fid  = {fid}, seatcol = {seatcol}, seatnum = {seatnum}")
 
-
+def changeDatabase(message):
+    with app.app_context():
+        print("updating db")
+        fid = message['fid']
+        seatcol = message['seatcol']
+        seatnum = message['seatnum']
+        # get the seat with the fid
+        seat = Seats.query.filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).first()
+        seat.available = not seat.available
+        db.session.commit()
+        print("seats: Seat updated successfully.")
 
 
 @app.route("/seat", methods=['GET'])

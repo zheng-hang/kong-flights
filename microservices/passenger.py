@@ -16,7 +16,6 @@ CORS(app)
 class Passenger(db.Model):
     __tablename__ = 'passenger'
 
-    pid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), nullable=False)  # Updated column name
     password = db.Column('password', db.String(255), nullable=False)  # Updated column name
     salt = db.Column('salt', db.String(255), nullable=False)  # Updated column name
@@ -27,7 +26,6 @@ class Passenger(db.Model):
 
     def json(self):
         return {
-            "PID": self.pid,
             "email": self.email,
             "password": self.password
         }
@@ -45,22 +43,6 @@ class Passenger(db.Model):
 
 
 ## METHODS AND PATH FOR PASSENGER ##
-@app.route("/email/<int:PID>")
-def get_email(PID):
-    passenger = db.session.scalars(db.select(Passenger).filter_by(pid=PID).limit(1)).first()
-    if passenger:
-        return jsonify(
-            {
-                "code": 200,
-                "data": passenger.get_email()
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Passenger not found."
-        }
-    ), 404
 
 # JSON FORMAT #
 # {

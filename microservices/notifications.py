@@ -19,6 +19,8 @@ import pika
 
 notif_queue_name = os.environ.get('exchangename') or 'Notif'
 
+notif_queue_name = os.environ.get('exchangename') or 'Notif'
+
 app = Flask(__name__)
 
 CORS(app)
@@ -28,6 +30,7 @@ dotenv_path = 'vue-frontend/.env'
 # Load environment variables from .env file
 load_dotenv(dotenv_path)
 
+# Email details
 # Email details
 email_sender = 'smoothairlines@gmail.com'
 email_password = os.environ.get("EMAIL_PASSWORD")
@@ -72,6 +75,7 @@ def sendEmail(email_receiver,subject,body):
         em['Subject'] = subject
         em.set_content(body)
 
+        context = ssl.create_default_context()
         context = ssl.create_default_context()
 
         with smtplib.SMTP_SSL('smtp.gmail.com',465, context=context) as smtp:

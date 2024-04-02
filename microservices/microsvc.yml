@@ -31,30 +31,9 @@ services:
       retries: 3
 
 
-# testing amqp in bookings
-  testamqp:
-    build:
-      context: ./
-      dockerfile: amqptest.dockerfile
-    image: warkionw/testamqp:esd
-    restart: always
-    depends_on:
-      - rabbitmq
-      - bookings
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      exchangename_booking: booking_topic
-      exchangename_flight: flight_topic
-      exchangetype: topic
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5100:5100"
-    networks:
-      - my-network
 
 
-# Seat Selection: Update Availablitiy, Insert Seat, Get seat
+# Bookings: Update Availablitiy, Insert Seat, Get seat
   bookings:
     build:
       context: ./
@@ -121,7 +100,8 @@ services:
     image: ray/seat:esd
     restart: always
     ports:
-      - "5002:5000"
+      - "5003:5000"
+      - "5003:5000"
     depends_on:
       - rabbitmq
     environment:
@@ -133,23 +113,162 @@ services:
     networks:
       - my-network
 
-#test seat amqp
-  testseatamqp:
+
+
+# Make Booking Complex Microservice
+# AMQP calls to: Seat, Booking, Notif
+# Get: Flight
+# Post: Payment
+
+  make_booking:
     build:
       context: ./
-      dockerfile: seatamqptest.dockerfile
-    image: ray/testseatamqp:esd
+      dockerfile: makebooking.Dockerfile
+    image: warkionw:esd
+    restart: always
+    depends_on:
+      - booking
+      - seat
+      - flight
+      - payment
+      - notif
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      flight_URL: http://flight:5000/flight/price/ 
+      seat_exchangename: seat_topic
+      booking_exchangename: booking_topic
+      notif_exchangename: notif_topic
+      payment_URL: PAYMENT URL
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5100:5100"
+
+
+# Payment/Paypal access API Microservice
+  payment:
+    build:
+      context: ../payment_paypal
+      dockerfile: ../payment_paypal/payment.dockerfile
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../payment_paypal/standard-integration:/app/standard-integration
+    networks:
+      - my-network
+
+
+# Lufthansa API calling
+  lufthansa:
+    build:
+      context: ./lufthansa
+      dockerfile: lufthansa.dockerfile
+    image: warkionw/lufthansa:esd
+    restart: always
+    ports:
+      - "5004:5000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+
+# # testing amqp in bookings & flight
+#   testamqp:
+#     build:
+#       context: ./
+#       dockerfile: amqptest.dockerfile
+#     image: warkionw/testamqp:esd
+#     restart: always
+#     depends_on:
+#       - rabbitmq
+#       - bookings
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       exchangename_booking: booking_topic
+#       exchangename_flight: flight_topic
+#       exchangetype: topic
+#       PYTHONUNBUFFERED: 1
+#     ports:
+#       - "5100:5100"
+#     networks:
+#       - my-network
+
+
+# #test seat amqp
+#   testseatamqp:
+#     build:
+#       context: ./
+#       dockerfile: seatamqptest.dockerfile
+#     image: ray/testseatamqp:esd
+#     restart: always
+#     depends_on:
+#       - rabbitmq
+#       - seat
+#     environment:
+#       rabbit_host: rabbitmq
+#       rabbit_port: 5672
+#       exchangename: seat_topic
+#       exchangetype: topic
+#       PYTHONUNBUFFERED: 1
+#     ports:
+#       - "5101:5101"
+#     networks:
+#       - my-network
+
+
+
+###############################################
+# seatchange: The seat change microservice
+###############################################
+  seatchange:
+    build:
+      context: ./
+      dockerfile: seatchange.Dockerfile
+    image: rayjiet/seatchange:esd
     restart: always
     depends_on:
       - rabbitmq
       - seat
+      - bookings
+      # - payment
+      # - notification
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      exchangename: seat_topic
-      exchangetype: topic
+      seat_URL: http://localhost:5000/seat
+      passengerbooking_URL: "http://localhost:5000/booking"
+      # notification_URL: "http://localhost:5000/notification"
+      # payment_URL: "http://localhost:5000/payment"
       PYTHONUNBUFFERED: 1
     ports:
-      - "5101:5101"
-    networks:
-      - my-network
+      - "5103:5103"
+
+
+###############################################
+# test_seatchange: The seat change microservice
+###############################################
+  # test_seatchange:
+  #   build:
+  #     context: ./
+  #     dockerfile: test_seatchange.Dockerfile
+  #   image: rayjiet/test_seatchange:esd
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #     - seat
+  #     - bookings
+  #     # - payment
+  #     # - notification
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     seat_URL: http://localhost:5000/seat
+  #     passengerbooking_URL: "http://localhost:5000/booking"
+  #     # notification_URL: "http://localhost:5000/notification"
+  #     # payment_URL: "http://localhost:5000/payment"
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5105:5105"
