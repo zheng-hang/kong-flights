@@ -11,7 +11,6 @@
     <div>
       <router-link to="/SearchFlights" class="header" style="margin: 10px; text-decoration: none;">Search Flights</router-link> 
       <router-link to="/MyFlights" class="header" style="margin: 10px; text-decoration: none;">My Flights</router-link> 
-      <router-link to="/MyPayments" class="header" style="margin: 10px; text-decoration: none;">My Payment</router-link>
     </div>
     <div>
       <router-link to="/signOut" style="text-decoration: none;">Sign Out</router-link>
