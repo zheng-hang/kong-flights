@@ -74,6 +74,8 @@ def processCreationReq():
         ), 500
     
     message =   json.dumps(booking.json())
+    message['msg_source'] = "bookings"
+    print(message)
 
     channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 

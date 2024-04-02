@@ -62,7 +62,7 @@ def amqptest_booking():
 
     # Ensuring message structure aligns with what the receiver expects
     message = json.dumps(createBooking)  # seatupdate already has 'seatnum' as per the receiver's expectation
-    
+    message["source"] = "bookings"
     # Publishing the message to the AMQP exchange with the correct routing key
     channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 

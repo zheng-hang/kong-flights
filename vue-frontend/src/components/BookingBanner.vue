@@ -23,7 +23,6 @@
             <div class="col ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Total Fare</h6>
                 <span class="h6 fw-bold">{{ bookingData.numPax.adults }} Adults</span>
-                <span v-show="bookingData.numPax.children > 0" class="h6 fw-bold"> + {{ bookingData.numPax.children }} Children</span> 
                 <h4 class="blue fw-bold">SGD 2,883.90</h4>
                 <h6 class="fst-italic">Total fare includes discounts, taxes, and surcharges</h6>
             </div>

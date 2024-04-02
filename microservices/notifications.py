@@ -17,7 +17,7 @@ import pika
 # The above shebang (#!) operator tells Unix-like environments
 # to run this file as a python3 script
 
-notif_queue_name = os.environ.get('exchangename') or 'Notif'
+notif_queue_name = 'Notif'
 
 app = Flask(__name__)
 
@@ -50,14 +50,15 @@ def receivePaymentUpdate(channel):
 
 # Run function based on the message
 def callback(channel, method, properties, body): # required signature for the callback; no return
-    print("\nflights: Received an update by " + __file__)
-    if __file__ == "makebooking.py": 
+    msg = json.loads(body)
+    print("\nflights: Received an update by " + msg["source"])
+    if msg["source"] == "makebooking": 
         createPaymentEmail(json.loads(body))  
     # elif __file__ == "booking.py":
-    elif __file__ == "amqpNotifTest.py":
+    elif msg["source"] == "bookings":
         # booking confirmation info
         createBookingEmail(json.loads(body))
-    elif __file__ == "seatchange.py":
+    elif msg["source"] == "seatchange":
         createSeatChangeEmail(json.loads(body))
     # DELETE IF APPLICABLE
     # else:

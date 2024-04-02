@@ -14,6 +14,10 @@ import SeatSelector from '../components/SeatSelector.vue'
             <!-- Fa fa Icon -->
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <body style="background-color: #FAFAFA; margin:0; padding:0;"></body>
+
+        <table class="rounded-3" style="border:solid;">
+            <section class=""></section>Economy Seat
+        </table>
         <SeatSelector/>
     </template>
 

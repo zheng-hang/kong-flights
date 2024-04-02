@@ -16,7 +16,7 @@ CORS(app)
 class Passenger(db.Model):
     __tablename__ = 'passenger'
 
-    email = db.Column(db.String(255), nullable=False)  # Updated column name
+    email = db.Column(db.String(255), nullable=False, primary_key=True)  # Updated column name
     password = db.Column('password', db.String(255), nullable=False)  # Updated column name
     salt = db.Column('salt', db.String(255), nullable=False)  # Updated column name
 

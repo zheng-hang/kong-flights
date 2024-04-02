@@ -16,7 +16,7 @@
                         <!-- Add flight duration -->
                         <h5>Personal details</h5>
                         <div class="row">
-                            <div class="col-2">
+                            <div class="col-lg-2 col-sm-2">
                                 <select class="form-select " aria-label="Default select example" required>
                                     <option disabled selected value="">Title</option>
                                     <option value="1">Mr.</option>
@@ -25,11 +25,11 @@
                                     <option value="4">Mdm.</option>
                                 </select>
                             </div>
-                            <div class="col-4 ms-5">
-                                <input class="text p-1 ps-2" name="firstName" size="50" type="text" placeholder="First/Given name (as in passport)" required>
+                            <div class="col-lg-4 col-md-2 col-sm-5 ms-5">
+                                <input class="text p-1 ps-2" name="firstName" size="30" type="text" placeholder="First/Given name (as in passport)" required>
                             </div>
-                            <div class="col-4 ms-3">
-                                <input class="text p-1 ps-2" name="lastName" size="50" type="text" placeholder="Last/Family name (as in passport)" required>
+                            <div class="col-md-4 col-sm-3 ms-3">
+                                <input class="text p-1 ps-2" name="lastName" size="30" type="text" placeholder="Last/Family name (as in passport)" required>
                             </div>
                         </div>
                         <h5 class="mt-5">Contact details</h5>

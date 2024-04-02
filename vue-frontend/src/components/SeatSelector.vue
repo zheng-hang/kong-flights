@@ -1,5 +1,6 @@
 <script setup>
     // import PlaneSeat from '../components/PlaneSeat.vue'
+    import axios from 'axios'
 </script>
 
 <template>
@@ -8,14 +9,14 @@
             <div class="col-1"></div>
                 <!-- Front Exit -->
                 <div class="col-10">
-                    <h1>Seat Selection</h1>
-                    <div class="exit exit--front fuselage"></div>
+                    <!-- <h1>Seat Selection</h1> -->
+                    <!-- <div class="exit exit--front fuselage"></div> -->
                     
                     <ol v-for="(row, index) in rows" :key="index" class="cabin fuselage">
                         <li class="row">
                             <ol class="seats" type="A">
                                 <li v-for="(column, index) in columns" :key="index" class="seat" :id="row + column">
-                                    <input type="checkbox" :id="'checkbox-' + row + column" @click="selectSeat"/>
+                                    <input type="checkbox" :id="'checkbox-' + row + column" @click="selectSeat" :disabled="disableSeat"/>
                                     <label :for="'checkbox-' + row + column">{{ row }}{{ column }}</label>
                                 </li>
                             </ol>
@@ -27,7 +28,7 @@
                     </ol>
 
                 <!-- Middle Exit -->
-                <div class="exit exit--front fuselage"></div>
+                <!-- <div class="exit exit--front fuselage"></div> -->
             </div>
             <div class="col-1"></div>
         </div>
@@ -36,53 +37,40 @@
 </template>
 
 <script>
-    console.log(document.getElementById("1A"));
+    // console.log(document.getElementById("1A"));
     export default {
         data() {
         return {
             numSeatsSelected: 0,
             isChecked: false,
             selectedSeat: "",
+            isAvailable: false,
             rows: 72,
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
             status: "",
             fid: "SQ 123",
-            seatData: 
-                [
-                    {
-                        fid: "SQ 123",
-                        seatcol: "A",
-                        seatnum: "1",
-                        available: 0,
-                        price: 30
-                    },
-                    {
-                        fid: "SQ 123",
-                        seatcol: "B",
-                        seatnum: "1",
-                        available: 1,
-                        price: 30
-                    },
-                    {
-                        fid: "SQ 123",
-                        seatcol: "C",
-                        seatnum: "1",
-                        available: 1,
-                        price: 30
-                    },
-                    {
-                        fid: "SQ 189",
-                        seatcol: "G",
-                        seatnum: "19",
-                        available: 1,
-                        price: 30
-                    }
-                ]
+            seatData: {}
 
             }
         },
     
     methods: {
+        getAvailableSeats(){
+            axios.get('localhost:5003/seat', {
+        })
+            .then(response => {
+                this.seatData = response.data
+                console.log(response.data);
+            })
+            .catch( error => {
+                console.error(error);
+            })
+
+        },
+        
+        checkAvailability(){
+            this.seatData
+        },
         selectSeat(event) {
             if(this.numSeatsSelected == 1){
                 // If >1 seat selected, uncheck previously selected seat.
@@ -94,6 +82,8 @@
             this.numSeatsSelected++;
             this.selectedSeat = event.target.id; 
         },
+
+        
         
         
 
@@ -101,6 +91,9 @@
         //     this.checkboxColor = this.isChecked ? 'green' : 'black';
         // }
     },
+    beforeMount() {
+        this.getAvailableSeats()
+    }
     // computed: {
     //     getSeatData() {
     //         for(seat in this.seatData) {
@@ -127,7 +120,7 @@
     font-size: 16px;
     }
 
-    .exit {
+    /* .exit {
         position: relative;
         height: 50px;
         &:before,
@@ -153,7 +146,7 @@
         &:after {
             right: 0;
         }
-    }
+    } */
 
     *,*:before,*:after {
   box-sizing: border-box;
