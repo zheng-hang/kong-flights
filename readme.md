@@ -20,9 +20,9 @@ In this project, SMOOth Flights is able to tackle the following 3 users scenario
 - [Flask_CORS](https://flask-cors.readthedocs.io/en/latest/)
 
 ## REST APIs used
-- [SIA API] (https://developer.singaporeair.com/api_flight_schedule)
-- [Lufthansa API] (https://developer.lufthansa.com/docs/read/api_details/flight_schedules) 
-- [Paypal API] (https://developer.paypal.com/api/rest/)
+- [SIA API](https://developer.singaporeair.com/api_flight_schedule)
+- [Lufthansa API](https://developer.lufthansa.com/docs/read/api_details/flight_schedules) 
+- [Paypal API](https://developer.paypal.com/api/rest/)
 - [Email API]
 
 ## Beyond The Lab
