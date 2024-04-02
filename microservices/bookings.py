@@ -42,6 +42,17 @@ class Bookings(db.Model):
 connection = amqp_connection.create_connection() 
 channel = connection.channel()
 
+
+## FORMAT FOR BODY - CreateBooking    ##
+## Routing Key: *.newBooking          ##
+# {
+#     "email": "pain@gmail.com"
+#     "fid": "SQ 123",
+#     "seatcol": "A",
+#     "seatnum": 1
+# }
+
+
 @app.route("/newbooking", methods=['POST'])
 def processCreationReq():
     print("bookings: Recording a creation:")
@@ -78,7 +89,7 @@ def processCreationReq():
 
 @app.route("/update", methods=['POST'])
 def processUpdateReq():
-    print("bookings: Recording a creation:")
+    print("bookings: Recording a update:")
 
     update = request.json
     print(update)
@@ -118,14 +129,6 @@ def processUpdateReq():
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
 
-    return jsonify(
-                {
-                    "code": 200,
-                    "message": f"Updated seatcol to '{seatcol}' and seatnum to '{seatnum}' for booking with bid '{bid}'",
-                    "data": update
-                }
-            ), 200
-
 
 @app.route("/booking/<string:email>")
 def search_by_email(email):
@@ -145,7 +148,6 @@ def search_by_email(email):
             "message": "Bookings not found for passenger ID {}.".format(email)
         }
     ), 404
-
 
 
 
