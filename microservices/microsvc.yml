@@ -186,7 +186,6 @@ services:
       - rabbitmq
       - bookings
       - make_booking
-      - 
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
