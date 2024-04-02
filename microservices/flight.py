@@ -151,6 +151,21 @@ def get_price_by_FID(FID):
     ), 404
 
 
+# {
+#     "flight":[
+    #     {"FID": "LH 552",
+    # "Airline": "Lufthansa",
+    # "DepartureLoc": "Singapore",
+    # "ArrivalLoc": "Kuala Lumpur",
+    # "Date": "2024-04-13",
+    # "DepartureTime": "07:45:23",
+    # "Duration": 75,
+    # "Price": 221,
+    # "DepAirportCode": "SIN",
+    # "ArrAirportCode": "KUL"}]
+# }
+
+
 @app.route("/insertflights", methods=['POST'])
 def insert_flights():
     print(request.json)
@@ -207,10 +222,34 @@ def insert_flights():
                         }), 500
 
 
+# Get all unique serviced locations, both departure and arrival
+@app.route("/getservicedlocs")
+def servicedlocs():
+    try:
+        unique_locations = db.session.query(
+            Flight.DepartureLoc, Flight.ArrivalLoc
+        ).distinct().all()
 
+        # Extract unique locations and convert them to strings
+        locations_set = set()
+        for loc in unique_locations:
+            locations_set.add(loc.DepartureLoc)
+            locations_set.add(loc.ArrivalLoc)
+        unique_locations_list = list(locations_set)
 
+        # Sort the unique locations alphabetically
+        unique_locations_list.sort()
 
-## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
+        return jsonify({
+            'code': 200,
+            'data': unique_locations_list
+        })
+    except Exception as e:
+        return jsonify({
+            'code': 500,
+            'data': str(e)
+        })
+
 
 
 

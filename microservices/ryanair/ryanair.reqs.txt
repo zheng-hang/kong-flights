@@ -1,0 +1,6 @@
+ryanair-py==3.0.0
+pyairports==2.1.1
+geopy==2.4.1
+forex_python==1.8
+simplejson==3.19.2
+pytz==2024.1

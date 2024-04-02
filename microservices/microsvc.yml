@@ -95,7 +95,6 @@ services:
     restart: always
     ports:
       - "5003:5000"
-      # - "5003:5000"
     depends_on:
       - rabbitmq
     environment:
@@ -188,6 +187,45 @@ services:
       - my-network
 
 
+# Ryanair Calling
+
+  ryanair:
+    build:
+      context: ./ryanair
+      dockerfile: ryanair.dockerfile
+    image: warkionw/ryanair:esd
+    restart: always
+    ports:
+      - "5005:5000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+
+
+###############################################
+# Scraper: The Scraper microservice
+###############################################
+  scraper:
+    build:
+      context: ./scraper
+      dockerfile: scraper.dockerfile
+    image: warkionw/scraper:esd
+    restart: always
+    depends_on:
+      - lufthansa
+      - ryanair
+      - flight
+    environment:
+      ryanair_URL: http://host.docker.internal:5005/getFRflights/today
+      lufthansa_URL: http://host.docker.internal:5004/getLHflights/today
+      flight_URL: http://host.docker.internal:5001/insertflights
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5104:5100"
+  
+
+
 # # testing amqp in bookings & flight
 #   testamqp:
 #     build:
@@ -278,7 +316,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5103:5103"
-    networks:
+      networks:
       - my-network
 
 
@@ -307,3 +345,5 @@ services:
   #     PYTHONUNBUFFERED: 1
   #   ports:
   #     - "5105:5105"
+    # networks:
+      # - my-network

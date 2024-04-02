@@ -12,7 +12,6 @@ from pyairports.airports import AirportNotFoundException
 import random
 import os
 
-# Specify the path to the .env file
 
 # Load environment variables from the specified .env file
 load_dotenv()
@@ -26,14 +25,14 @@ app = Flask(__name__)
 airports = Airports()
 
 
-
 with open("./arrDep.json", 'r') as file:
     data = json.load(file)
     airportcodes = data['LH']
+    airportcodes = [{
+            "Departure": "FRA",
+            "Arrival": "LCA"
+        }]
     print('loaded')
-
-
-
 
 
 # Current airlines
@@ -43,7 +42,6 @@ with open("./arrDep.json", 'r') as file:
 # S - Austrian
 # WK - Edelweiss
 # SN - Brussels Airlines
-
     
 
 # Randomise Price
@@ -76,7 +74,6 @@ def calculate_and_randomize_price(airport1, airport2):
 
 
 
-# Get relevant details from passed schedule
 def extract_flight_info(schedule):
     try:
         if 'Flight' in schedule:  # Check if schedule is a single flight
@@ -96,9 +93,10 @@ def extract_flight_info(schedule):
             # Handle if airport location not found
             departure_loc = airports.airport_iata(dep_airport_code)[1]
             arrival_loc = airports.airport_iata(arr_airport_code)[1]
-            
-            return flight_number, {
-                'Airline': flight['MarketingCarrier']['AirlineID'],
+
+            flight_info = {
+                'FID': flight_number,
+                'Airline': 'Lufthansa',
                 'DepartureLoc': departure_loc,
                 'ArrivalLoc': arrival_loc,
                 'Date': departure_time[:10],
@@ -108,28 +106,30 @@ def extract_flight_info(schedule):
                 'DepAirportCode': dep_airport_code,
                 'ArrAirportCode': arr_airport_code
             }
+            return [flight_info]  # Return as a list of dictionaries
         else:
             print("Invalid schedule format.")
-            return None
+            return []
     except KeyError as e:
         print(f"KeyError: {e}")
-        return None
+        return []
     except ValueError as e:
         print(f"ValueError: {e}")
-        return None
+        return []
     except AirportNotFoundException as e:
         print(f"AirportNotFoundException: {e}")
         raise e  # Raise the exception to exit and not store the flight details
 
 
-# Call API to get flight schedules
+
+
 def get_flight_schedules(airport_pairs, datetime, api_key):
     headers = {
         'Authorization': f'Bearer {api_key}',
         'Accept': 'application/json'
     }
     
-    all_flights = {}
+    all_flights = []
     for pair in airport_pairs:
         print(pair)
         origin = pair['Departure']
@@ -147,17 +147,17 @@ def get_flight_schedules(airport_pairs, datetime, api_key):
                     print('list')
                     for flight_schedule in schedule:
                         try:
-                            flightNum, flight_info = extract_flight_info(flight_schedule)
+                            flight_info = extract_flight_info(flight_schedule)
                             if flight_info:
-                                all_flights[flightNum] = flight_info
+                                all_flights.extend(flight_info)
                         except AirportNotFoundException:
                             pass  # Do nothing if AirportNotFoundException occurs
                 elif isinstance(schedule, dict):  # Only one flight for the path
                     print('dict')
                     try:
-                        flightNum, flight_info = extract_flight_info(schedule)
+                        flight_info = extract_flight_info(schedule)
                         if flight_info:
-                            all_flights[flightNum] = flight_info
+                            all_flights.extend(flight_info)
                     except AirportNotFoundException:
                         pass  # Do nothing if AirportNotFoundException occurs
                 else:
@@ -221,7 +221,7 @@ def getFlightToday():
     today_date = datetime.now().date()
 
     # Call the function for today's date and store the results
-    print(airportcodes)
+    # print(airportcodes)
     flights_data = get_flight_schedules(airportcodes, today_date.strftime(datetime_format), API_KEY)
 
     # Save the data to a JSON file
