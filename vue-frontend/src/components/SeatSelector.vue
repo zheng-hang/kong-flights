@@ -43,6 +43,7 @@
             rows: 72,
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
             status: "",
+            fid: "SQ 123",
             seatData: 
                 [
                     {
@@ -65,6 +66,13 @@
                         seatnum: "1",
                         available: 1,
                         price: 30
+                    },
+                    {
+                        fid: "SQ 189",
+                        seatcol: "G",
+                        seatnum: "19",
+                        available: 1,
+                        price: 30
                     }
                 ]
 
@@ -75,7 +83,22 @@
         toggleSeatColor() {
             this.checkboxColor = this.isChecked ? 'green' : 'black';
         }
-    }
+    },
+    // computed: {
+    //     getSeatData() {
+    //         for(seat in this.seatData) {
+    //             if(this.fid === seat.fid) {
+    //                 return seat;
+    //             }
+    //         }
+    //     },
+    // 
+        // checkAvailability() {
+            
+        //     var seat = this.getSeatData();
+        //     seat.availability
+        // }
+    // }
 }
 </script>
 
