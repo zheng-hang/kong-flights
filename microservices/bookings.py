@@ -149,7 +149,41 @@ def search_by_email(email):
         }
     ), 404
 
+@app.route("/booking/<string:bid>")
+def search_by_bid(bid):
+    booking = db.session.query(Bookings).filter(Bookings.bid == bid).first()
+    if booking:
+        return jsonify(
+            {
+                "code": 200,
+                "data": booking.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Booking not found for booking ID {}.".format(bid)
+        }
+    ), 404
 
+@app.route("/booking")
+def get_all():
+    bookings = db.session.query(Bookings).all()
+    if bookings:
+        data = [booking.json() for booking in bookings]
+        return jsonify(
+            {
+                "code": 200,
+                "data": data
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no bookings."
+        }
+    ), 404
+    
 
 if __name__ == "__main__":
     print("This is flask for " + path.basename(__file__) + ": manage bookings ...")
