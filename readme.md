@@ -20,7 +20,7 @@ In this project, SMOOth Flights is able to tackle the following 3 users scenario
 - [Flask_CORS](https://flask-cors.readthedocs.io/en/latest/)
 
 ## REST APIs used
-- [SIA API](https://developer.singaporeair.com/api_flight_schedule)
+- [RyanAir API](https://pypi.org/project/ryanair-py/0.0.1/)
 - [Lufthansa API](https://developer.lufthansa.com/docs/read/api_details/flight_schedules) 
 - [Paypal API](https://developer.paypal.com/api/rest/)
 - [Email API]
@@ -50,7 +50,7 @@ We used `Flask-SQLAlchemy` as a Python SQL toolkit and Object Relational Mapper 
 We used `Flask-CORS` to explicitly allowing cross-origins access to our microservices to prepare for the web pages.
 
 # API Used
-We incorporated `SIA API` (https://developer.singaporeair.com/api_flight_schedule) and `Lufthansa API` (https://developer.lufthansa.com/docs/read/api_details/flight_schedules) into our Scraper complex microservice.
+We incorporated `RyanAir API` and `Lufthansa API` into our Scraper complex microservice.
 
 This allows us to obtain all new available flights from SIA and Lufthansa for passengers to view and book. This is done through our Scraper complex microservice through a HTTP GET request. 
 
@@ -116,6 +116,10 @@ docker rm <containerid>
 To bring down everything,
 ```sh
 docker compose down
+```
+To bring down everything including volumes,
+```sh
+docker compose down -v
 ```
 
 ### Start the container
