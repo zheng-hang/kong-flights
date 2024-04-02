@@ -100,6 +100,7 @@ def get_all():
         }
     ), 404
 
+
 # Get all seats for flight
 @app.route("/seat/<string:fid>", methods=['GET'])
 def get_seat(fid):
@@ -120,15 +121,6 @@ def get_seat(fid):
             "message":"Seat not found."
         }
     ), 404
-
-def start_flask():
-    try:
-        app.run(host='0.0.0.0', port=5000)
-    finally:
-        print("Flask thread exiting")
-
-
-    
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
     <router-link to="/register">Register</router-link> |
     <router-link to="/login">Login</router-link>
   </nav> -->
-  <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center;justify-content: space-between;">
+  <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center; justify-content: space-between;">
     <div>
       <img src="@/assets/SMOOth Airlines Logo - Flat.png" style="height: 50px;">
     </div>
