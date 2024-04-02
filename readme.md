@@ -54,7 +54,7 @@ We incorporated `RyanAir API` and `Lufthansa API` into our Scraper complex micro
 
 This allows us to obtain all new available flights from SIA and Lufthansa for passengers to view and book. This is done through our Scraper complex microservice through a HTTP GET request. 
 
-We also incorporated `Paypal API` (https://developer.paypal.com/api/rest/) into Payment service.
+We also incorporated `Paypal API` into Payment service.
 
 This enables passengers to do payment through Paypal at the end of their booking process. This is done through our Payment service. 
 
