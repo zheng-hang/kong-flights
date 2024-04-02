@@ -95,7 +95,6 @@ services:
     restart: always
     ports:
       - "5003:5000"
-      - "5003:5000"
     depends_on:
       - rabbitmq
     environment:
@@ -164,6 +163,21 @@ services:
     networks:
       - my-network
 
+
+# Ryanair Calling
+
+  ryanair:
+    build:
+      context: ./ryanair
+      dockerfile: ryanair.dockerfile
+    image: warkionw/ryanair:esd
+    restart: always
+    ports:
+      - "5005:5000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
 
 
 # # testing amqp in bookings & flight

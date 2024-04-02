@@ -142,6 +142,21 @@ def get_price_by_FID(FID):
     ), 404
 
 
+# {
+#     "flight":[
+    #     {"FID": "LH 552",
+    # "Airline": "Lufthansa",
+    # "DepartureLoc": "Singapore",
+    # "ArrivalLoc": "Kuala Lumpur",
+    # "Date": "2024-04-13",
+    # "DepartureTime": "07:45:23",
+    # "Duration": 75,
+    # "Price": 221,
+    # "DepAirportCode": "SIN",
+    # "ArrAirportCode": "KUL"}]
+# }
+
+
 @app.route("/insertflights", methods=['POST'])
 def insert_flights():
     print(request.json)
