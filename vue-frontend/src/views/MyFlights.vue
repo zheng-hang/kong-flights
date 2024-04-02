@@ -119,7 +119,7 @@
                         <tr>
                             <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
                                 <h6 style="font-weight: bold">{{ flight.FID }} | {{ flight.DepartureLoc }} to {{ flight.ArrivalLoc }}</h6>
-                                <h6 style="font-weight: bold">Economy | <a href="#" style="color:black"><i class="fas fa-edit"></i> Change Seat</a></h6>
+                                <h6 style="font-weight: bold">Economy | Flight Completed</h6>
                             </th>
                         </tr>
                         </thead>
