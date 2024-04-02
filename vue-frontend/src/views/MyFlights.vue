@@ -53,7 +53,7 @@
                         <tr>
                             <td style="padding: 40px; padding-top:20px;">
                                 <!-- Add flight duration -->
-                                <span style="font-weight: bold;">{{ flight.Duration }} min</span>
+                                <span style="font-weight: bold;">{{ convertMinutes(flight.Duration) }}</span>
                                 <div class="row" style="margin-top: 15px">
                                     <!-- Departure -->
                                     <div class="col-3">
@@ -71,9 +71,9 @@
                                     <!-- Arrival -->
                                     <div class="col-5">
                                         <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
-                                        <h3>{{ flgiht.ArrAirportCode }} {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
+                                        <h3>{{ flight.ArrAirportCode }} {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
                                         <p>
-                                            <span style="font-weight: bold;">Tokyo</span><br/>
+                                            <span style="font-weight: bold;">{{flight.ArrivalLoc}}</span><br/>
                                             {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
                                         </p>
                                     </div>
@@ -127,7 +127,7 @@
                         <tr>
                             <td style="padding: 40px; padding-top:20px;">
                                 <!-- Add flight duration -->
-                                <span style="font-weight: bold;">{{ flight.Duration }} min</span>
+                                <span style="font-weight: bold;">{{ convertMinutes(flight.Duration) }}</span>
                                 <div class="row" style="margin-top: 15px">
                                     <!-- Departure -->
                                     <div class="col-3">
@@ -147,7 +147,7 @@
                                         <p class="text-primary" style="font-weight: bold;">ARRIVAL</p>
                                         <h3>{{ flight.ArrAirportCode }} {{ calculateArrivalTime(flight.DepartureTime, flight.Duration) }}</h3>
                                         <p>
-                                            <span style="font-weight: bold;">Tokyo</span><br/>
+                                            <span style="font-weight: bold;">{{flight.ArrivalLoc}}</span><br/>
                                             {{ formatDate(getArrivalDate(flight.Date, flight.Duration)) }}
                                         </p>
                                     </div>
@@ -191,8 +191,11 @@
     data() {
         return {
             toggle: 'upcoming',
-            pastFlights: ''
+            pastFlights: ""
         };
+    },
+    beforeMount() {
+        this.loadPastFlights();
     },
     methods: {
       loadCss(url) {
@@ -247,21 +250,24 @@
 
         return formattedDate;
       },
-      loadPastFlights(){
-        axios.get('http://localhost:5001/flight')
-          .then(response => {
-            // Handle the response data here
-            this.pastFlights = response.data; // flight data
-          })
-          .catch(error => {
-            // Handle errors here
-            this.pastFlights = error;
-            console.error('There was an error fetching flight data:', error);
-        });
-      },
-    },
-    beforeMount() {
-        this.loadPastFlights()
+      loadPastFlights() {
+            // Make a GET request to the URL
+            axios.get('http://localhost:5001/flight')
+            .then(response => {
+                // Handle the response data
+                this.pastFlights = response.data;
+                console.log(response.data);
+            })
+            .catch(error => {
+                // Handle errors
+                console.error(error);
+            });
+        }, 
+      convertMinutes(minutes) {
+            let hours = Math.floor(minutes / 60);
+            let remainingMinutes = minutes % 60;
+            return `${hours} hr ${remainingMinutes} min`;
+      }               
     }
   };
 </script>

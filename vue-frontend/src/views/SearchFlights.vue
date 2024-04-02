@@ -172,7 +172,7 @@ import axios from 'axios';
     },
     data: function(){
       return {
-        flights: ''
+        flights: ''    
       }
     },
     methods: {
