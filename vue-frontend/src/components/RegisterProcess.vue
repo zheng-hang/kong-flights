@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import router from "../router/index.js";
 
 
 const loadCss = (url) => {
@@ -42,13 +43,13 @@ const submitForm = async() =>{
     const email = document.querySelector("input[type='text']").value;
     const password = document.querySelector("input[type='password']").value;
     try {
-        const response = await axios.post('http://localhost:5000/register', {
+        const response = await axios.post('http://localhost:5002/create', {
             email: email,
             password: password
         })
         if(response && response.data && response.status === 200){
             console.log('Register successful');
-            this.$router.push('/login');
+            router.push("/login");
         } 
         else {
             errorMessage.value = 'Invalid credentials. Please try again.';
