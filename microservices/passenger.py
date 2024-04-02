@@ -1,96 +1,131 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from os import environ
 from flask_cors import CORS
-from flask_bcrypt import Bcrypt
-from flask_bcrypt import generate_password_hash, check_password_hash
+import bcrypt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/users' # Replace with your database connection string
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
-CORS(app)
-
 db = SQLAlchemy(app)
 
-class Users(db.Model):
-    __tablename__ = 'users'
+CORS(app)
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False) 
-    email = db.Column(db.String(255), nullable=False)
-    password = db.Column(db.String(64), nullable=False)
+class Passenger(db.Model):
+    __tablename__ = 'passenger'
 
-    def __init__(self,name, email, password):
-        self.name = name
+    pid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(255), nullable=False)  # Updated column name
+    password = db.Column('password', db.String(255), nullable=False)  # Updated column name
+    salt = db.Column('salt', db.String(255), nullable=False)  # Updated column name
+
+    def __init__(self, email, password):
         self.email = email
-        self.password = password
+        self.set_password(password)
 
     def json(self):
-        return {"userid": self.id, "username": self.name, "email": self.email, "password": self.password}
+        return {
+            "PID": self.pid,
+            "email": self.email,
+            "password": self.password
+        }
+
+    def get_email(self):
+        return self.email
+
+    def set_password(self, password):
+        self.salt = bcrypt.gensalt()
+        self.password = bcrypt.hashpw(password.encode(), self.salt)
+
+    def check_password(self, password):
+        hashed_password = bcrypt.hashpw(password.encode(), self.salt.encode())
+        return hashed_password == self.password.encode()
 
 
-@app.route('/users', methods=['GET'])
-def get_all():
-    users = db.session.scalars(db.select(Users)).all()
-    return [user.json() for user in users]
+## METHODS AND PATH FOR PASSENGER ##
+@app.route("/email/<int:PID>")
+def get_email(PID):
+    passenger = db.session.scalars(db.select(Passenger).filter_by(pid=PID).limit(1)).first()
+    if passenger:
+        return jsonify(
+            {
+                "code": 200,
+                "data": passenger.get_email()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Passenger not found."
+        }
+    ), 404
 
+# JSON FORMAT #
+# {
+#     "email": 'emily.jones987@example.org'
+#     "password": "abc123"
+# }
 
-@app.route('/register', methods=['POST'])
-
-def register():
-    try:
-        data = request.get_json()
-
-        # Perform registration logic here (e.g., save user to database)
-        email = data.get('email')
-        password = data.get('password')
-
-        # Check if the username and email are unique before adding to the database
-        existing_user = Users.query.filter(Users.email == email).first()
-        if existing_user:
-            return jsonify({'error': 'Username or email already exists'}), 400
-
-        # Create a new user and add to the database
-        new_user = Users(email=email, password= Bcrypt().generate_password_hash(password).decode('utf-8'))
-        db.session.add(new_user)
-        db.session.commit()
-
-        return jsonify({'message': 'Registration successful'})
-
-    except Exception as e:
-        # Log the exception for debugging purposes
-        print(f"Exception during registration: {str(e)}")
-        return jsonify({'error': 'Internal Server Error'}), 500
-    
-
-@app.route('/login', methods=['POST'])
+@app.route("/login", methods=["POST"])
 def login():
-    try:
-        data = request.get_json()
-
-        # Perform login logic here (e.g., verify user credentials)
-        email = data.get('email')
-        password = data.get('password')
-
-        # Check if the user exists in the database
-        user = Users.query.filter(Users.email == email).first()
-        if not user:
-            print("incorrect user")
-            return jsonify({'error': 'Invalid email or password'}), 400
-
-        # Check if the password is correct
-        if not Bcrypt().check_password_hash(user.password, password):
-            print("incorrect password")
-            return jsonify({'error': 'Invalid email or password'}), 400
-
-        return jsonify({'message': 'Login successful'})
-
-    except Exception as e:
-        # Log the exception for debugging purposes
-        print(f"Exception during login: {str(e)}")
-        return jsonify({'error': 'Internal Server Error'}), 500
-
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
     
+    app.logger.info(f"Attempting login for email: {email}")
+    
+    passenger = Passenger.query.filter_by(email=email).first()
+    
+    if passenger and passenger.check_password(password):
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Login successful."
+            }
+        )
+    
+    app.logger.warning(f"Login failed for email: {email}")
+    
+    return jsonify(
+        {
+            "code": 401,
+            "message": "Invalid email or password."
+        }
+    ), 401
+
+
+# JSON FORMAT #
+# {
+#     "email": 'pain@example.org'
+#     "password": "abc123"
+# }
+
+@app.route("/create", methods=["POST"])
+def new_account():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    if Passenger.query.filter_by(email=email).first():
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Email already exists."
+            }
+        ), 400
+    passenger = Passenger(email=email, password=password)
+    db.session.add(passenger)
+    db.session.commit()
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Account created successfully."
+        }
+    ), 201
+
+
+
+
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

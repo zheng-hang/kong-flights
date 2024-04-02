@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS seats (
     seatnum INT NOT NULL,
     available BOOLEAN,
     price DOUBLE,
-    class VARCHAR(255),
+    seat_class VARCHAR(255),
     PRIMARY KEY (fid,seatcol,seatnum)
 );
 
@@ -15,5 +15,5 @@ LOAD DATA INFILE '/var/lib/mysql-files/data.csv'
 INTO TABLE seats
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;
