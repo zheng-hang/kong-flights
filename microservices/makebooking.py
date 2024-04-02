@@ -16,31 +16,31 @@ CORS(app)
 
 
 flight_URL = environ.get('flight_URL') or "http://flight:5000/flight/price/" 
-payment_URL = environ.get('payment_URL')
-
+payment_URL = environ.get('payment_URL') or "http://payment:5000/"
 
 seat_exchangename = environ.get('seat_exchangename') or "seat_topic" # seat exchange name
 booking_exchangename = environ.get('booking_exchangename') or "booking_topic" #booking exchange name
 notif_exchangename = environ.get('notif_exchangename') or 'notif_topic'
 exchangetype="topic" # use a 'topic' exchange to enable interaction
 
+email_to_booking = {}
 # Instead of hardcoding the values, we can also get them from the environ as shown below
 # exchangename = environ.get('exchangename') #order_topic
 # exchangetype = environ.get('exchangetype') #topic 
 
 #create a connection and a channel to the broker to publish messages to activity_log, error queues
-connection = amqp_connection.create_connection() 
-channel = connection.channel()
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
 
-#if the seat exchange is not yet created, exit the program
-if not amqp_connection.check_exchange(channel, seat_exchangename, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# #if the seat exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, seat_exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
-#if the booking exchange is not yet created, exit the program
-if not amqp_connection.check_exchange(channel, booking_exchangename, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# #if the booking exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, booking_exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 
 # JSON RESPONSE FORMAT
@@ -118,38 +118,11 @@ def processBookingRequest(booking):
 
     # 4. Call payment svc
     print('\n-----Call payment service-----')
-    payment_result = invoke_http(payment_URL, method='POST', json=price)
+    checkout_url = payment_URL + "/endpoint"
+    payment_result = invoke_http(checkout_url, method='POST', json={"email": booking['email'], "price": price['price']})
     print('payment_result:', payment_result)
 
-
-    if payment_result["code"] in range (200,300):
-        # 5. Send Notif AMQP
-        message = {
-                        'email': booking['email'],
-                    }
-
-        print('\n\n-----Publishing the (notif) message with routing_key=paymentupdate.notif-----')
-
-        channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-        print("\nNotif request published to the RabbitMQ Exchange:", message)
-
-
-        # 6. Send booking creation req
-        print('\n\n-----Publishing the (booking creation) message with routing_key=paymentupdate.notif-----')
-
-        channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
-            body=booking, properties=pika.BasicProperties(delivery_mode = 2)) 
-
-        print("\nBooking creation request published to the RabbitMQ Exchange:", booking)
-
-
-        return jsonify({
-                    'code': 200,
-                    'message': "Payment successful, booking creation sent"
-                })
-
+    email_to_booking[booking['email']] = booking
     return {
             "code": 400,
             "data": {
@@ -158,7 +131,62 @@ def processBookingRequest(booking):
             "message": "Simulated shipping record error sent for error handling."
         }
 
+@app.route("/webhook", methods=['POST'])
+def handle_webhook():
+    if not request.is_json:
+        return {
+            "code": 400,
+            "message": "Invalid JSON"
+        }
+    
+    headers = dict(request.headers)
+    print(headers)
+    body = request.get_json()
 
+    response = invoke_http((payment_URL + "/webhook"), method='POST', json=body, headers=headers)
+    print('response:', response)
+    if response['code'] != 200:
+        return {
+            "code": 400,
+            "message": "Error in payment service"
+        }
+    
+    if email not in response:
+        return {
+            "code": 400,
+            "message": "No email in response"
+        }
+
+    email = response["email"]
+    return jsonify(email=email)
+
+
+    # message = {
+    #     'email': email,
+    # }
+
+    # print('\n\n-----Publishing the (notif) message with routing_key=paymentupdate.notif-----')
+
+    # channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    # print("\nNotif request published to the RabbitMQ Exchange:", message)
+
+
+    # # 6. Send booking creation req
+    # print('\n\n-----Publishing the (booking creation) message with routing_key=paymentupdate.notif-----')
+
+    # channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
+    #     body=email_to_booking[email], properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    # print("\nBooking creation request published to the RabbitMQ Exchange:", email_to_booking[email])
+
+    # del email_to_booking[email]
+
+    # return jsonify({
+    #             'code': 200,
+    #             'message': "Payment successful, booking creation sent"
+    #         })
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":

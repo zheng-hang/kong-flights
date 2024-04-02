@@ -1,0 +1,16 @@
+version: '3.8'
+
+networks:
+  my-network:
+    name: my-network
+    external: true
+
+services:
+  payment-service:
+    build: .
+    image: payment-service
+    networks:
+      - my-network
+
+    ports:
+      - 5020:5000
