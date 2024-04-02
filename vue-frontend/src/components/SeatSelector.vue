@@ -15,8 +15,8 @@
                         <li class="row">
                             <ol class="seats" type="A">
                                 <li v-for="(column, index) in columns" :key="index" class="seat" :id="row + column">
-                                    <input type="checkbox" :checked="isChecked" @change="selectSeat"/>
-                                    <label for="1A">{{ row }}{{ column }}</label>
+                                    <input type="checkbox" :id="'checkbox-' + row + column" @click="selectSeat"/>
+                                    <label :for="'checkbox-' + row + column">{{ row }}{{ column }}</label>
                                 </li>
                             </ol>
                             <!-- Galley -->
@@ -40,7 +40,9 @@
     export default {
         data() {
         return {
+            numSeatsSelected: 0,
             isChecked: false,
+            selectedSeat: "",
             rows: 72,
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
             status: "",
@@ -82,10 +84,19 @@
     
     methods: {
         selectSeat(event) {
+            if(this.numSeatsSelected == 1){
+                // If >1 seat selected, uncheck previously selected seat.
+                this.isChecked="false";
+                document.getElementById(this.selectedSeat).checked = false;
+                this.numSeatsSelected--;
+            }
             this.isChecked=event.target.checked;
-            console.log(this.input)
+            this.numSeatsSelected++;
+            this.selectedSeat = event.target.id; 
         },
         
+        
+
         // toggleSeatColor() {
         //     this.checkboxColor = this.isChecked ? 'green' : 'black';
         // }
@@ -182,6 +193,13 @@
     input[type=checkbox] {
         position: absolute;
         opacity: 0;
+        + label {
+        background: #bada55;      
+        -webkit-animation-name: rubberBand;
+            animation-name: rubberBand;
+        animation-duration: 300ms;
+        animation-fill-mode: both;
+        }
     }
     input[type=checkbox]:checked {
         + label {

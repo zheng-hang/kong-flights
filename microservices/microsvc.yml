@@ -173,6 +173,30 @@ services:
     networks:
       - my-network
 
+# Notifications: send email for bookings, seatchange,  
+  notifications:
+    build:
+      context: ./
+      dockerfile: notifications.dockerfile
+    image: bran/notifications:esd
+    restart: always
+    ports:
+      - "5008:5000"
+    depends_on:
+      - rabbitmq
+      - bookings
+      - make_booking
+      - 
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      booking_queue_name: BookingUpdate
+
+      exchangename: notif_topic
+      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
 
 # # testing amqp in bookings & flight
 #   testamqp:

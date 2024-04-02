@@ -19,8 +19,6 @@ import pika
 
 notif_queue_name = os.environ.get('exchangename') or 'Notif'
 
-notif_queue_name = os.environ.get('exchangename') or 'Notif'
-
 app = Flask(__name__)
 
 CORS(app)
