@@ -38,7 +38,49 @@ class Seats(db.Model):
     def json(self):
         return {"fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum, "available": self.available, "price": self.price, "seat_class": self.seat_class}
 
+# for SCENARIO 2 reserve seat
+@app.route("/reserveseat", methods=['POST'])
+def updateSeat():
+    print("updating db")
+    seat = request.json
+    fid = seat.get('fid', None)
+    seatcol = seat.get('seatcol', None)
+    seatnum = seat.get('seatnum', None)
 
+    seatToUpdate = Seats.query.filter_by(fid=fid, seatcol=seatcol, seatnum=seatnum).first()
+
+    if seatToUpdate and seatToUpdate.available == True:
+        try:
+            print(seat)
+            print(seatToUpdate)
+            seatToUpdate.available = not seatToUpdate.available
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Updated seat '{seatcol}' '{seatnum}' to {'available' if seatToUpdate.available else 'unavailable'}",
+                    "data": seatToUpdate.json()
+                }
+            ), 200
+        except Exception as e:
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred while updating booking. " + str(e)
+                }
+            ), 500
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "seat": seat
+                },
+                "message": "Seat not found."
+            }
+        ), 404
+
+# for SCENARIO 12 reserve seat
 @app.route("/updateseat", methods=['POST'])
 def updateSeat():
     print("updating db")
@@ -79,8 +121,7 @@ def updateSeat():
                 "message": "Seat not found."
             }
         ), 404
-
-
+    
 # Get all seats
 @app.route("/seat", methods=['GET'])
 def get_all():
@@ -126,3 +167,6 @@ def get_seat(fid):
 if __name__ == "__main__":
     print("This is flask for " + path.basename(__file__) + ": manage seats ...")
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+
+# situation where 2 is selecting the same seat hence need to reseve the seat first

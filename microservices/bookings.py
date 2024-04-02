@@ -149,6 +149,22 @@ def search_by_email(email):
         }
     ), 404
 
+@app.route("booking/<int:bid>")
+def search_by_bid(bid):
+    booking = Bookings.query.filter_by(bid=bid).first()
+    if booking:
+        return jsonify(
+            {
+                "code": 200,
+                "data": [bookings.json() for bookings in booking]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Booking with bid {} not found.".format(bid)
+        }
+    ), 404
 
 
 if __name__ == "__main__":

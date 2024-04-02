@@ -230,8 +230,9 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
-      seat_URL: http://localhost:5000/seat
-      passengerbooking_URL: "http://localhost:5000/booking"
+      seatReserve_URL: http://localhost:5000/reserveseat
+      seatUpdate_URL: http://localhost:5000/updateseat
+      passengerbooking_URL: http://localhost:5000/update
       # notification_URL: "http://localhost:5000/notification"
       # payment_URL: "http://localhost:5000/payment"
       PYTHONUNBUFFERED: 1
@@ -264,3 +265,27 @@ services:
   #     PYTHONUNBUFFERED: 1
   #   ports:
   #     - "5105:5105"
+
+# Notifications
+  notification:
+    build:
+      context: ./
+      dockerfile: notification.dockerfile
+    image: brannon/notificationss:esd
+    restart: always
+    ports:
+      - "5008:5000"
+    depends_on:
+      - rabbitmq
+      - bookings
+      - make_booking
+      - seatchange
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      exchangename: notif_topic
+      notif_queue_name: Notif
+      PYTHONUNBUFFERED: 1
+    networks:
+      - my-network
+    
