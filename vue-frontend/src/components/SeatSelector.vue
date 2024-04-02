@@ -15,7 +15,7 @@
                         <li class="row">
                             <ol class="seats" type="A">
                                 <li v-for="(column, index) in columns" :key="index" class="seat" :id="row + column">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" :checked="isChecked" @change="selectSeat"/>
                                     <label for="1A">{{ row }}{{ column }}</label>
                                 </li>
                             </ol>
@@ -40,6 +40,7 @@
     export default {
         data() {
         return {
+            isChecked: false,
             rows: 72,
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
             status: "",
@@ -80,9 +81,14 @@
         },
     
     methods: {
-        toggleSeatColor() {
-            this.checkboxColor = this.isChecked ? 'green' : 'black';
-        }
+        selectSeat(event) {
+            this.isChecked=event.target.checked;
+            console.log(this.input)
+        },
+        
+        // toggleSeatColor() {
+        //     this.checkboxColor = this.isChecked ? 'green' : 'black';
+        // }
     },
     // computed: {
     //     getSeatData() {

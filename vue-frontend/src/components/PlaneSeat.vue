@@ -6,8 +6,8 @@
     <ol class="cabin fuselage">
         <li class="row">
         <ol class="seats" type="A">
-            <li v-for="(column, index) in columns" :key="index" class="seat" :id="'{{ row }}{{ column }}'">   
-                <input type="checkbox"/>
+            <li v-for="(column, index) in columns" :key="index" class="seat" :id="row, column">   
+                <input type="checkbox" :disabled="true"/>
                 <label for="1A">{{ row }}{{ column }}</label>
             </li>
         </ol>
@@ -19,6 +19,7 @@
 export default {
     data() {
         return {
+            isSelected: 0,
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
             status: "",
             seatData: 
@@ -53,9 +54,14 @@ export default {
         },
     
     methods: {
-        toggleSeatColor() {
-            this.checkboxColor = this.isChecked ? 'green' : 'black';
+      selectSeat() { 
+        if(this.isSelected == 1) {
+          
         }
+      },
+      toggleSeatColor() {
+          this.checkboxColor = this.isChecked ? 'green' : 'black';
+      }
     }
 }
 
