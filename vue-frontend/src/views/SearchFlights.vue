@@ -144,7 +144,7 @@
     </div>
 </template>
   
-<style>
+<style scoped>
       #SearchBox {
           height: 200px;
           margin-top: 20px;
@@ -172,7 +172,13 @@ import axios from 'axios';
     },
     data: function(){
       return {
-        flights: ''
+        flights: '',
+        form: {
+          departLoc: '',
+          arrLoc: '',
+          departDate: ''
+        }
+
       }
     },
     methods: {
