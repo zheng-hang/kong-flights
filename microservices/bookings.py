@@ -150,25 +150,6 @@ def search_by_email(email):
         }
     ), 404
 
-# ray - added this to get bookings for the person with the pid
-@app.route("/booking/<int:pid>")
-def search_by_pid(pid):
-    bookings = db.session.query(Bookings).filter(Bookings.pid == pid).all()
-    if bookings:
-        # Convert each booking to a dictionary using the json method
-        data = [booking.json() for booking in bookings]
-        return jsonify(
-            {
-                "code": 200,
-                "data": data
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Bookings not found for passenger ID {}.".format(pid)
-        }
-    ), 404
 
 
 ## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
