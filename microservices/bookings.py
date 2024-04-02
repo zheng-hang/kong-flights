@@ -23,8 +23,7 @@ CORS(app)
 
 class Bookings(db.Model):
     __tablename__ = 'bookings'
-
-    pid = db.Column(db.Integer, nullable=False)
+    bid = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True)
     fid = db.Column(db.String(6), nullable=False)
     seatcol = db.Column(db.String(1), nullable=False)
     seatnum = db.Column(db.Integer, nullable=False)
@@ -109,6 +108,7 @@ def processUpdate(update, channel):
 ## FORMAT FOR BODY - CreateBooking    ##
 ## Routing Key: *.newBooking          ##
 # {
+#     "email": "pain@gmail.com"
 #     "fid": "SQ 123",
 #     "seatcol": "A",
 #     "seatnum": 1
@@ -118,7 +118,7 @@ def processCreation(update, channel):
     with app.app_context():
         print("bookings: Recording a creation:")
         print(update)
-        booking = Bookings(pid=update['pid'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatnum'])
+        booking = Bookings(email=update['email'], fid=update['fid'], seatcol=update['seatcol'], seatnum=update['seatnum'])
         db.session.add(booking)
         db.session.commit()
         print("bookings: Recorded the creation in the database")
@@ -148,6 +148,25 @@ def search_by_email(email):
         }
     ), 404
 
+# ray - added this to get bookings for the person with the pid
+@app.route("/booking/<int:pid>")
+def search_by_pid(pid):
+    bookings = db.session.query(Bookings).filter(Bookings.pid == pid).all()
+    if bookings:
+        # Convert each booking to a dictionary using the json method
+        data = [booking.json() for booking in bookings]
+        return jsonify(
+            {
+                "code": 200,
+                "data": data
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Bookings not found for passenger ID {}.".format(pid)
+        }
+    ), 404
 
 
 ## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
