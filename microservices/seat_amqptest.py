@@ -28,28 +28,37 @@ channel = connection.channel()
 def amqptest():
     print('\n\n-----Publishing the (seatupdate) message with routing_key=tryseat.seat-----')
 
-    message = {
+    message1 = {
     'fid': 'LH 520',
     'seatcol': 'A',
     'seatnum': 1,
-    'available': 1,
-    'price': 25.00,
-    'seat_class': 'first'
+    }
+
+    message2 = {
+    'fid': 'LH 520',
+    'seatcol': 'B',
+    'seatnum': 1,
     }
 
     # Ensuring message structure aligns with what the receiver expects
-    messages = json.dumps(message)  # seatupdate already has 'seatnum' as per the receiver's expectation
-    
+    messages1 = json.dumps(message1)  # seatupdate already has 'seatnum' as per the receiver's expectation
+    messages2 = json.dumps(message2)
     # Publishing the message to the AMQP exchange with the correct routing key
     channel.basic_publish(exchange=exchangename, routing_key="try.seat", 
-                          body=messages, properties=pika.BasicProperties(delivery_mode=2))
+                          body=messages1, properties=pika.BasicProperties(delivery_mode=2))
 
-    print("\nBooking creation request published to the RabbitMQ Exchange:", messages)
+    print("\nBooking creation request published to the RabbitMQ Exchange:", messages1)
+
+    # Publishing another message with a different routing key
+    channel.basic_publish(exchange=exchangename, routing_key="try.Failseat", 
+                          body=messages2, properties=pika.BasicProperties(delivery_mode=2))
+    
+    print("\nBooking creation request published to the RabbitMQ Exchange:", messages2)
 
     # Returning a more relevant response
     return jsonify({
         "code": 200,  # Assuming successful publication, setting a success status code
-        "data": {"message": messages},
+        "data": {"message1": messages1 , "message2": messages2},
         "message": "Seat update and create booking request successfully published."
     })
     

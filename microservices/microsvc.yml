@@ -32,7 +32,8 @@ services:
 
 
 
-# Seat Selection: Update Availablitiy, Insert Seat, Get seat
+
+# Bookings: Update Availablitiy, Insert Seat, Get seat
   bookings:
     build:
       context: ./
@@ -99,6 +100,7 @@ services:
     image: ray/seat:esd
     restart: always
     ports:
+      - "5003:5000"
       - "5003:5000"
     depends_on:
       - rabbitmq
@@ -215,3 +217,58 @@ services:
 #       - "5101:5101"
 #     networks:
 #       - my-network
+
+
+
+###############################################
+# seatchange: The seat change microservice
+###############################################
+  seatchange:
+    build:
+      context: ./
+      dockerfile: seatchange.Dockerfile
+    image: rayjiet/seatchange:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+      - seat
+      - bookings
+      # - payment
+      # - notification
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      seat_URL: http://localhost:5000/seat
+      passengerbooking_URL: "http://localhost:5000/booking"
+      # notification_URL: "http://localhost:5000/notification"
+      # payment_URL: "http://localhost:5000/payment"
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5103:5103"
+
+
+###############################################
+# test_seatchange: The seat change microservice
+###############################################
+  # test_seatchange:
+  #   build:
+  #     context: ./
+  #     dockerfile: test_seatchange.Dockerfile
+  #   image: rayjiet/test_seatchange:esd
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #     - seat
+  #     - bookings
+  #     # - payment
+  #     # - notification
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     seat_URL: http://localhost:5000/seat
+  #     passengerbooking_URL: "http://localhost:5000/booking"
+  #     # notification_URL: "http://localhost:5000/notification"
+  #     # payment_URL: "http://localhost:5000/payment"
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5105:5105"
