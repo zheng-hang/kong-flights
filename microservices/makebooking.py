@@ -75,7 +75,7 @@ def place_order():
 
             return jsonify({
                 "code": 500,
-                "message": "place_order.py internal error: " + ex_str
+                "message": "makebooking.py internal error: " + ex_str
             }), 500
 
     # if reached here, not a JSON request.
@@ -91,6 +91,14 @@ def processBookingRequest(booking):
     print('\n-----Invoking flight microservice-----')
     price = invoke_http((flight_URL + booking.FID), method='GET')
     print('flight price:', price)
+
+    if price['code'] == 404:
+        print('\n-----'+ price['message'] +'-----')
+        return {
+            "code": 500,
+            "data": {"priceRetrieval_result": price},
+            "message": "Price not found."
+        }
 
 
     # 3. reserve seat in Seats
@@ -108,19 +116,10 @@ def processBookingRequest(booking):
     print("\nSeat update request published to the RabbitMQ Exchange:", message)
 
 
-    if price['code'] in range (200,300):
-        # 4. Call payment svc
-        print('\n-----Call payment service-----')
-        payment_result = invoke_http(payment_URL, method='POST', json=price)
-        print('payment_result:', payment_result)
-
-    else:
-        print('\n-----'+ price['message'] +'-----')
-        return {
-            "code": 500,
-            "data": {"priceRetrieval_result": price},
-            "message": "Price not found."
-        }
+    # 4. Call payment svc
+    print('\n-----Call payment service-----')
+    payment_result = invoke_http(payment_URL, method='POST', json=price)
+    print('payment_result:', payment_result)
 
 
     if payment_result["code"] in range (200,300):
