@@ -15,9 +15,9 @@ In this project, SMOOth Flights is able to tackle the following 3 users scenario
 ## Tools used
 - [Vue 3](https://vuejs.org/guide/introduction.html)
 - [MySQL](https://dev.mysql.com/doc/workbench/en/wb-intro.html)
-- [Flask]
-- [Flask-SQLAlchemy]
-- [Flask_cors]
+- [Flask](https://flask.palletsprojects.com/en/latest/)
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/en/3.1.x/api/)
+- [Flask_CORS](https://flask-cors.readthedocs.io/en/latest/)
 
 ## REST APIs used
 - SIA API (https://developer.singaporeair.com/api_flight_schedule)
@@ -104,15 +104,15 @@ docker-compose -f microsvc.yml up --build
 docker ps a
 ```
 ### Stop and Remove containers
-To stop a specific container
+To stop a specific container,
 ```sh
 docker stop <containerid>
 ```
-To remove a specific container
+To remove a specific container,
 ```sh
 docker rm <containerid>
 ```
-To bring down everything
+To bring down everything,
 ```sh
 docker compose down
 ```
