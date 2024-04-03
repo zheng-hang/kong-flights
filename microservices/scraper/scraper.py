@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import schedule
+import json
 
 import os, sys
 from os import environ
@@ -21,6 +22,7 @@ CORS(app)
 ryanair_URL = environ.get('ryanair_URL')
 lufthansa_URL = environ.get('lufthansa_URL')
 flight_URL = environ.get('flight_URL')
+seat_URL = environ.get('seat_URL')
 
 # Get the JSON data from the API
 # response = requests.get(luft_URL)
@@ -58,8 +60,23 @@ def scrapeAPI():
 
     print(all_flights)
 
-    # Insert into flights DB
-    results = invoke_http(flight_URL, method='POST', json=all_flights)
+    # Read seat layout from seat_layout.json
+    with open('seat_layout.json', 'r') as f:
+        seat_layout = json.load(f)
+
+    flight_seats = {}
+
+    for flight in all_flights['flight']:
+        fid = flight['FID']
+        flight_seats[fid] = [{'seatcol': seat['seatcol'], 'seatnum': seat['seatrow']} for seat in seat_layout]
+
+    # Insert into flights DB, returned json
+    flight_results = invoke_http(flight_URL, method='POST', json=all_flights)
+
+    # Insert into seats DB, returned json
+    seat_results = invoke_http(seat_URL, method='POST', json=flight_seats)
+
+    results = flight_results + seat_results
 
     return jsonify(results)
 

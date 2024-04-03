@@ -18,6 +18,7 @@ CORS(app)
 
 exchangename_booking = environ.get('exchangename_booking') #booking_topic
 exchangename_flight = environ.get('exchangename_flight') #flight_topic
+notifexchange = 'notif_topic'
 exchangetype = environ.get('exchangetype') #topic 
 
 print("amqptest: Getting Connection")
@@ -120,6 +121,30 @@ insertFlights = [{  "FID": "LH111",
 @app.route("/testamqp/flights")
 def amqptest_flight():
     print('\n\n-----Publishing the (insertflights) message with routing_key=insert.flight-----')
+
+    # Ensuring message structure aligns with what the receiver expects
+    message = json.dumps(insertFlights)  # seatupdate already has 'seatnum' as per the receiver's expectation
+    
+    # Publishing the message to the AMQP exchange with the correct routing key
+    channel.basic_publish(exchange=exchangename_flight, routing_key="insert.flight", 
+                          body=message, properties=pika.BasicProperties(delivery_mode=2))
+
+    print("\nFlight insertion request published to the RabbitMQ Exchange:", insertFlights)
+
+    # Returning a more relevant response
+    return jsonify({
+        "code": 200,  # Assuming successful publication, setting a success status code
+        "data": insertFlights,
+        "message": "Seat update and create booking request successfully published."
+    })
+
+
+notifmsg= {}
+
+notifexchange = 'notif_topic'
+@app.route("/testamqp/flights")
+def amqptest_flight():
+    print('\n\n-----Publishing the (notif) message with routing_key=call.notif-----')
 
     # Ensuring message structure aligns with what the receiver expects
     message = json.dumps(insertFlights)  # seatupdate already has 'seatnum' as per the receiver's expectation

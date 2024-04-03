@@ -15,17 +15,17 @@ app = Flask(__name__)
 CORS(app)
 
 
-seatReserve_URL = environ.get("seat_URL") or "http://localhost:5000/reserveseat"
-seatUpdate_URL = environ.get("seat_URL") or "http://localhost:5000/updateseat"
-passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
+seatReserve_URL = environ.get("seat_URL") or "http://host.docker.internal:5003/reserveseat"
+seatUpdate_URL = environ.get("seat_URL") or "http://host.docker.internal:5003/updateseat"
+passengerbooking_URL = environ.get("passengerbooking_URL") or "http://host.docker.internal:5000/update"
 # payment_url = "environ.get('payment_URL')"
-# notification_url = environ.get("notification_URL") 
+notification_url = environ.get("notification_URL") 
 
 
 
 # exchangename_booking = "booking_topic"
 # exchangename_seat_change =  "seat_change_topic"
-exchangename_notification = "Notif"
+exchangename_notification = "notif_topic"
 # exchangename_payment = "" not done
 
 exchangetype="topic"
@@ -82,6 +82,7 @@ def processSeatChange(seat):
     seat_copy.pop('bid', None)
 
     print("invote_http for reserve_seat")
+    print(seat_copy)
     reserve_seat = invoke_http(seatReserve_URL, method='PUT', json=seat_copy)
     print("Seat reserved" + str(reserve_seat))
 
@@ -112,17 +113,25 @@ def processSeatChange(seat):
   
         print("person_bid:", str(person_bid))
 
-        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
+        original_seat = requests.get(f"http://host.docker.internal:5000/booking/{person_bid}")
         original_seat = original_seat.json()['data']
         original_seat.pop('bid', None)
         print("-----------------")
 
 
         #SCENARIO 9: send to notification (NOT DONE) AMQP
-        # channel.basic_publish(exchange=exchangename_notification, routing_key="do.notif", 
-        #     body=json.dumps(seat), properties=pika.BasicProperties(delivery_mode = 2))
+
+        print("original:",original_seat)
+        print("email:",original_seat['email'])
+        original_seat['email'] = "warkionw12@gmail.com"
+        original_seat['source'] = "payment"
+        print("updated:",original_seat)
+
+
+        channel.basic_publish(exchange=exchangename_notification, routing_key="seatchange.notif", 
+            body=json.dumps(original_seat), properties=pika.BasicProperties(delivery_mode = 2))
         
-        # print("\n Notification to the RabbitMQ Exchange:", seat)
+        print("\n Notification to the RabbitMQ Exchange:", seat)
 
         #SCENARIO 10: update passenger bookings
         # this case is seat change so bid in message 

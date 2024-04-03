@@ -164,6 +164,28 @@ def get_seat(fid):
     ), 404
 
 
+# {
+#     "SQ 123": [{'seatcol':"A", 'seatnum':1}],
+#     "SQ 124": [{'seatcol':"A", 'seatnum':1}]
+# }
+
+
+# Insert seats into Seat
+@app.route('/insert_seats', methods=['POST'])
+def insert_seats():
+    try:
+        data = request.json
+        for flight, seats in data.items():
+            for seat in seats:
+                seat_obj = Seats(fid=flight, seatcol=seat['seatcol'], seatnum=seat['seatnum'], available=True, price=0, seat_class='economy')
+                db.session.add(seat_obj)
+        db.session.commit()
+        return jsonify({'message': 'Seats inserted successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to insert seats', 'error': str(e)}), 500
+
+
 if __name__ == "__main__":
     print("This is flask for " + path.basename(__file__) + ": manage seats ...")
     app.run(host='0.0.0.0', port=5000, debug=True)

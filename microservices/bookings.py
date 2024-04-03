@@ -74,7 +74,7 @@ def processCreationReq():
         ), 500
     
     message =   json.dumps(booking.json())
-    message['msg_source'] = "bookings"
+    message['source'] = "bookings"
     print(message)
 
     channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
@@ -109,13 +109,7 @@ def processUpdateReq():
             booking.seatcol = seatcol
             booking.seatnum = seatnum
             db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "message": f"Updated booking with bid '{bid}' to seat '{seatcol}' '{seatnum}'",
-                    "data": booking.json()
-                }
-            ), 200
+
         except Exception as e:
             return jsonify(
                 {
@@ -136,6 +130,13 @@ def processUpdateReq():
 
     channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
         body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    
+    return jsonify(
+    {
+        "code": 200,
+        "message": f"Updated booking with bid '{bid}' to seat '{seatcol}' '{seatnum}'",
+        "data": booking.json()
+    }), 200
 
 
 

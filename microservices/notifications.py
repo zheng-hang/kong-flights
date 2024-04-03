@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
 import os
-import threading
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+# import threading
+# from flask import Flask, request, jsonify
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_cors import CORS
 
 from email.message import EmailMessage
 import ssl
@@ -17,23 +17,23 @@ import pika
 # The above shebang (#!) operator tells Unix-like environments
 # to run this file as a python3 script
 
-notif_queue_name = os.environ.get('exchangename') or 'Notif'
+notif_queue_name = "Notif"
 
 
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-CORS(app)
+# CORS(app)
 
 # Set env path
 dotenv_path = 'vue-frontend/.env'
 # Load environment variables from .env file
 load_dotenv(dotenv_path)
 
-# Email details
+# Email detailsS
 # Email details
 email_sender = 'smoothairlines@gmail.com'
-email_password = os.environ.get("EMAIL_PASSWORD")
+email_password = "ahmv lesd tbkp quqi" #os.environ.get("EMAIL_PASSWORD") or 
 
 # Receive notif
 def receivePaymentUpdate(channel):
@@ -54,7 +54,7 @@ def receivePaymentUpdate(channel):
 def callback(channel, method, properties, body): # required signature for the callback; no return
     msg = json.loads(body)
     print("\nflights: Received an update by " + msg["source"])
-    if msg["source"] == "makebooking": 
+    if msg["source"] == "payment": 
         createPaymentEmail(json.loads(body))  
     # elif __file__ == "booking.py":
     elif msg["source"] == "bookings":
@@ -84,32 +84,32 @@ def sendEmail(email_receiver,subject,body):
             smtp.sendmail(email_sender, email_receiver, em.as_string())
         
         print("Email sent successfully!")
-        return jsonify({
-            "code": 250,
-            "message": "Email sent successfully."
-        }), 250
+        # return jsonify({
+        #     "code": 250,
+        #     "message": "Email sent successfully."
+        # }), 250
 
     #ERROR HANDLING
     except smtplib.SMTPAuthenticationError:
         print("Error: SMTP authentication failed. Check your email credentials.")
-        return jsonify({
-            "code": 401,
-            "message": "SMTP authentication failed. Check your email credentials."
-        }), 401
+        # return jsonify({
+        #     "code": 401,
+        #     "message": "SMTP authentication failed. Check your email credentials."
+        # }), 401
      
     except smtplib.SMTPException as e:
         print(f"Error: SMTP error occurred. {e}")
-        return jsonify({
-            "code": 500,
-            "message": f"SMTP error occured: {e}"
-        }), 500
+        # return jsonify({
+        #     "code": 500,
+        #     "message": f"SMTP error occured: {e}"
+        # }), 500
     
     except Exception as e:
         print(f"Error: An unexpected error occurred. {e}")
-        return jsonify({
-            "code": 500,
-            "message": f"An unexpected error occurred: {e}"
-        }), 500
+        # return jsonify({
+        #     "code": 500,
+        #     "message": f"An unexpected error occurred: {e}"
+        # }), 500
 
 # To send successful Payment Email 
 def createPaymentEmail(msg):
@@ -184,35 +184,11 @@ def createSeatChangeEmail(msg):
     sendEmail(email_receiver, subject, body)
 
 
-## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
-
-def start_flask():
-    try:
-        app.run(host='0.0.0.0', port=5000)
-    finally:
-        print("Flask thread exiting")
-
-def start_amqp():
-    try:
-        print("notifications: Getting Connection")
-        connection = amqp_connection.create_connection()  # get the connection to the broker
-        print("notifications: Connection established successfully")
-        channel = connection.channel()
-        receivePaymentUpdate(channel)
-    finally:
-        print("AMQP thread exiting")
 
 # Start script execution
 if __name__ == "__main__":
-    flask_thread = threading.Thread(target=start_flask)
-    amqp_thread = threading.Thread(target=start_amqp)
-
-    flask_thread.start()
-    amqp_thread.start()
-    
-    try:
-        flask_thread.join()
-        amqp_thread.join()
-
-    except KeyboardInterrupt:
-        print("Keyboard interrupt received, exiting threads")
+    print("notifications: Getting Connection")
+    connection = amqp_connection.create_connection()  # get the connection to the broker
+    print("notifications: Connection established successfully")
+    channel = connection.channel()
+    receivePaymentUpdate(channel)
