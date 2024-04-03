@@ -35,7 +35,7 @@ class Bookings(db.Model):
         self.seatnum = seatnum
 
     def json(self):
-        return {"bid": self.bid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
+        return {"bid": self.bid, "email": self.email, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
 
 
 
@@ -65,6 +65,12 @@ def processCreationReq():
     try:
         db.session.add(booking)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 201,
+                "data": booking.json()
+            }), 201
+    
     except Exception as e:
         return jsonify(
             {
@@ -73,17 +79,17 @@ def processCreationReq():
             }
         ), 500
     
-    message =   json.dumps(booking.json())
+    # message =   json.dumps(booking.json())
 
-    channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
-    return jsonify(
-        {
-            "code": 201,
-            "data": booking.json()
-        }
-    ), 201
+    # return jsonify(
+    #     {
+    #         "code": 201,
+    #         "data": booking.json()
+    #     }
+    # ), 201
 
 
 

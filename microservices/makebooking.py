@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from urllib.parse import quote
 
 import os, sys
 from os import environ
@@ -16,7 +17,8 @@ CORS(app)
 
 
 flight_URL = environ.get('flight_URL') or "http://flight:5000/flight/price/" 
-seatReserve_URL = environ.get("seatReserve_URL") or "http://localhost:5000/reserveseat"
+seatReserve_URL = environ.get("seatReserve_URL") or "http://seat:5000/reserveseat"
+seatUpdate_URL = environ.get("seatUpdate_URL") or "http://seat:5000/updateseat"
 newBooking_URL = environ.get("newBooking_URL") or "http://bookings:5000/newbooking"
 # payment_URL = environ.get('payment_URL')
 
@@ -50,21 +52,31 @@ newBooking_URL = environ.get("newBooking_URL") or "http://bookings:5000/newbooki
 #     'email': 'help@gmail.com',
 #     'fid': 'SQ 123',
 #     'seatcol': 'A',
-#     'seatnum': 1
+#     'seatnum': 2
 # }
 
-@app.route("/make_booking", methods=['POST'])
+@app.route("/make_booking", methods=['PUT', 'GET', 'POST'])
 def place_order():
     # Simple check of input format and data of the request are JSON
     #SCENARIO 1: Receive booking request
-    if request.is_json:
+        
+    # if request.is_json: -- uncomment after testing
         try:
-            booking = request.get_json()
-            print("\nReceived a booking request in JSON:", booking)
+            # booking = request.get_json()
+            # print("\nReceived a booking request in JSON:", booking)
+            
+            ###### FOR TESTING ######
+            try_booking = {
+                'email': 'help@gmail.com',
+                'fid': 'SQ 123',
+                'seatcol': 'A',
+                'seatnum': 2
+            }
 
+            print("start invoking")
             # do the actual work
             # 1. Send booking info
-            result = processBookingRequest(booking)
+            result = processBookingRequest(try_booking)
             print('\n------------------------')
             print('\nresult: ', result)
             return jsonify(result), result["code"]
@@ -82,18 +94,20 @@ def place_order():
             }), 500
 
     # if reached here, not a JSON request.
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    # return jsonify({ -- uncomment after testing
+    #     "code": 400,
+    #     "message": "Invalid JSON input: " + str(request.get_data())
+    # }), 400
 
 
 def processBookingRequest(booking):
     # 2-3. Get flight price
     # Invoke the flight microservice
     print('\n-----Invoking flight microservice-----')
-    price = invoke_http((flight_URL + booking.FID), method='GET')
-    print('flight price:', price['data'])
+    print(flight_URL + quote(booking['fid']))
+    price = invoke_http((flight_URL + quote(booking['fid'])), method='GET')
+    print(price)
+    print("-----")
 
     if price['code'] == 404:
         print('\n-----'+ price['message'] +'-----')
@@ -138,6 +152,9 @@ def processBookingRequest(booking):
     #         },
     #         "message": "Payment failed."
     #     }
+    # else:
+    #     # if payment fails update the seat back to available
+    #     update_seat = invoke_http(seatUpdate_URL, method='PUT', json=message)
 
     # 10. Send Notif AMQP
     email = {
@@ -166,6 +183,7 @@ def processBookingRequest(booking):
         'seatcol': booking['seatcol'],
         'seatnum': booking['seatnum']
     }
+
 
     print('\n-----Invoking bookings microservice-----')
     new_booking = invoke_http(newBooking_URL, method='POST', json=combined)

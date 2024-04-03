@@ -129,6 +129,8 @@ services:
       rabbit_port: 5672
       flight_URL: http://flight:5000/flight/price/ 
       seatReserve_URL: http://seat:5000/reserveseat
+      seatUpdate_URL: http://seat:5000/updateseat
+      newBooking_URL: http://bookings:5000/newbooking
       # seat_exchangename: seat_topic
       # booking_exchangename: booking_topic
       # notif_exchangename: notif_topic
@@ -136,6 +138,8 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5100:5100"
+    networks:
+      - my-network
 
 
 # Payment/Paypal access API Microservice
