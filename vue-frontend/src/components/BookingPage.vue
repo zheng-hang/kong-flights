@@ -49,15 +49,15 @@ export default {
         // FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime,Duration,Price,DepAirportCode,ArrAirportCode
         bookingData: {
             FID: "SQ 123",
-            Date: "2024-03-15",
+            Date: "2024-04-15",
             DepartureTime: "10:30:00",
             DepartureLoc: "Singapore",
-            ArrivalTime: "28 Mar (Thu)",
-            ArrivalLoc: "Tokyo",
+            ArrivalTime: "28 April (Thu)",
+            ArrivalLoc: "Berlin",
             Price: "1100",
             Duration: "1000"
         },
-        arrivalTime: "17:10:00"
+        arrivalTime: "15:05:00"
     }
   }
 }

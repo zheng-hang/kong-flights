@@ -89,9 +89,35 @@ onMounted(() => {
     <!-- Display Matched Flights -->
      <!-- <div v-for="(flight, i) in availableFlights.data.flights" :key="i"> -->
         <div id="displayBox" style="padding-right: 25px; padding-left: 25px; padding-top: 20px; height:200px; margin-top:10px">
-            <AvailableFlights :departDate="departDate" :departLoc="departLoc" :departTime="departTime"
-                                :arrDate="arrDate" :arrLoc="arrLoc" 
-                                :arrTime="arrTime" :fare="fare" :flightDuration="flightDuration"/>
+            <div class="row">
+        <div class="col">
+            <div class="row">
+                <p>Non-stop - {{flightDuration}}</p>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <h3>{{departTime}}</h3>
+                        <p>{{departLoc}}</p>
+                        <p>{{departDate}}</p>
+                </div>
+                <div class="col" >
+                    <p style="font-size: 60px;">------------------</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>{{arrTime}}</h3>
+                    <p>{{arrLoc}}</p>
+                    <p>{{arrDate}}</p>
+                </div>
+            </div>
+        </div>
+                
+        <div class="col-md-2" style="border-left: 0.5px solid black; text-align: center;">
+            <p style="color: grey;">From SGD</p>
+                <h4>{{fare}}</h4>
+                <p style="color: grey;">per ticket</p>
+                <button type="button" class="button btn btn-outline-dark rounded-pill" style="width: 150px;" @click="bookingPage()"><span>Select</span></button>
+            </div>
+        </div>
         </div>
     <!-- </div>  -->
 </template>
@@ -99,24 +125,29 @@ onMounted(() => {
 <script>
 export default {
     // components: {AvailableFlights}, 
-    props: ['formData'],
+    // props: ['formData'],
     data() {
         return {
-                departDate: "",
+                departDate: "15 April 2024",
                 departLoc: "Singapore",
                 arrLoc: "Berlin",
-                departTime: "SIN ",
-                arrDate: "",
-                arrTime: "",
-                fare: "",
-                flightDuration: "",
+                departTime: "10:30:00",
+                arrDate: "15 April 2024",
+                arrTime: "15:05:00",
+                fare: "SGD 1100",
+                flightDuration: "14 hrs 35 min",
                 // availableFlights: '',
                 receivedData: ''
             }
         },
-    mounted() {
-    // Access form data passed from the previous page
-        this.receivedData = this.$route.params.data;
+    // mounted() {
+    // // Access form data passed from the previous page
+    //     this.receivedData = this.$route.params.data;
+    // },
+    methods:{
+        bookingPage(){
+            this.$router.push({ name: 'booking' });
+            }
     }
 }
 
