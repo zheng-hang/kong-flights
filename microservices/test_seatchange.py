@@ -15,8 +15,8 @@ app = Flask(__name__)
 CORS(app)
 
 
-seatReserve_URL = environ.get("seatReserve_URL") or "http://localhost:5000/reserveseat"
-seatUpdate_URL = environ.get("seatUpdate_URL") or "http://localhost:5000/updateseat"
+seatReserve_URL = environ.get("seatReserve_URL") or "http://seat:5000/reserveseat"
+seatUpdate_URL = environ.get("seatUpdate_URL") or "http://seat:5000/updateseat"
 passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
 # payment_url =
 
