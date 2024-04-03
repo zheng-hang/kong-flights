@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
-import os
+# from dotenv import load_dotenv
+# import os
 # import threading
 # from flask import Flask, request, jsonify
 # from flask_sqlalchemy import SQLAlchemy
@@ -25,10 +25,10 @@ notif_queue_name = "Notif"
 
 # CORS(app)
 
-# Set env path
-dotenv_path = 'vue-frontend/.env'
-# Load environment variables from .env file
-load_dotenv(dotenv_path)
+# # Set env path
+# dotenv_path = 'vue-frontend/.env'
+# # Load environment variables from .env file
+# load_dotenv(dotenv_path)
 
 # Email detailsS
 # Email details
@@ -53,15 +53,16 @@ def receivePaymentUpdate(channel):
 # Run function based on the message
 def callback(channel, method, properties, body): # required signature for the callback; no return
     msg = json.loads(body)
+    print(msg)
     print("\nflights: Received an update by " + msg["source"])
     if msg["source"] == "payment": 
-        createPaymentEmail(json.loads(body))  
+        createPaymentEmail(msg)  
     # elif __file__ == "booking.py":
     elif msg["source"] == "bookings":
         # booking confirmation info
-        createBookingEmail(json.loads(body))
+        createBookingEmail(msg)
     elif msg["source"] == "seatchange":
-        createSeatChangeEmail(json.loads(body))
+        createSeatChangeEmail(msg)
     # DELETE IF APPLICABLE
     # else:
     #     createPaymentEmail(json.loads(body))
@@ -114,7 +115,7 @@ def sendEmail(email_receiver,subject,body):
 # To send successful Payment Email 
 def createPaymentEmail(msg):
     # get from booking microservice (from passengers.sql)
-    email_receiver = msg.email 
+    email_receiver = msg['email']
     
     subject = "Payment Successful"
     body = """
@@ -137,7 +138,7 @@ def createPaymentEmail(msg):
 # To send successful Booking Email 
 def createBookingEmail(msg):
     # get from booking microservice (from passengers.sql)
-    email_receiver = msg.email 
+    email_receiver = msg['email']
     
     subject = "Booking Successful"
     body = f"""
@@ -145,10 +146,10 @@ def createBookingEmail(msg):
 
     Thank you for choosing SMOOth Airlines as the carrier for your trip! Your booking has been confirmed with the following details:
 
-    Booking ID: {msg.bid}
-    Passenger ID: {msg.pid}
-    Flight: {msg.fid}
-    Seat: {msg.seatcol}{msg.seatnum}
+    Booking ID: {msg['bid']}
+    Passenger Email: {msg['email']}
+    Flight: {msg['fid']}
+    Seat: {msg['seatcol']}{msg['seatnum']}
 
     We look forward to serving you on your flight with us!
 
@@ -163,7 +164,7 @@ def createBookingEmail(msg):
 # NEED TO CHANGE BODY MESSAGE TO INCLUDE/EXCLUDE OLD SEAT
 def createSeatChangeEmail(msg):
     # get from booking microservice (from passengers.sql)
-    email_receiver = msg.email 
+    email_receiver = msg['email']
     
     subject = "Flight Seat Change Successful"
     body = f"""
@@ -171,7 +172,7 @@ def createSeatChangeEmail(msg):
 
     We are pleased to inform you that your seat has been changed. Your flight details are as follows:
 
-    OldSeat-> {msg.seatcol}{msg.seatnum} 
+    NewSeat-> {msg['seatcol']}{msg['seatnum']} 
 
     Once again, thank you for choosing SMOOth Airlines, we look forward to serving you on your flight!
 

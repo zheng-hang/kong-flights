@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS flights (
     Date DATE NOT NULL,
     DepartureTime TIME,
     Duration INT,
-    Price DOUBLE,
+    Price FLOAT,
     DepAirportCode VARCHAR(3),
     ArrAirportCode VARCHAR(3),
     PRIMARY KEY (fid,Date)

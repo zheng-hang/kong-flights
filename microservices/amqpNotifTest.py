@@ -33,13 +33,6 @@ channel = connection.channel()
 #     "seatnum": 1
 # }
 
-createBooking = {
-                    "pid": 1,
-                    "fid": "SQ 123",
-                    "seatcol": "A",
-                    "seatnum": 1,
-                    "email": "bckf2000@gmail.com",
-                }
 
 ## FORMAT FOR BODY - Update Seat    ##
 ## Routing Key: #.booking           ##
@@ -49,30 +42,66 @@ createBooking = {
 #     "seatnum": 1
 # }
 
-seatupdate = {
-                "email": "bckf2000@gmail.com",
+
+createBooking = {
+                "email": "warkionw12@gmail.com",
+                "fid": "FR 123",
+                "bid": 5,
+                "seatcol": "A",
+                "seatnum": 1
+            }
+
+seatchange = {
+                "email": "warkionw12@gmail.com",
                 "bid": 3,
                 "seatcol": "A",
                 "seatnum": 1
             }
 
+payment = {
+                "email": "warkionw12@gmail.com",
+            }
+
 @app.route("/testamqp/bookings")
 def amqptest_booking():
-    print('\n\n-----Publishing the (bookingcreation) message with routing_key=bookingupdate.notif-----')
+    print('\n\n-----Publishing the (bookingcreation) message with routing_key=bookingcreation.notif-----')
 
     # Ensuring message structure aligns with what the receiver expects
-    message = json.dumps(createBooking)  # seatupdate already has 'seatnum' as per the receiver's expectation
+    message = createBooking  # seatupdate already has 'seatnum' as per the receiver's expectation
     message["source"] = "bookings"
     # Publishing the message to the AMQP exchange with the correct routing key
     channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
 
     print("\nBooking creation request published to the RabbitMQ Exchange:", createBooking)
+
+
+    print('\n\n-----Publishing the (seatchange) message with routing_key=seatchange.notif-----')
+
+    # Ensuring message structure aligns with what the receiver expects
+    message = seatchange  # seatupdate already has 'seatnum' as per the receiver's expectation
+    message["source"] = "seatchange"
+    # Publishing the message to the AMQP exchange with the correct routing key
+    channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+        body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    print("\nSeat change request published to the RabbitMQ Exchange:", createBooking)
+
+    print('\n\n-----Publishing the (payment) message with routing_key=payment.notif-----')
+
+    # Ensuring message structure aligns with what the receiver expects
+    message = payment  # seatupdate already has 'seatnum' as per the receiver's expectation
+    message["source"] = "payment"
+    # Publishing the message to the AMQP exchange with the correct routing key
+    channel.basic_publish(exchange=exchangename, routing_key="payment.notif", 
+        body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    print("\nPayment request published to the RabbitMQ Exchange:", createBooking)
 
     # Returning a more relevant response
     return jsonify({
         "code": 200,  # Assuming successful publication, setting a success status code
-        "data": {"seatupdate": seatupdate, "createBooking": createBooking},
+        "data": {"seatupdate": seatchange, "createBooking": createBooking},
         "message": "Seat update and create booking request successfully published."
     })
     

@@ -81,7 +81,7 @@ def processSeatChange(seat):
     # remove 'bid' from the copy
     seat_copy.pop('bid', None)
 
-    print("invote_http for reserve_seat")
+    print("invoke_http for reserve_seat")
     print(seat_copy)
     reserve_seat = invoke_http(seatReserve_URL, method='PUT', json=seat_copy)
     print("Seat reserved" + str(reserve_seat))
@@ -108,7 +108,7 @@ def processSeatChange(seat):
         #         "code": 500,
         #         "data": "Payment failed"
         #     }
-        print("--------getting pid-------")
+        print("--------getting bid-------")
         person_bid = seat['bid']
   
         print("person_bid:", str(person_bid))
@@ -121,17 +121,29 @@ def processSeatChange(seat):
 
         #SCENARIO 9: send to notification (NOT DONE) AMQP
 
+# seatchange = {
+#                 "email": "warkionw12@gmail.com",
+#                 "bid": 3,
+#                 "seatcol": "A",
+#                 "seatnum": 1
+#             }
+
         print("original:",original_seat)
         print("email:",original_seat['email'])
         original_seat['email'] = "warkionw12@gmail.com"
         original_seat['source'] = "payment"
         print("updated:",original_seat)
 
+        print('\n\n-----Publishing the (seatchange) message with routing_key=seatchange.notif-----')
 
-        channel.basic_publish(exchange=exchangename_notification, routing_key="seatchange.notif", 
-            body=json.dumps(original_seat), properties=pika.BasicProperties(delivery_mode = 2))
-        
-        print("\n Notification to the RabbitMQ Exchange:", seat)
+        # Ensuring message structure aligns with what the receiver expects
+        message = original_seat  # seatupdate already has 'seatnum' as per the receiver's expectation
+        message["source"] = "seatchange"
+        # Publishing the message to the AMQP exchange with the correct routing key
+        channel.basic_publish(exchange=exchangename_notification, routing_key="bookingupdate.notif", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+
+        print("\nSeat change request published to the RabbitMQ Exchange:", original_seat)
 
         #SCENARIO 10: update passenger bookings
         # this case is seat change so bid in message 

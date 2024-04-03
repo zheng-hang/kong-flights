@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
-
+#booking
 db = SQLAlchemy(app)
 
 CORS(app)
@@ -35,7 +35,7 @@ class Bookings(db.Model):
         self.seatnum = seatnum
 
     def json(self):
-        return {"bid": self.bid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
+        return {"bid": self.bid, "email": self.email, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
 
 
 
@@ -65,6 +65,12 @@ def processCreationReq():
     try:
         db.session.add(booking)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 201,
+                "data": booking.json()
+            }), 201
+    
     except Exception as e:
         return jsonify(
             {
@@ -77,15 +83,15 @@ def processCreationReq():
     message['source'] = "bookings"
     print(message)
 
-    channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
-    return jsonify(
-        {
-            "code": 201,
-            "data": booking.json()
-        }
-    ), 201
+    # return jsonify(
+    #     {
+    #         "code": 201,
+    #         "data": booking.json()
+    #     }
+    # ), 201
 
 
 

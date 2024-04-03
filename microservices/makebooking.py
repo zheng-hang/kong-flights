@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from urllib.parse import quote
 
 import os, sys
 from os import environ
@@ -16,16 +17,17 @@ CORS(app)
 
 
 flight_URL = environ.get('flight_URL') or "http://flight:5000/flight/price/" 
-seatReserve_URL = environ.get("seatReserve_URL") or "http://localhost:5000/reserveseat"
+seatReserve_URL = environ.get("seatReserve_URL") or "http://seat:5000/reserveseat"
+seatUpdate_URL = environ.get("seatUpdate_URL") or "http://seat:5000/updateseat"
 newBooking_URL = environ.get("newBooking_URL") or "http://bookings:5000/newbooking"
-# payment_URL = environ.get('payment_URL')
-
+payment_URL = environ.get('payment_URL') or "http://payment:5000/"
 
 # seat_exchangename = environ.get('seat_exchangename') or "seat_topic" # seat exchange name
 # booking_exchangename = environ.get('booking_exchangename') or "booking_topic" #booking exchange name
 # notif_exchangename = environ.get('notif_exchangename') or 'notif_topic'
 # exchangetype="topic" # use a 'topic' exchange to enable interaction
 
+email_to_booking = {}
 # Instead of hardcoding the values, we can also get them from the environ as shown below
 # exchangename = environ.get('exchangename') #order_topic
 # exchangetype = environ.get('exchangetype') #topic 
@@ -50,21 +52,31 @@ newBooking_URL = environ.get("newBooking_URL") or "http://bookings:5000/newbooki
 #     'email': 'help@gmail.com',
 #     'fid': 'SQ 123',
 #     'seatcol': 'A',
-#     'seatnum': 1
+#     'seatnum': 2
 # }
 
-@app.route("/make_booking", methods=['POST'])
+@app.route("/make_booking", methods=['PUT', 'GET', 'POST'])
 def place_order():
     # Simple check of input format and data of the request are JSON
     #SCENARIO 1: Receive booking request
-    if request.is_json:
+        
+    # if request.is_json: -- uncomment after testing
         try:
-            booking = request.get_json()
-            print("\nReceived a booking request in JSON:", booking)
+            # booking = request.get_json()
+            # print("\nReceived a booking request in JSON:", booking)
+            
+            ###### FOR TESTING ######
+            try_booking = {
+                'email': 'help@gmail.com',
+                'fid': 'SQ 123',
+                'seatcol': 'A',
+                'seatnum': 2
+            }
 
+            print("start invoking")
             # do the actual work
             # 1. Send booking info
-            result = processBookingRequest(booking)
+            result = processBookingRequest(try_booking)
             print('\n------------------------')
             print('\nresult: ', result)
             return jsonify(result), result["code"]
@@ -82,18 +94,20 @@ def place_order():
             }), 500
 
     # if reached here, not a JSON request.
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    # return jsonify({ -- uncomment after testing
+    #     "code": 400,
+    #     "message": "Invalid JSON input: " + str(request.get_data())
+    # }), 400
 
 
 def processBookingRequest(booking):
     # 2-3. Get flight price
     # Invoke the flight microservice
     print('\n-----Invoking flight microservice-----')
-    price = invoke_http((flight_URL + booking.FID), method='GET')
-    print('flight price:', price['data'])
+    print(flight_URL + quote(booking['fid']))
+    price = invoke_http((flight_URL + quote(booking['fid'])), method='GET')
+    print(price)
+    print("-----")
 
     if price['code'] == 404:
         print('\n-----'+ price['message'] +'-----')
@@ -127,6 +141,11 @@ def processBookingRequest(booking):
         }
     
     # 6-9. Call payment svc
+    print('\n-----Call payment service-----')
+    checkout_url = payment_URL + "/endpoint"
+    obj = {"email": booking["email"], "price": price["price"]}
+    payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
+    print('payment_result:', payment_result)
     # print('\n-----Call payment service-----')
     # payment_result = invoke_http(payment_URL, method='POST', json=price)
     # print('payment_result:', payment_result)
@@ -138,6 +157,9 @@ def processBookingRequest(booking):
     #         },
     #         "message": "Payment failed."
     #     }
+    # else:
+    #     # if payment fails update the seat back to available
+    #     update_seat = invoke_http(seatUpdate_URL, method='PUT', json=message)
 
     # 10. Send Notif AMQP
     email = {
@@ -167,6 +189,7 @@ def processBookingRequest(booking):
         'seatnum': booking['seatnum']
     }
 
+
     print('\n-----Invoking bookings microservice-----')
     new_booking = invoke_http(newBooking_URL, method='POST', json=combined)
     print('new_booking:', new_booking)
@@ -192,7 +215,60 @@ def processBookingRequest(booking):
         "message": "Check email for flight details."
     }
 
+@app.route("/webhook", methods=['POST'])
+def handle_webhook():
+    if not request.is_json:
+        return {
+            "code": 400,
+            "message": "Invalid JSON"
+        }
+    
+    headers = dict(request.headers)
+    body = request.get_data(as_text=True)
 
+    response = invoke_http((payment_URL + "/webhook"), method='POST', json=body, headers=headers)
+    if response['code'] != 200:
+        return {
+            "code": 400,
+            "message": "Error in payment service"
+        }
+    
+    if "email" not in response:
+        return {
+            "code": 400,
+            "message": "No email in response"
+        }
+
+    email = response["email"]
+    return jsonify(email=email)
+
+
+    # message = {
+    #     'email': email,
+    # }
+
+    # print('\n\n-----Publishing the (notif) message with routing_key=paymentupdate.notif-----')
+
+    # channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    # print("\nNotif request published to the RabbitMQ Exchange:", message)
+
+
+    # # 6. Send booking creation req
+    # print('\n\n-----Publishing the (booking creation) message with routing_key=paymentupdate.notif-----')
+
+    # channel.basic_publish(exchange=notif_exchangename, routing_key="paymentupdate.notif", 
+    #     body=email_to_booking[email], properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    # print("\nBooking creation request published to the RabbitMQ Exchange:", email_to_booking[email])
+
+    # del email_to_booking[email]
+
+    # return jsonify({
+    #             'code': 200,
+    #             'message': "Payment successful, booking creation sent"
+    #         })
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
