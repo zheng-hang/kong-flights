@@ -18,7 +18,7 @@ CORS(app)
 seatReserve_URL = environ.get("seat_URL") or "http://localhost:5000/reserveseat"
 seatUpdate_URL = environ.get("seat_URL") or "http://localhost:5000/updateseat"
 passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
-# payment_url = "environ.get('payment_URL')"
+payment_url = "environ.get('payment_URL')"
 # notification_url = environ.get("notification_URL") 
 
 
@@ -93,9 +93,23 @@ def processSeatChange(seat):
         }
     else:
 
+        print("--------getting pid-------")
+        person_bid = seat['bid']
+  
+        print("person_bid:", str(person_bid))
+
+        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
+        original_seat = original_seat.json()['data']
+        original_seat.pop('bid', None)
+        print("-----------------")
+
         # UNCOMMENT ONCE PAYMENT IS DONE
         #SCENARIO 3-7: send payment requests to payment system (NOT DONE)
-        #
+        print('\n-----Call payment service-----')
+        checkout_url = payment_url + "/endpoint"
+        obj = {"email": original_seat["email"], "price": 12}
+        payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
+        print('payment_result:', payment_result)
         # price_result = invoke_http(payment_url, method='POST', json=seat)
         # print("Payment request sent to payment system")
         # if price_result['code'] not in range(200, 300):
@@ -107,15 +121,6 @@ def processSeatChange(seat):
         #         "code": 500,
         #         "data": "Payment failed"
         #     }
-        print("--------getting pid-------")
-        person_bid = seat['bid']
-  
-        print("person_bid:", str(person_bid))
-
-        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
-        original_seat = original_seat.json()['data']
-        original_seat.pop('bid', None)
-        print("-----------------")
 
 
         #SCENARIO 9: send to notification (NOT DONE) AMQP

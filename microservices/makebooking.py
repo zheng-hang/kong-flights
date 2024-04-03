@@ -60,7 +60,7 @@ def place_order():
     # Simple check of input format and data of the request are JSON
     #SCENARIO 1: Receive booking request
         
-    # if request.is_json: -- uncomment after testing
+    # if request.is_json: -- uncomment after testing*
         try:
             # booking = request.get_json()
             # print("\nReceived a booking request in JSON:", booking)
@@ -94,7 +94,7 @@ def place_order():
             }), 500
 
     # if reached here, not a JSON request.
-    # return jsonify({ -- uncomment after testing
+    # return jsonify({ -- uncomment after testing*
     #     "code": 400,
     #     "message": "Invalid JSON input: " + str(request.get_data())
     # }), 400
