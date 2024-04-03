@@ -52,12 +52,12 @@ export default {
             Date: "2024-04-15",
             DepartureTime: "10:30:00",
             DepartureLoc: "Singapore",
-            ArrivalTime: "28 April (Thu)",
+            ArrivalTime: "15:05:00",
             ArrivalLoc: "Berlin",
             Price: "1100",
             Duration: "1000"
         },
-        arrivalTime: "15:05:00"
+        // arrivalTime: "15:05:00"
     }
   }
 }
