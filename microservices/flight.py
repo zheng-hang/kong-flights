@@ -1,13 +1,8 @@
-import threading
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from os import environ
+from os import environ, path
 from flask_cors import CORS
 from datetime import datetime
-
-import amqp_connection
-import json
-import pika
 
 flight_queue_name = environ.get('flight_queue_name') or 'FlightInsert'
 
@@ -19,6 +14,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 db = SQLAlchemy(app)
 
 CORS(app)
+
 
 class Flight(db.Model):
     __tablename__ = 'flights'
@@ -64,6 +60,28 @@ class Flight(db.Model):
         return {"Price": self.Price}
 
 
+with app.app_context():
+    # Reflect the tables and print their column names
+    meta = db.metadata
+    meta.reflect(bind=db.engine)
+
+    for table in meta.sorted_tables:
+        print(f"Table: {table.name}")
+        for column in table.columns:
+            print(f" - {column.name}")
+
+
+with app.app_context():
+    # Reflect the tables and print their column names
+    meta = db.metadata
+    meta.reflect(bind=db.engine)
+
+    for table in meta.sorted_tables:
+        print(f"Table: {table.name}")
+        for column in table.columns:
+            print(f" - {column.name}")
+
+
 
 @app.route("/flight", methods=['GET'])
 def get_all_flights():
@@ -73,7 +91,7 @@ def get_all_flights():
             {
                 "code": 200,
                 "data": {
-                    "flights": [(flight.json()) for flight in flightlist]
+                    "flights": [(flight.json()) for flight in flightlist],
                 }
             }
         )
@@ -127,7 +145,7 @@ def searchflights():
     ), 404
 
 # Get specific flight price by FID
-@app.route("/flight/<string:FID>/Price")
+@app.route("/flight/price/<string:FID>")
 def get_price_by_FID(FID):
     flight = db.session.scalars(db.select(Flight).filter_by(FID=FID).limit(1)).first()
     if flight:
@@ -270,66 +288,79 @@ def processInsert(new):
                 "message": "Expected a list of flight records."
             }), 400
 
-        required_keys = ['FID', 'Airline', 'DepartureLoc', 'ArrivalLoc', 'Date', 'DepartureTime', 'Duration', 'Price']
+    for flight_info in flights:
+        print(flight_info)
+        print(all(key in flight_info for key in required_keys))
+        if not all(key in flight_info for key in required_keys):
+            return jsonify({
+                "code": 400,
+                "message": "Missing or incorrect keys in a flight record."
+            }), 400
 
-        for flight_info in new:
-            if not all(key in flight_info for key in required_keys):
-                return jsonify({
-                    "code": 400,
-                    "message": "Missing or incorrect keys in a flight record."
-                }), 400
+        flight = Flight(
+            FID=flight_info['FID'],
+            Airline=flight_info['Airline'],
+            DepartureLoc=flight_info['DepartureLoc'],
+            ArrivalLoc=flight_info['ArrivalLoc'],
+            Date=flight_info['Date'],
+            DepartureTime=flight_info['DepartureTime'],
+            Duration=flight_info['Duration'],
+            Price=flight_info['Price'],
+            DepAirportCode=flight_info['DepAirportCode'],
+            ArrAirportCode=flight_info['ArrAirportCode']
+        )
 
-            flight = Flight(
-                FID=flight_info['FID'],
-                Airline=flight_info['Airline'],
-                DepartureLoc=flight_info['DepartureLoc'],
-                ArrivalLoc=flight_info['ArrivalLoc'],
-                Date=flight_info['Date'],
-                DepartureTime=flight_info['DepartureTime'],
-                Duration=flight_info['Duration'],
-                Price=flight_info['Price']
-            )
+        db.session.add(flight)
 
-            db.session.add(flight)
-
-        try:
-            db.session.commit()
-            print("Flights: Recorded the creation in the database")
-            return jsonify({"code": 200, "message": "Successfully inserted all flight records."}), 200
-        except Exception as e:
-            db.session.rollback()
-            print(f"An error occurred: {e}")
-            return jsonify({"code": 500, "message": "Internal server error"}), 500
-
-
-
-## LAUNCHING FLASK CONNECTION AND AMQP CHANNEL ##
-
-def start_flask():
     try:
-        app.run(host='0.0.0.0', port=5000)
-    finally:
-        print("Flask thread exiting")
+        db.session.commit()
+        print("Flights: Recorded the creation in the database")
+        return jsonify({
+                        "code": 200, 
+                        "message": "Successfully inserted all flight records.",
+                        "data": request.json
+                        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        print(f"An error occurred: {e}")
+        return jsonify({
+                        "code": 500, 
+                        "message": "Internal server error"
+                        }), 500
 
-def start_amqp():
+
+# Get all unique serviced locations, both departure and arrival
+@app.route("/getservicedlocs")
+def servicedlocs():
     try:
-        print("flights: Getting Connection")
-        connection = amqp_connection.create_connection()  # get the connection to the broker
-        print("flights: Connection established successfully")
-        channel = connection.channel()
-        receiveLog(channel)
-    finally:
-        print("AMQP thread exiting")
+        unique_locations = db.session.query(
+            Flight.DepartureLoc, Flight.ArrivalLoc
+        ).distinct().all()
+
+        # Extract unique locations and convert them to strings
+        locations_set = set()
+        for loc in unique_locations:
+            locations_set.add(loc.DepartureLoc)
+            locations_set.add(loc.ArrivalLoc)
+        unique_locations_list = list(locations_set)
+
+        # Sort the unique locations alphabetically
+        unique_locations_list.sort()
+
+        return jsonify({
+            'code': 200,
+            'data': unique_locations_list
+        })
+    except Exception as e:
+        return jsonify({
+            'code': 500,
+            'data': str(e)
+        })
+
+
+
 
 if __name__ == "__main__":
-    flask_thread = threading.Thread(target=start_flask)
-    amqp_thread = threading.Thread(target=start_amqp)
-
-    flask_thread.start()
-    amqp_thread.start()
-    
-    try:
-        flask_thread.join()
-        amqp_thread.join()
-    except KeyboardInterrupt:
-        print("Keyboard interrupt received, exiting threads")
+    print("This is flask for " + path.basename(__file__) + ": manage flights ...")
+    app.run(host='0.0.0.0', port=5000, debug=True)

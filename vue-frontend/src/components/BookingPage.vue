@@ -25,12 +25,17 @@ import PassengerDetail from './PassengerDetail.vue'
         <h3>Passenger details</h3>
     </div>
 
-    <form action="">
+    <form action="/seatsbooking">
 
     <!-- Passenger Details -->
 
     <!--<PassengerDetail v-for="num in numPax" :key="bookData.numPax.adults"/> -->
     <PassengerDetail/>
+
+    <div class="d-flex justify-content-end mt-3">
+        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection">
+    </div>
+
     </form>
 
 
@@ -41,20 +46,18 @@ import PassengerDetail from './PassengerDetail.vue'
 export default {
   data() {
     return {
+        // FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime,Duration,Price,DepAirportCode,ArrAirportCode
         bookingData: {
-            numPax: {
-                adults: 2,
-                children: 0
-            },
-        departDate: "28 Mar (Thu)",
-        departTime: "SIN 08:05",
-        departLoc: "Singapore",
-        arrDate: "28 Mar (Thu)",
-        arrTime: "NRT 15:45",
-        arrLoc: "Tokyo",
-        fare: "SGD 2,883.90",
-        flightDuration: "6 hr 40 min"
-        }
+            FID: "SQ 123",
+            Date: "2024-03-15",
+            DepartureTime: "10:30:00",
+            DepartureLoc: "Singapore",
+            ArrivalTime: "28 Mar (Thu)",
+            ArrivalLoc: "Tokyo",
+            Price: "1100",
+            Duration: "1000"
+        },
+        arrivalTime: "17:10:00"
     }
   }
 }

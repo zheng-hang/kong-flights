@@ -6,25 +6,24 @@
         <div class="row">
             <div class="col-2 ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Departing</h6>
-                <h6 class="fw-bold">{{ bookingData.departDate }}</h6>
-                <h4 class="blue fw-bold">{{ bookingData.departTime }}</h4>
-                <h6 class="fw-bold">{{ bookingData.departLoc }}</h6>
+                <h6 class="fw-bold">{{ formatDate(bookingData.Date) }}</h6>
+                <h4 class="blue fw-bold">{{ bookingData.DepartureTime }}</h4>
+                <h6 class="fw-bold">{{ bookingData.DepartureLoc }}</h6>
             </div>
-            <div class="col-2 pt-4 my-auto">
+            <div class="col-1 pt-4 me-5 my-auto">
                 <i class="fa fa-plane fa-2x d-flex justify-content-center"></i>
-                <h6 class="text-secondary d-flex justify-content-center">{{ bookingData.flightDuration }}</h6>
+                <h6 class="text-secondary d-flex justify-content-center">{{ formatDuration(bookingData.Duration) }}</h6>
             </div>
             <div class="col-2 ms-5 ps-4 text-start">
-                <h6 class="text-secondary">Departing</h6>
-                <h6 class="fw-bold">{{ bookingData.arrDate }}</h6>
-                <h4 class="blue fw-bold">{{ bookingData.arrTime }}</h4>
-                <h6 class="fw-bold">{{ bookingData.arrLoc }}</h6>
+                <h6 class="text-secondary">Arrival</h6>
+                <h6 class="fw-bold">{{ formatDate(bookingData.Date) }}</h6>
+                <h4 class="blue fw-bold">{{ this.arrivalTime }}</h4>
+                <h6 class="fw-bold">{{ bookingData.ArrivalLoc }}</h6>
             </div>
             <div class="col ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Total Fare</h6>
-                <span class="h6 fw-bold">{{ bookingData.numPax.adults }} Adults</span>
-                <span v-show="bookingData.numPax.children > 0" class="h6 fw-bold"> + {{ bookingData.numPax.children }} Children</span> 
-                <h4 class="blue fw-bold">SGD 2,883.90</h4>
+                <span class="h6 fw-bold">1 Adult</span>
+                <h4 class="blue fw-bold">SGD {{ bookingData.Price.toLocaleString()}}</h4>
                 <h6 class="fst-italic">Total fare includes discounts, taxes, and surcharges</h6>
             </div>
         </div>
@@ -37,8 +36,24 @@ export default {
         bookingData: {
             type: Object,
             required: true
+        },
+        arrivalTime: {
+            type: String,
+            required: true
         }
+    },
+    methods: {
+        formatDate(dateInput) { 
+            const dateObject = new Date(dateInput); 
+            const options = { month: 'short', day: 'numeric', year: 'numeric', weekday: 'short' }; 
+            return dateObject.toLocaleDateString('en-US', options); 
+        },
+        formatDuration(duration) {
+            return Math.floor(duration/60) + " hr " + duration%60 + " min";
+        }
+
     }
+
 }
 </script>
 
