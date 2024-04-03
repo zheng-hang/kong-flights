@@ -28,7 +28,7 @@ const routes = [
   
   },
   {
-    path: '/SearchFlights',
+    path: '/searchFlights',
     name: 'SearchFlights',
     component: SearchFlights
   
