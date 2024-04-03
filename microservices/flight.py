@@ -219,7 +219,7 @@ def insert_flights():
 
 
 # Get all unique serviced locations, both departure and arrival
-@app.route("/getservicedlocs")
+@app.route("/getservicedlocs", methods=['GET'])
 def servicedlocs():
     try:
         unique_locations = db.session.query(
@@ -331,32 +331,32 @@ def processInsert(new):
 
 
 # Get all unique serviced locations, both departure and arrival
-@app.route("/getservicedlocs")
-def servicedlocs():
-    try:
-        unique_locations = db.session.query(
-            Flight.DepartureLoc, Flight.ArrivalLoc
-        ).distinct().all()
+# @app.route("/getservicedlocs")
+# def servicedlocs():
+#     try:
+#         unique_locations = db.session.query(
+#             Flight.DepartureLoc, Flight.ArrivalLoc
+#         ).distinct().all()
 
-        # Extract unique locations and convert them to strings
-        locations_set = set()
-        for loc in unique_locations:
-            locations_set.add(loc.DepartureLoc)
-            locations_set.add(loc.ArrivalLoc)
-        unique_locations_list = list(locations_set)
+#         # Extract unique locations and convert them to strings
+#         locations_set = set()
+#         for loc in unique_locations:
+#             locations_set.add(loc.DepartureLoc)
+#             locations_set.add(loc.ArrivalLoc)
+#         unique_locations_list = list(locations_set)
 
-        # Sort the unique locations alphabetically
-        unique_locations_list.sort()
+#         # Sort the unique locations alphabetically
+#         unique_locations_list.sort()
 
-        return jsonify({
-            'code': 200,
-            'data': unique_locations_list
-        })
-    except Exception as e:
-        return jsonify({
-            'code': 500,
-            'data': str(e)
-        })
+#         return jsonify({
+#             'code': 200,
+#             'data': unique_locations_list
+#         })
+#     except Exception as e:
+#         return jsonify({
+#             'code': 500,
+#             'data': str(e)
+#         })
 
 
 

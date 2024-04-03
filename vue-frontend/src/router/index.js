@@ -6,8 +6,8 @@ import MyFlights from '../views/MyFlights.vue'
 import BookingView from '../views/BookingView.vue'
 // import FlightsResult from '@/components/FlightsResult.vue'
 import BookingSeatsView from '@/views/BookingSeatsView.vue'
-import FlightsResult from '@/components/FlightsResult.vue'
-import PaymentPage from '@/components/PaymentPage.vue'
+// import FlightsResult from '@/components/FlightsResult.vue'
+// import PaymentPage from '@/components/PaymentPage.vue'
 
 
 const routes = [

@@ -3,7 +3,6 @@
     <img alt="Vue logo" src="../assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div> -->
-  Read from microservice JSON results: {{ flights }}
   <div style="background-color: #FAFAFA;margin:0;padding:0;text-align: left;">
     <!-- Nav -->
     <!-- <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center;justify-content: space-between;">
@@ -39,43 +38,31 @@
         <h5>Hey there, where can we take you?</h5> <br/>
         <div class="row">
             <div class="col-4">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">From</span>
-                    </div>
-                    <!-- <input type="text" class="form-control" placeholder="Your current location" v-model="form.departLoc"> -->
-                    <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
-                        Select Current Location
-                      </button>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item" v-for="loc in locations" :key="loc.id" @click="this.selectedDepLoc = loc">{{ loc }}</a>
-                      </div>
-                    </div>
-                </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text">From</span>
+                <select class="form-select" style="width: 320px" v-model="selectedDepLoc">
+                  <option option value="" disabled selected>Select Departure Location</option>
+                  <!-- Loop through locations and generate options -->
+                  <option v-for="(location, index) in locations" :key="index" :value="location">{{ location }}</option>
+                </select>
+              </div>
             </div>
             <div class="col-4">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">To</span>
-                    </div>
-                    <!-- <input type="text" class="form-control" placeholder="Your Destination" v-model="form.arrLoc"> -->
-                    <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">
-                        Select Destination Location
-                      </button>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item" v-for="loc in locations" :key="loc.id" @click="this.selectedArrLoc = loc">{{ loc }}</a>
-                      </div>
-                    </div>
-                </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text">To</span>
+                <select class="form-select" style="width: 320px" v-model="selectedArrLoc">
+                  <option option value="" disabled selected>Select Arrival Location</option>
+                  <!-- Loop through locations and generate options -->
+                  <option v-for="(location, index) in locations" :key="index" :value="location">{{ location }}</option>
+                </select>
+              </div>
             </div>
             <div class="col-4">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Departure Date</span>
                     </div>
-                    <input class="form-control" type="date" id="departureDate" name="departureDate" v-model="form.departDate">
+                    <input class="form-control" type="date" id="departureDate" name="departureDate" v-model="departDate">
                 </div>
             </div>
         </div>
@@ -172,6 +159,7 @@
     }
 </style>
 <script>
+
 import axios from 'axios';
 export default {
   async mounted() {
@@ -188,16 +176,10 @@ export default {
   },
   data: function(){
     return {
-      flights: '',
       locations: [],
-      selectedDeoLoc: '',
-      selectedArrLoc: '', 
-      form: {
-        departLoc: '',
-        arrLoc: '',
-        departDate: ''
-      }
-      
+      selectedDepLoc: '',
+      selectedArrLoc: '',
+      departDate: ''
     }
   },
   created() {
@@ -224,26 +206,35 @@ export default {
       document.body.appendChild(script);
     },
     searchFlights() {
-      axios.get('http://localhost:5001/flight')
+      const dataToSend = {
+        DepartureLoc: this.selectedDepLoc, 
+        ArrivalLoc: this.selectedArrLoc, 
+        DepartureDate: this.departDate
+      };
+      console.log(dataToSend);
+
+      axios.post('http://localhost:5001/searchFlights', dataToSend)
         .then(response => {
           // Handle the response data here
-          this.flights = response.data; // flight data
+          alert('works!');
+          console.log(response.data);
         })
         .catch(error => {
           // Handle errors here
-          this.flights = error;
+          alert("ERROR");
+          console.log("DATA RESULTS: ", dataToSend)
           console.error('There was an error fetching flight data:', error);
       });
     },
     fetchLocations() {
       axios.get('http://localhost:5001/getservicedlocs')
         .then(response => {
-          this.locations = response.data;
+          this.locations = response.data.data;
         })
         .catch(error => {
           console.error('Error fetching items:', error);
         });
-    },
+    }
   }
 };
 </script>

@@ -39,8 +39,8 @@ class Bookings(db.Model):
 
 
 
-connection = amqp_connection.create_connection() 
-channel = connection.channel()
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
 
 
 ## FORMAT FOR BODY - CreateBooking    ##
