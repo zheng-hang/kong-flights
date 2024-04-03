@@ -25,19 +25,19 @@ payment_url = "environ.get('payment_URL')"
 
 # exchangename_booking = "booking_topic"
 # exchangename_seat_change =  "seat_change_topic"
-exchangename_notification = "Notif"
+# exchangename_notification = "Notif"
 # exchangename_payment = "" not done
 
-exchangetype="topic"
+# exchangetype="topic"
 
 #create a connection and a channel to the broker to publish messages to seat_, passengerbookigns, notifications and 
-connection = amqp_connection.create_connection() 
-channel = connection.channel()
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
 
-#if the exchange is not yet created, exit the program ()
-if not amqp_connection.check_exchange(channel, exchangename_notification, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# #if the exchange is not yet created, exit the program ()
+# if not amqp_connection.check_exchange(channel, exchangename_notification, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 # if not amqp_connection.check_exchange(channel, exchangename_booking, exchangetype):
 #     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
@@ -171,14 +171,40 @@ def processSeatChange(seat):
         # }
 
 # for retrieving the person's original bid
-def get_original_booking(person_bid):
-    response = requests.get(f"http://localhost:5000/booking/{person_bid}")
-    data = response.json()
-    if data['code'] == 200 and data['data']:
-        return data['data'][0]
-    return None
+# def get_original_booking(person_bid):
+#     response = requests.get(f"http://localhost:5000/booking/{person_bid}")
+#     data = response.json()
+#     if data['code'] == 200 and data['data']:
+#         return data['data'][0]
+#     return None
  
 
+@app.route("/webhook", methods=['POST'])
+def handle_webhook():
+    if not request.is_json:
+        return {
+            "code": 400,
+            "message": "Invalid JSON"
+        }
+    
+    headers = dict(request.headers)
+    body = request.get_data(as_text=True)
+
+    response = invoke_http((payment_url + "/webhook"), method='POST', json=body, headers=headers)
+    if response['code'] != 200:
+        return {
+            "code": 400,
+            "message": "Error in payment service"
+        }
+    
+    if "email" not in response:
+        return {
+            "code": 400,
+            "message": "No email in response"
+        }
+
+    email = response["email"]
+    return jsonify(email=email)
 
 
 if __name__ == "__main__":

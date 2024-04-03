@@ -138,11 +138,11 @@ def processUpdateReq():
             }
         ), 404
 
-    booking_updated = Bookings.query.filter_by(bid=bid).first()
-    message = json.dumps(booking_updated.json())
+    # booking_updated = Bookings.query.filter_by(bid=bid).first()
+    # message = json.dumps(booking_updated.json())
 
-    channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
 
 
