@@ -45,7 +45,7 @@
                         <tr>
                             <th class="d-flex justify-content-between" style="padding: 20px;padding-bottom:10px;">
                                 <h6 style="font-weight: bold">{{ flight.FID }} | {{ flight.DepartureLoc }} to {{ flight.ArrivalLoc }}</h6>
-                                <h6 style="font-weight: bold">Economy | <a href="#" style="color:black"><i class="fas fa-edit"></i> Change Seat</a></h6>
+                                <h6 style="font-weight: bold">Economy | <a href="#" style="color:black" @click="changeSeat()"><i class="fas fa-edit"></i> Change Seat</a></h6>
                             </th>
                         </tr>
                         </thead>
@@ -267,7 +267,10 @@
             let hours = Math.floor(minutes / 60);
             let remainingMinutes = minutes % 60;
             return `${hours} hr ${remainingMinutes} min`;
-      }               
+      }        ,
+      changeSeat() {
+        this.$router.push('/seatsbooking');
+      }       
     }
   };
 </script>
