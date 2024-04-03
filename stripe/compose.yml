@@ -14,3 +14,16 @@ services:
 
     ports:
       - 5020:5000
+
+    
+  ngrok:
+      image: ngrok/ngrok:alpine
+      volumes:
+        - ../ngrok.yml:/app/ngrok.yml
+      command:
+        - start
+        - --all
+        - --config
+        - /app/ngrok.yml
+      networks:
+        - my-network

@@ -106,7 +106,8 @@ def endpoint():
 
 @app.route('/webhook', methods=['POST'])
 def stripe_webhook():
-    payload = request.get_data(as_text=True)
+
+    payload = request.get_json()
     sig_header = request.headers.get('Stripe-Signature')
 
     try:
@@ -115,16 +116,16 @@ def stripe_webhook():
         )
 
     except ValueError as e:
-        return 'Invalid payload', 400
+        raise e
     except stripe.error.SignatureVerificationError as e:
-        return 'Invalid signature', 400
+        raise e
 
     if event['type'] != 'checkout.session.completed':
-        return jsonify({'status': 'failed'}), 400
+        return jsonify({'code': 400, 'status': 'failed'}), 400
 
     session = event['data']['object']
     customer_email = session['customer_details']['email']
-    return jsonify({'email': customer_email}), 200
+    return jsonify({'code': 200, 'email': customer_email}), 200
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)

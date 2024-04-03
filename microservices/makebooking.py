@@ -119,7 +119,8 @@ def processBookingRequest(booking):
     # 4. Call payment svc
     print('\n-----Call payment service-----')
     checkout_url = payment_URL + "/endpoint"
-    payment_result = invoke_http(checkout_url, method='POST', json={"email": booking['email'], "price": price['price']})
+    obj = {"email": booking["email"], "price": price["price"]}
+    payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
     print('payment_result:', payment_result)
 
     email_to_booking[booking['email']] = booking
@@ -140,18 +141,16 @@ def handle_webhook():
         }
     
     headers = dict(request.headers)
-    print(headers)
-    body = request.get_json()
+    body = request.get_data(as_text=True)
 
     response = invoke_http((payment_URL + "/webhook"), method='POST', json=body, headers=headers)
-    print('response:', response)
     if response['code'] != 200:
         return {
             "code": 400,
             "message": "Error in payment service"
         }
     
-    if email not in response:
+    if "email" not in response:
         return {
             "code": 400,
             "message": "No email in response"

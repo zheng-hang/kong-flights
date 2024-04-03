@@ -10,7 +10,9 @@ volumes:
 
 services:
 
+###############################################
 # # RabbitMQ: Msging broker
+###############################################
 #   rabbitmq:
 #     image: rabbitmq:3-management
 #     container_name: rabbitmq-mgmt
@@ -33,7 +35,9 @@ services:
 
 
 
+###############################################
 # # Bookings: Update Availablitiy, Insert Seat, Get seat
+###############################################
 #   bookings:
 #     build:
 #       context: ./
@@ -55,7 +59,9 @@ services:
     
 
 
+###############################################
 # Flights: service
+###############################################
   flight:
     build:
       context: ./
@@ -71,7 +77,9 @@ services:
       - my-network
 
 
+###############################################
 # # Passenger Microservice
+###############################################
 #   passenger:
 #     build:
 #       context: ./
@@ -86,7 +94,9 @@ services:
 #     networks:
 #       - my-network
 
+###############################################
 # # Seat
+###############################################
 #   seat:
 #     build:
 #       context: ./
@@ -105,10 +115,12 @@ services:
 
 
 
+###############################################
 # # Make Booking Complex Microservice
 # # AMQP calls to: Seat, Booking, Notif
 # # Get: Flight
 # # Post: Payment
+###############################################
 
 
   ngrok:
@@ -164,7 +176,10 @@ services:
 #       - my-network
 
 
+###############################################
 # Lufthansa API calling
+###############################################
+
   lufthansa:
     build:
       context: ./lufthansa
@@ -178,8 +193,9 @@ services:
     networks:
       - my-network
 
-
+###############################################
 # Ryanair Calling
+###############################################
 
   ryanair:
     build:
