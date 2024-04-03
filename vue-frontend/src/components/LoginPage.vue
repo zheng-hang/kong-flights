@@ -1,8 +1,11 @@
 <script setup>
-import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import router from "../router/index.js";
 
+const errorMessage = ref('');
+const email = ref('');
+const password = ref('');
 
 const loadCss = (url) => {
   const link = document.createElement('link');
@@ -37,36 +40,62 @@ onMounted(() => {
   loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
 });
 
-const submitForm = async() =>{
-    errorMessage.value = "";
+// Function to submit form
+// Function to submit form
+const submitForm = async () => {
+  errorMessage.value = '';
+  try {
+    const response = await axios.post('http://localhost:5002/login', {
+      email: email.value,
+      password: password.value
+    });
 
-    const email = document.querySelector("input[type='text']").value;
-    const password = document.querySelector("input[type='password']").value;
-    try {
-        const response = await axios.post('http://localhost:5002/login', {
-            email: email,
-            password: password
-        })
-        if(response && response.data && response.status === 200){
-            console.log('Login successful');
-            // this.$router.push('/SearchFlights');
-            // Vue.router.push('/');
-            router.push("/SearchFlights");
-        } 
-        else {
-            errorMessage.value = 'Invalid credentials. Please try again.';
-        }
+    if (response && response.data && response.status === 200) {
+      console.log('Login successful');
+      router.push({ name: 'SearchFlights', params: { query: email.value } });
+    } else {
+      errorMessage.value = 'Invalid credentials. Please try again.';
     }
-    catch (error) {
-        if (error.response && error.response.data.error) {
-            errorMessage.value = error.response.data.error;
-        } else {
-            errorMessage.value = "Login request failed";
-        }
-        console.error("Login error:", error);
+  } catch (error) {
+    if (error.response && error.response.data.error) {
+      errorMessage.value = error.response.data.error;
+    } else {
+      errorMessage.value = "Login request failed";
     }
+    console.error("Login error:", error);
+  }
 };
-const errorMessage = ref("");
+
+// const submitForm = async() =>{
+//     errorMessage.value = "";
+
+//     const email = document.querySelector("input[type='text']").value;
+//     const password = document.querySelector("input[type='password']").value;
+//     try {
+//         const response = await axios.post('http://localhost:5002/login', {
+//             email: email,
+//             password: password
+//         })
+//         if(response && response.data && response.status === 200){
+//             console.log('Login successful');
+//             // Store email in session
+//             this.$session.set('email', email.value);
+//             router.push("/SearchFlights");
+//         } 
+//         else {
+//             errorMessage.value = 'Invalid credentials. Please try again.';
+//         }
+//     }
+//     catch (error) {
+//         if (error.response && error.response.data.error) {
+//             errorMessage.value = error.response.data.error;
+//         } else {
+//             errorMessage.value = "Login request failed";
+//         }
+//         console.error("Login error:", error);
+//     }
+// };
+// const errorMessage = ref("");
 
 </script>
 
@@ -104,19 +133,6 @@ const errorMessage = ref("");
         </div>
   </div>
 </template>
-
-<script>
-export default {
-    data() {
-        return {
-            email: '',
-            password: ''
-        };
-    },
-};
-
-
-</script>
 
 <style scoped>
 .background {

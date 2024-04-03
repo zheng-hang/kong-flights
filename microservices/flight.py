@@ -144,6 +144,91 @@ def get_price_by_FID(FID):
         }
     ), 404
 
+@app.route("/insertflights", methods=['POST'])
+def insert_flights():
+    print(request.json)
+    flights = request.json.get('flight')
+    print(flights)
+    
+    required_keys = ['FID', 'Airline', 'DepartureLoc', 'ArrivalLoc', 'Date', 'DepartureTime', 'Duration', 'Price', "DepAirportCode", "ArrAirportCode"]
+
+    if not isinstance(flights, list):
+            return jsonify({
+                "code": 400,
+                "message": "Expected a list of flight records."
+            }), 400
+
+    for flight_info in flights:
+        print(flight_info)
+        print(all(key in flight_info for key in required_keys))
+        if not all(key in flight_info for key in required_keys):
+            return jsonify({
+                "code": 400,
+                "message": "Missing or incorrect keys in a flight record."
+            }), 400
+
+        flight = Flight(
+            FID=flight_info['FID'],
+            Airline=flight_info['Airline'],
+            DepartureLoc=flight_info['DepartureLoc'],
+            ArrivalLoc=flight_info['ArrivalLoc'],
+            Date=flight_info['Date'],
+            DepartureTime=flight_info['DepartureTime'],
+            Duration=flight_info['Duration'],
+            Price=flight_info['Price'],
+            DepAirportCode=flight_info['DepAirportCode'],
+            ArrAirportCode=flight_info['ArrAirportCode']
+        )
+
+        db.session.add(flight)
+
+    try:
+        db.session.commit()
+        print("Flights: Recorded the creation in the database")
+        return jsonify({
+                        "code": 200, 
+                        "message": "Successfully inserted all flight records.",
+                        "data": request.json
+                        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        print(f"An error occurred: {e}")
+        return jsonify({
+                        "code": 500, 
+                        "message": "Internal server error"
+                        }), 500
+
+
+# Get all unique serviced locations, both departure and arrival
+@app.route("/getservicedlocs")
+def servicedlocs():
+    try:
+        unique_locations = db.session.query(
+            Flight.DepartureLoc, Flight.ArrivalLoc
+        ).distinct().all()
+
+        # Extract unique locations and convert them to strings
+        locations_set = set()
+        for loc in unique_locations:
+            locations_set.add(loc.DepartureLoc)
+            locations_set.add(loc.ArrivalLoc)
+        unique_locations_list = list(locations_set)
+
+        # Sort the unique locations alphabetically
+        unique_locations_list.sort()
+
+        return jsonify({
+            'code': 200,
+            'data': unique_locations_list
+        })
+    except Exception as e:
+        return jsonify({
+            'code': 500,
+            'data': str(e)
+        })
+
+
 # Insert new flights (AMQP) Queue: FlightInsert, Routing Key: #.flight
 # Receive message
 def receiveLog(channel):

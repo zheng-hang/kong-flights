@@ -21,22 +21,22 @@
 }
 </style>
 
-<script>
-import NavBar from './components/NavBar.vue';
-export default {
-  components: {
-    NavBar
-  },
-  data() {
-    return {
-      isLoggedIn: false,
-      shouldShowNavbar: true
-    };
-  },
-  watch: {
-    $route(to) {
-      this.shouldShowNavbar = to.name !== "Login";
-    }
-  }
-}
-</script>
+<!-- <script>
+import { ref, watch } from 'vue';
+
+import { useSession } from 'vue-session';
+
+const shouldShowNavbar = ref(true);
+const session = useSession();
+
+// Set session data
+session.set('isLoggedIn', true);
+
+// Get session data
+const isLoggedIn = session.get('isLoggedIn');
+
+watch($route, (to) => {
+  shouldShowNavbar.value = to.name !== 'Login' && !to.meta.hideNavBar;
+});
+
+</script> -->
