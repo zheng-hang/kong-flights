@@ -160,6 +160,7 @@
 </style>
 <script>
 
+import router from '@/router';
 import axios from 'axios';
 export default {
   async mounted() {
@@ -221,10 +222,11 @@ export default {
         })
         .catch(error => {
           // Handle errors here
-          alert("ERROR");
+          // alert("ERROR");
           console.log("DATA RESULTS: ", dataToSend)
           console.error('There was an error fetching flight data:', error);
       });
+      router.push('/flightsresult')
     },
     fetchLocations() {
       axios.get('http://localhost:5001/getservicedlocs')

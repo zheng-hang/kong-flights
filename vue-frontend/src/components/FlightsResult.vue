@@ -46,17 +46,17 @@ onMounted(() => {
                     <div class="row">
                         <div class="col-md">
                             <div class="row">
-                                <h6> Departing: {{$route.params.departDate}}</h6>
+                                <h6> Departing: {{departDate}}</h6>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <p>{{$route.params.departLoc}}</p>
+                                    <p>{{departLoc}}</p>
                                 </div>
                                 <div class="col-2" style=" text-align: center;">
                                     <i class="fa fa-fighter-jet" aria-hidden="true" style="font-size:20px; padding-top: 5px;"></i>
                                 </div>
                                 <div class="col">
-                                    <p>{{$route.params.arrLoc}}</p>
+                                    <p>{{arrLoc}}</p>
                                 </div>
                             </div>
                         </div>
@@ -87,13 +87,13 @@ onMounted(() => {
         {{arrLoc}}
     </div>
     <!-- Display Matched Flights -->
-    <!-- <div v-for="(flight, i) in availableFlights.data.flights" :key="i">
+     <!-- <div v-for="(flight, i) in availableFlights.data.flights" :key="i"> -->
         <div id="displayBox" style="padding-right: 25px; padding-left: 25px; padding-top: 20px; height:200px; margin-top:10px">
-            <AvailableFlights :departDate="flight.departDate" :departLoc="flight.DepartureLoc" :departTime="flight.DepartureTime"
-                                :arrDate="formatDate(getArrivalDate(flight.Date, flight.Duration))" :arrLoc="flight.ArrivalLoc" 
-                                :arrTime="calculateArrivalTime(flight.DepartureTime, flight.Duration)" :fare="f.fare" :flightDuration="flight.Duration"/>
+            <AvailableFlights :departDate="departDate" :departLoc="departLoc" :departTime="departTime"
+                                :arrDate="arrDate" :arrLoc="arrLoc" 
+                                :arrTime="arrTime" :fare="fare" :flightDuration="flightDuration"/>
         </div>
-    </div> -->
+    <!-- </div>  -->
 </template>
 
 <script>
@@ -103,9 +103,9 @@ export default {
     data() {
         return {
                 departDate: "",
-                departLoc: "",
-                arrLoc: "",
-                departTime: "",
+                departLoc: "Singapore",
+                arrLoc: "Berlin",
+                departTime: "SIN ",
                 arrDate: "",
                 arrTime: "",
                 fare: "",
