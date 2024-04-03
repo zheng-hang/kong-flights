@@ -33,7 +33,7 @@ import PassengerDetail from './PassengerDetail.vue'
     <PassengerDetail/>
 
     <div class="d-flex justify-content-end mt-3">
-        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection">
+        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection" @click="seatSelection">
     </div>
 
     </form>
@@ -49,15 +49,20 @@ export default {
         // FID, Airline, DepartureLoc, ArrivalLoc, Date, DepartureTime,Duration,Price,DepAirportCode,ArrAirportCode
         bookingData: {
             FID: "SQ 123",
-            Date: "2024-03-15",
+            Date: "2024-04-15",
             DepartureTime: "10:30:00",
             DepartureLoc: "Singapore",
-            ArrivalTime: "28 Mar (Thu)",
-            ArrivalLoc: "Tokyo",
+            ArrivalTime: "15:05:00",
+            ArrivalLoc: "Berlin",
             Price: "1100",
             Duration: "1000"
         },
-        arrivalTime: "17:10:00"
+        // arrivalTime: "15:05:00"
+    }
+  },
+  methods:{
+    seatSelection(){
+        this.$router.push('/seatsbooking');
     }
   }
 }

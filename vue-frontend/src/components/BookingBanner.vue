@@ -17,7 +17,7 @@
             <div class="col-2 ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Arrival</h6>
                 <h6 class="fw-bold">{{ formatDate(bookingData.Date) }}</h6>
-                <h4 class="blue fw-bold">{{ this.arrivalTime }}</h4>
+                <h4 class="blue fw-bold">{{ bookingData.ArrivalTime }}</h4>
                 <h6 class="fw-bold">{{ bookingData.ArrivalLoc }}</h6>
             </div>
             <div class="col ms-5 ps-4 text-start">
@@ -37,10 +37,10 @@ export default {
             type: Object,
             required: true
         },
-        arrivalTime: {
-            type: String,
-            required: true
-        }
+        // arrivalTime: {
+        //     type: String,
+        //     required: true
+        // }
     },
     methods: {
         formatDate(dateInput) { 

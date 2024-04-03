@@ -40,7 +40,7 @@
             <div class="col-4">
               <div class="input-group mb-3">
                 <span class="input-group-text">From</span>
-                <select class="form-select" style="width: 320px" v-model="selectedDepLoc">
+                <select class="form-select" style="width: 280px" v-model="selectedDepLoc">
                   <option option value="" disabled selected>Select Departure Location</option>
                   <!-- Loop through locations and generate options -->
                   <option v-for="(location, index) in locations" :key="index" :value="location">{{ location }}</option>
@@ -50,7 +50,7 @@
             <div class="col-4">
               <div class="input-group mb-3">
                 <span class="input-group-text">To</span>
-                <select class="form-select" style="width: 320px" v-model="selectedArrLoc">
+                <select class="form-select" style="width: 300px" v-model="selectedArrLoc">
                   <option option value="" disabled selected>Select Arrival Location</option>
                   <!-- Loop through locations and generate options -->
                   <option v-for="(location, index) in locations" :key="index" :value="location">{{ location }}</option>
@@ -160,6 +160,7 @@
 </style>
 <script>
 
+import router from '@/router';
 import axios from 'axios';
 export default {
   async mounted() {
@@ -221,10 +222,11 @@ export default {
         })
         .catch(error => {
           // Handle errors here
-          alert("ERROR");
+          // alert("ERROR");
           console.log("DATA RESULTS: ", dataToSend)
           console.error('There was an error fetching flight data:', error);
       });
+      router.push('/flightsresult')
     },
     fetchLocations() {
       axios.get('http://localhost:5001/getservicedlocs')
