@@ -164,27 +164,27 @@ services:
   #     - my-network
 
 # Notifications: send email for bookings, seatchange,  
-  notifications:
-    build:
-      context: ./
-      dockerfile: notifications.dockerfile
-    image: bran/notifications:esd
-    restart: always
-    ports:
-      - "5008:5000"
-    depends_on:
-      - rabbitmq
-      - bookings
-      # - testnotifamqp
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      notification_queue_name: Notif
-      exchangename: notif_topic
-      dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
-      PYTHONUNBUFFERED: 1
-    networks:
-      - my-network
+  # notifications:
+  #   build:
+  #     context: ./
+  #     dockerfile: notifications.dockerfile
+  #   image: bran/notifications:esd
+  #   restart: always
+  #   ports:
+  #     - "5008:5000"
+  #   depends_on:
+  #     - rabbitmq
+  #     - bookings
+  #     # - testnotifamqp
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     notification_queue_name: Notif
+  #     exchangename: notif_topic
+  #     dbURL: mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db
+  #     PYTHONUNBUFFERED: 1
+  #   networks:
+  #     - my-network
 
 
 # Ryanair Calling
@@ -206,23 +206,23 @@ services:
 ###############################################
 # Scraper: The Scraper microservice
 ###############################################
-  scraper:
-    build:
-      context: ./scraper
-      dockerfile: scraper.dockerfile
-    image: warkionw/scraper:esd
-    restart: always
-    depends_on:
-      - lufthansa
-      - ryanair
-      - flight
-    environment:
-      ryanair_URL: http://host.docker.internal:5005/getFRflights/today
-      lufthansa_URL: http://host.docker.internal:5004/getLHflights/today
-      flight_URL: http://host.docker.internal:5001/insertflights
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5104:5100"
+  # scraper:
+  #   build:
+  #     context: ./scraper
+  #     dockerfile: scraper.dockerfile
+  #   image: warkionw/scraper:esd
+  #   restart: always
+  #   depends_on:
+  #     - lufthansa
+  #     - ryanair
+  #     - flight
+  #   environment:
+  #     ryanair_URL: http://host.docker.internal:5005/getFRflights/today
+  #     lufthansa_URL: http://host.docker.internal:5004/getLHflights/today
+  #     flight_URL: http://host.docker.internal:5001/insertflights
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5104:5100"
   
 
 
@@ -271,24 +271,24 @@ services:
 
 
 # #test seat amqp
-  testnotifamqp:
-    build:
-      context: ./
-      dockerfile: amqpnotiftest.dockerfile
-    image: bran/amqpnotiftest:esd
-    restart: always
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      exchangename: notif_topic
-      exchangetype: topic
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5102:5102"
-    networks:
-      - my-network
+  # testnotifamqp:
+  #   build:
+  #     context: ./
+  #     dockerfile: amqpnotiftest.dockerfile
+  #   image: bran/amqpnotiftest:esd
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     exchangename: notif_topic
+  #     exchangetype: topic
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5102:5102"
+  #   networks:
+  #     - my-network
 
 
 ###############################################
@@ -316,7 +316,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5103:5103"
-      networks:
+    networks:
       - my-network
 
 
