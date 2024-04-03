@@ -33,7 +33,7 @@ import PassengerDetail from './PassengerDetail.vue'
     <PassengerDetail/>
 
     <div class="d-flex justify-content-end mt-3">
-        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection">
+        <input class="btn btn-primary px-4 mb-3 mt-1 me-5" type="submit" value="Next: Seat Selection" @click="seatSelection">
     </div>
 
     </form>
@@ -58,6 +58,11 @@ export default {
             Duration: "1000"
         },
         // arrivalTime: "15:05:00"
+    }
+  },
+  methods:{
+    seatSelection(){
+        this.$router.push('/seatsbooking');
     }
   }
 }
