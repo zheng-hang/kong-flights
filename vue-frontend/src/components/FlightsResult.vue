@@ -1,12 +1,43 @@
+<script setup>
+// import axios from 'axios';
+import {onMounted } from 'vue';
+// import AvailableFlights from './AvailableFlights.vue';
+
+const loadCss = (url) => {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = url;
+  if (url.includes('bootstrap')) {
+    link.integrity = 'sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx';
+    link.crossOrigin = 'anonymous';
+    }
+  document.head.appendChild(link);
+};
+
+const loadScript = (url) => {
+  const script = document.createElement('script');
+  script.src = url;
+  script.async = true;
+  if (url.includes('kit.fontawesome')) {
+    script.crossOrigin = 'anonymous';
+  }
+  script.async = true;
+  document.body.appendChild(script);
+};
+
+onMounted(() => {
+  // Load Bootstrap CSS
+  loadCss('https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css');
+  
+  // Load Font Awesome CSS
+  loadCss('path/to/font-awesome/css/font-awesome.min.css');
+  
+  // Load Font Awesome JavaScript
+  loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
+});
+</script>
+
 <template>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" 
-    rel="stylesheet" 
-    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" 
-    crossorigin="anonymous">
-
-    <!-- Fa fa Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
     <!-- Display Flight Details from SearchFlights.html-->
     <div id="displayBox" style="padding: 15px; background-color: #5554;">
         <div class="row">
@@ -15,17 +46,17 @@
                     <div class="row">
                         <div class="col-md">
                             <div class="row">
-                                <h6> Departing: {{departDate}}</h6>
+                                <h6> Departing: {{$route.params.departDate}}</h6>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <p>{{departLoc}}</p>
+                                    <p>{{$route.params.departLoc}}</p>
                                 </div>
                                 <div class="col-2" style=" text-align: center;">
                                     <i class="fa fa-fighter-jet" aria-hidden="true" style="font-size:20px; padding-top: 5px;"></i>
                                 </div>
                                 <div class="col">
-                                    <p>{{arrLoc}}</p>
+                                    <p>{{$route.params.arrLoc}}</p>
                                 </div>
                             </div>
                         </div>
@@ -36,21 +67,15 @@
             <div class="col-md-2 custom-col" style="padding-left: 20px;">
                 <div class="row" style="text-align: left;">
                     <h6>Class</h6>
-                    <p>{{type_class}}</p>
+                    <p>Economy</p>
                 </div>
             </div>
 
             <div class="col" style="padding-left: 20px;">
                 <div class="row" style="text-align: left;">
                     <h6>Number of Passengers</h6>
-                    <p>{{numPax}}</p>
+                    <p>1 Adult</p>
                 </div>
-            </div>
-            <div class="col" style="padding-top:20px;">
-                <button type="button" class="btn btn-outline-dark rounded-pill" @click="changeSearch()">Edit Search</button>
-                <!-- <div v-if="showSearch" class="accordion">
-                  <input type="text" placeholder="Search..." v-model="searchQuery">
-                </div> -->
             </div>
         </div>
     </div>
@@ -61,47 +86,38 @@
         <i class="fa fa-plane" aria-hidden="true"></i>
         {{arrLoc}}
     </div>
-
     <!-- Display Matched Flights -->
-    <!-- <div for="matchedFlights"> -->
+    <!-- <div v-for="(flight, i) in availableFlights.data.flights" :key="i">
         <div id="displayBox" style="padding-right: 25px; padding-left: 25px; padding-top: 20px; height:200px; margin-top:10px">
-            <AvailableFlights :departDate="departDate" :departLoc="departLoc" :departTime="departTime"
-                                :arrDate="arrDate" :arrLoc="arrLoc" :arrTime="arrTime" :fare="fare" :flightDuration="flightDuration"/>
+            <AvailableFlights :departDate="flight.departDate" :departLoc="flight.DepartureLoc" :departTime="flight.DepartureTime"
+                                :arrDate="formatDate(getArrivalDate(flight.Date, flight.Duration))" :arrLoc="flight.ArrivalLoc" 
+                                :arrTime="calculateArrivalTime(flight.DepartureTime, flight.Duration)" :fare="f.fare" :flightDuration="flight.Duration"/>
         </div>
-    <!-- </div> -->
+    </div> -->
 </template>
 
 <script>
-import AvailableFlights from './AvailableFlights.vue';
-
 export default {
-    components: {AvailableFlights}, 
-    // props: ['formData'],
+    // components: {AvailableFlights}, 
+    props: ['formData'],
     data() {
         return {
-                numPax:"1 adult",
-                departDate: "28 MAR (THU)",
-                departLoc: "Singapore",
-                arrLoc: "Tokyo",
-                type_class: "Economy",
-                departTime: "SIN 08:05",
-                arrDate: "28 MAR (THU)",
-                arrTime: "NRT 15:45",
-                fare: "SGD 2,883.90",
-                flightDuration: "6 hr 40 min",
-                showSearch: false,
-                searchQuery: '',
-                receivedData: '', 
+                departDate: "",
+                departLoc: "",
+                arrLoc: "",
+                departTime: "",
+                arrDate: "",
+                arrTime: "",
+                fare: "",
+                flightDuration: "",
+                // availableFlights: '',
+                receivedData: ''
             }
         },
-    methods: {
-        changeSearch(){
-            this.showSearch = !this.showSearch;
-        }
-    },
-    // created() {
-    //     this.receivedData = this.$route.query.data;
-    // }
+    mounted() {
+    // Access form data passed from the previous page
+        this.receivedData = this.$route.params.data;
+    }
 }
 
 </script>

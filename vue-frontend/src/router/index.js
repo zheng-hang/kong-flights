@@ -1,18 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import Regis from '../views/RegisterView.vue'
-import Login from '../views/LoginView.vue'
+import Login from '@/components/LoginPage.vue'
 import SearchFlights from '../views/SearchFlights.vue'
 import MyFlights from '../views/MyFlights.vue'
 import BookingView from '../views/BookingView.vue'
 // import FlightsResult from '@/components/FlightsResult.vue'
 import BookingSeatsView from '@/views/BookingSeatsView.vue'
+// import FlightsResult from '@/components/FlightsResult.vue'
+// import PaymentPage from '@/components/PaymentPage.vue'
+
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: 'SearchFlights',
+    component: SearchFlights
   },
   {
     path: '/register',
@@ -27,7 +29,7 @@ const routes = [
   
   },
   {
-    path: '/SearchFlights',
+    path: '/searchFlights',
     name: 'SearchFlights',
     component: SearchFlights
   

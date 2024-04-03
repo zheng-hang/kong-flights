@@ -35,7 +35,7 @@
         props:['departTime', 'departDate', 'departLoc', 'arrDate', 'arrTime', 'arrLoc', 'fare', 'flightDuration'],
         methods: {
             bookingPage(){
-                this.$router.push({name: 'booking'});
+                this.$router.push({name: '/booking'});
             }
         }
     }
@@ -70,4 +70,4 @@
         right: 0;
         
     }
-</style>
+</style> 

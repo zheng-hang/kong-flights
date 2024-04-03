@@ -1,24 +1,18 @@
+<script setup>
+  import NavBar from './components/NavBar.vue';
+</script>
+
 <template>
-  <!-- <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/register">Register</router-link> |
-    <router-link to="/login">Login</router-link>
-  </nav> -->
-  <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center; justify-content: space-between;">
-    <div>
-      <img src="@/assets/SMOOth Airlines Logo - Flat.png" style="height: 50px;">
-    </div>
-    <div>
-      <router-link to="/SearchFlights" class="header" style="margin: 10px; text-decoration: none;">Search Flights</router-link> 
-      <router-link to="/MyFlights" class="header" style="margin: 10px; text-decoration: none;">My Flights</router-link> 
-      <router-link to="/MyPayments" class="header" style="margin: 10px; text-decoration: none;">My Payment</router-link>
-    </div>
-    <div>
-      <router-link to="/signOut" style="text-decoration: none;">Sign Out</router-link>
-    </div>
-  </nav>
-  <router-view/>
+  <!-- Need Logic here -->
+   <!-- <main :class="[this.$route.meta.hideNavBar ? 'bg-white' : 'bg-light']" :style="[
+    { 'min-height': $route.meta.hideNavBar ? '100vh' : 'calc(100vh - 75px)' },
+    { 'margin-top': $route.meta.hideNavBar ? '0' : '74px' },
+    ]"/> -->
+  <NavBar/>
+  <RouterView />
 </template>
+
+
 
 <style>
 #app {
@@ -27,23 +21,26 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-
-/* Doesn't work very well - green color will remain  */
-.header:focus{
-  color: blue;
+  background-color: #FAFAFA;
 }
 </style>
+
+<!-- <script>
+import { ref, watch } from 'vue';
+
+import { useSession } from 'vue-session';
+
+const shouldShowNavbar = ref(true);
+const session = useSession();
+
+// Set session data
+session.set('isLoggedIn', true);
+
+// Get session data
+const isLoggedIn = session.get('isLoggedIn');
+
+watch($route, (to) => {
+  shouldShowNavbar.value = to.name !== 'Login' && !to.meta.hideNavBar;
+});
+
+</script> -->
