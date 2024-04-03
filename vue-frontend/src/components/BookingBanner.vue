@@ -12,7 +12,7 @@
             </div>
             <div class="col-1 pt-4 me-5 my-auto">
                 <i class="fa fa-plane fa-2x d-flex justify-content-center"></i>
-                <h6 class="text-secondary d-flex justify-content-center">{{ bookingData.flightDuration }}</h6>
+                <h6 class="text-secondary d-flex justify-content-center">{{ formatDuration(bookingData.Duration) }}</h6>
             </div>
             <div class="col-2 ms-5 ps-4 text-start">
                 <h6 class="text-secondary">Arrival</h6>
@@ -44,11 +44,16 @@ export default {
     },
     methods: {
         formatDate(dateInput) { 
-        const dateObject = new Date(dateInput); 
-        const options = { month: 'short', day: 'numeric', year: 'numeric', weekday: 'short' }; 
-        return dateObject.toLocaleDateString('en-US', options); 
-      }
+            const dateObject = new Date(dateInput); 
+            const options = { month: 'short', day: 'numeric', year: 'numeric', weekday: 'short' }; 
+            return dateObject.toLocaleDateString('en-US', options); 
+        },
+        formatDuration(duration) {
+            return Math.floor(duration/60) + " hr " + duration%60 + " min";
+        }
+
     }
+
 }
 </script>
 

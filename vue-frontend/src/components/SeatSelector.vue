@@ -34,6 +34,9 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-end">
+        <input class="btn btn-primary me-4 mb-4" type="submit" value="Submit" @click="sendBooking">
+    </div>
 </template>
 
 <script>
@@ -44,6 +47,7 @@
             numSeatsSelected: 0,
             isChecked: false,
             selectedSeat: "",
+            sessionSeat: "", // simulate session['seat']
             isAvailable: false,
             rows: 72,
             flightId: "SQ 124",
@@ -53,6 +57,10 @@
         },
         beforeMount() {
             this.getAvailableSeats()
+            // this.loadSelectedSeat()
+        },
+        mounted() {
+            this.loadSelectedSeat()
         },
     
     methods: {
@@ -89,6 +97,14 @@
             this.isChecked=event.target.checked;
             this.numSeatsSelected++;
             this.selectedSeat = event.target.id; 
+        },
+        sendBooking(){
+            window.location.href=""
+        },
+        loadSelectedSeat(){
+            if(this.sessionSeat != ""){
+                document.getElementById("checkbox-" + this.sessionSeat).checked = true;
+            }
         }
     },
     computed: {

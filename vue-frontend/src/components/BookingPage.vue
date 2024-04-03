@@ -55,9 +55,9 @@ export default {
             ArrivalTime: "28 Mar (Thu)",
             ArrivalLoc: "Tokyo",
             Price: "1100",
-            Duration: "6 hr 40 min"
+            Duration: "1000"
         },
-        ArrivalTime: "17:10:00"
+        arrivalTime: "17:10:00"
     }
   }
 }
