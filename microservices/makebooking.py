@@ -60,38 +60,38 @@ def place_order():
     # Simple check of input format and data of the request are JSON
     #SCENARIO 1: Receive booking request
         
-    # if request.is_json: -- uncomment after testing*
-    try:
-        # booking = request.get_json()
-        # print("\nReceived a booking request in JSON:", booking)
-        
-        ###### FOR TESTING ######
-        try_booking = {
-            'email': 'help@gmail.com',
-            'fid': 'SQ 123',
-            'seatcol': 'A',
-            'seatnum': 2
-        }
+    if request.is_json: 
+        try:
+            try_booking = request.get_json()
+            print("\nReceived a booking request in JSON:", booking)
+            
+            ###### FOR TESTING ######
+            # try_booking = {
+            #     'email': 'help@gmail.com',
+            #     'fid': 'SQ 123',
+            #     'seatcol': 'A',
+            #     'seatnum': 2
+            # }
 
-        print("start invoking")
-        # do the actual work
-        # 1. Send booking info
-        result = processBookingRequest(try_booking)
-        print('\n------------------------')
-        print('\nresult: ', result)
-        return jsonify(result), result["code"]
+            print("start invoking")
+            # do the actual work
+            # 1. Send booking info
+            result = processBookingRequest(try_booking)
+            print('\n------------------------')
+            print('\nresult: ', result)
+            return jsonify(result), result["code"]
 
-    except Exception as e:
-        # Unexpected error in code
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
-        print(ex_str)
+        except Exception as e:
+            # Unexpected error in code
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            print(ex_str)
 
-        return jsonify({
-            "code": 500,
-            "message": "makebooking.py internal error: " + ex_str
-        }), 500
+            return jsonify({
+                "code": 500,
+                "message": "makebooking.py internal error: " + ex_str
+            }), 500
 
     # if reached here, not a JSON request.
     # return jsonify({ -- uncomment after testing*

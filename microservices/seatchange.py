@@ -15,28 +15,27 @@ app = Flask(__name__)
 CORS(app)
 
 
-seatReserve_URL = environ.get("seat_URL") or "http://host.docker.internal:5003/reserveseat"
-seatUpdate_URL = environ.get("seat_URL") or "http://host.docker.internal:5003/updateseat"
-passengerbooking_URL = environ.get("passengerbooking_URL") or "http://host.docker.internal:5000/update"
-# payment_url = "environ.get('payment_URL')"
-notification_url = environ.get("notification_URL") 
+seatReserve_URL = environ.get("seatReserve_URL") or "http://seat:5000/reserveseat"
+seatUpdate_URL = environ.get("seatUpdate_URL") or "http://seat:5000/updateseat"
+passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
+# payment_url =
+
 
 
 
 # exchangename_booking = "booking_topic"
 # exchangename_seat_change =  "seat_change_topic"
-# exchangename_notification = "Notif"
-exchangename_notification = "notif_topic"
-# exchangename_payment = "" not done
+# exchangename_notification = environ.get("notif_queue_name") or "Notif" 
+# # exchangename_payment = "" not done
 
 # exchangetype="topic"
 
-#create a connection and a channel to the broker to publish messages to seat_, passengerbookigns, notifications and 
+# #create a connection and a channel to the broker to publish messages to seat_, passengerbookigns, notifications and 
 # connection = amqp_connection.create_connection() 
 # channel = connection.channel()
 
-# #if the exchange is not yet created, exit the program ()
-# if not amqp_connection.check_exchange(channel, exchangename_notification, exchangetype):
+#if the exchange is not yet created, exit the program ()
+# if not amqp_connection.check_exchange(channel, exchangename_seat_change, exchangetype):
 #     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
 #     sys.exit(0)  # Exit with a success status
 
@@ -46,11 +45,18 @@ exchangename_notification = "notif_topic"
 
 
 
-@app.route("/seatchange", methods=['POST'])
+@app.route("/seatchange", methods=['PUT', 'GET', 'POST'])
 def seat_change():
     if request.is_json:
         try:
             data = request.get_json()
+            # data = {
+            #     "bid": 1,
+            #     "fid": "SQ 123",
+            #     "seatcol": "A",
+            #     "seatnum": 2,
+                
+            # }
             print("\nReceived a seat change request with:", data)
             
             result = processSeatChange(data)
@@ -95,23 +101,9 @@ def processSeatChange(seat):
         }
     else:
 
-        print("--------getting pid-------")
-        person_bid = seat['bid']
-  
-        print("person_bid:", str(person_bid))
-
-        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
-        original_seat = original_seat.json()['data']
-        original_seat.pop('bid', None)
-        print("-----------------")
-
         # UNCOMMENT ONCE PAYMENT IS DONE
         #SCENARIO 3-7: send payment requests to payment system (NOT DONE)
-        print('\n-----Call payment service-----')
-        checkout_url = payment_url + "/endpoint"
-        obj = {"email": original_seat["email"], "price": 12}
-        payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
-        print('payment_result:', payment_result)
+        #
         # price_result = invoke_http(payment_url, method='POST', json=seat)
         # print("Payment request sent to payment system")
         # if price_result['code'] not in range(200, 300):
@@ -123,12 +115,12 @@ def processSeatChange(seat):
         #         "code": 500,
         #         "data": "Payment failed"
         #     }
-        print("--------getting bid-------")
+        print("--------getting pid-------")
         person_bid = seat['bid']
   
         print("person_bid:", str(person_bid))
 
-        original_seat = requests.get(f"http://host.docker.internal:5000/booking/{person_bid}")
+        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
         original_seat = original_seat.json()['data']
         original_seat.pop('bid', None)
         print("-----------------")
@@ -203,41 +195,17 @@ def processSeatChange(seat):
 
 # for retrieving the person's original bid
 # def get_original_booking(person_bid):
-#     response = requests.get(f"http://localhost:5000/booking/{person_bid}")
-#     data = response.json()
-#     if data['code'] == 200 and data['data']:
-#         return data['data'][0]
+#     print("invoking: get_original_booking")
+#     response = requests.request('GET', f"http://bookings:5000/booking/{person_bid}")
+#     data = response["data"]
+#     print("data: ", data)
+#     if response:
+#         return data
 #     return None
  
 
-@app.route("/webhook", methods=['POST'])
-def handle_webhook():
-    if not request.is_json:
-        return {
-            "code": 400,
-            "message": "Invalid JSON"
-        }
-    
-    headers = dict(request.headers)
-    body = request.get_data(as_text=True)
-
-    response = invoke_http((payment_url + "/webhook"), method='POST', json=body, headers=headers)
-    if response['code'] != 200:
-        return {
-            "code": 400,
-            "message": "Error in payment service"
-        }
-    
-    if "email" not in response:
-        return {
-            "code": 400,
-            "message": "No email in response"
-        }
-
-    email = response["email"]
-    return jsonify(email=email)
 
 
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
-    app.run(host="0.0.0.0", port=5103, debug=True)
+    app.run(host="0.0.0.0", port=5105, debug=True)
