@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@host.docker.internal:3312/bookings_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
-
+#booking
 db = SQLAlchemy(app)
 
 CORS(app)
@@ -35,7 +35,7 @@ class Bookings(db.Model):
         self.seatnum = seatnum
 
     def json(self):
-        return {"bid": self.bid, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
+        return {"bid": self.bid, "email": self.email, "fid": self.fid, "seatcol": self.seatcol, "seatnum": self.seatnum}
 
 
 
@@ -65,6 +65,12 @@ def processCreationReq():
     try:
         db.session.add(booking)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 201,
+                "data": booking.json()
+            }), 201
+    
     except Exception as e:
         return jsonify(
             {
@@ -73,23 +79,24 @@ def processCreationReq():
             }
         ), 500
     
-    message =   json.dumps(booking.json())
-    message['msg_source'] = "bookings"
-    print(message)
+    # message =   json.dumps(booking.json())
+    # message['msg_source'] = "bookings"
+    # print(message)
+    # payments branch had this...accepted a combination
 
-    channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    # channel.basic_publish(exchange=exchangename, routing_key="bookingupdate.notif", 
+    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
-    return jsonify(
-        {
-            "code": 201,
-            "data": booking.json()
-        }
-    ), 201
+    # return jsonify(
+    #     {
+    #         "code": 201,
+    #         "data": booking.json()
+    #     }
+    # ), 201
 
 
 
-@app.route("/update", methods=['POST'])
+@app.route("/update", methods=['PUT'])
 def processUpdateReq():
     print("bookings: Recording a update:")
 
@@ -109,6 +116,13 @@ def processUpdateReq():
             booking.seatcol = seatcol
             booking.seatnum = seatnum
             db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Updated booking with bid '{bid}' to seat '{seatcol}' '{seatnum}'",
+                    "data": booking.json()
+                }
+            ), 200
         except Exception as e:
             return jsonify(
                 {
@@ -151,7 +165,41 @@ def search_by_email(email):
         }
     ), 404
 
+@app.route("/booking/<int:bid>")
+def search_by_bid(bid):
+    booking = db.session.query(Bookings).filter(Bookings.bid == bid).first()
+    if booking:
+        return jsonify(
+            {
+                "code": 200,
+                "data": booking.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Booking not found for booking ID {}.".format(bid)
+        }
+    ), 404
 
+@app.route("/booking")
+def get_all():
+    bookings = db.session.query(Bookings).all()
+    if bookings:
+        data = [booking.json() for booking in bookings]
+        return jsonify(
+            {
+                "code": 200,
+                "data": data
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no bookings."
+        }
+    ), 404
+    
 
 if __name__ == "__main__":
     print("This is flask for " + path.basename(__file__) + ": manage bookings ...")

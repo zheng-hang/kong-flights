@@ -17,7 +17,9 @@ import pika
 # The above shebang (#!) operator tells Unix-like environments
 # to run this file as a python3 script
 
-notif_queue_name = 'Notif'
+notif_queue_name = os.environ.get('exchangename') or 'Notif'
+
+
 
 app = Flask(__name__)
 

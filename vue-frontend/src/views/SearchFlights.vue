@@ -3,6 +3,7 @@
       <img alt="Vue logo" src="../assets/logo.png">
       <HelloWorld msg="Welcome to Your Vue.js App"/>
     </div> -->
+    Read from microservice JSON results: {{ flights }}
     <div style="background-color: #FAFAFA;margin:0;padding:0;text-align: left;">
       <!-- Nav -->
       <!-- <nav style="margin:0; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2); background-color: white; height: 65px;display: flex;align-items: center;justify-content: space-between;">
@@ -37,7 +38,7 @@
       <div id="SearchBox" style="padding-right: 25px; padding-left: 25px; padding-top: 20px;">
           <h5>Hey there, where can we take you?</h5> <br/>
           <div class="row">
-              <div class="col-3">
+              <div class="col-4">
                   <div class="input-group mb-3">
                       <div class="input-group-prepend">
                           <span class="input-group-text">From</span>
@@ -45,7 +46,7 @@
                       <input type="text" class="form-control" placeholder="Your current location" v-model="form.departLoc">
                   </div>
               </div>
-              <div class="col-3">
+              <div class="col-4">
                   <div class="input-group mb-3">
                       <div class="input-group-prepend">
                           <span class="input-group-text">To</span>
@@ -53,7 +54,7 @@
                       <input type="text" class="form-control" placeholder="Your Destination" v-model="form.arrLoc">
                   </div>
               </div>
-              <div class="col-3">
+              <div class="col-4">
                   <div class="input-group mb-3">
                       <div class="input-group-prepend">
                           <span class="input-group-text">Departure Date</span>
@@ -61,24 +62,10 @@
                       <input class="form-control" type="date" id="departureDate" name="departureDate" v-model="form.departDate">
                   </div>
               </div>
-              <div class="col-3">
-                  <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                          <span class="input-group-text">Class</span>
-                      </div>
-                      <select class="form-select form-select-sm" aria-label=".form-select-sm example" v-model="form.classtype">
-                          <option selected>Select a Class</option>
-                          <option value="1">First Class</option>
-                          <option value="2">Business</option>
-                          <option value="3">Premium Economy</option>
-                          <option value="3">Economy</option>
-                      </select>
-                  </div>
-              </div>
           </div>
           <div class="row" style="margin-top: 5px;">
               <div class="d-flex justify-content-end">
-                  <button type="button" class="btn btn-primary col-2" @click="submitForm">Search Flights</button>
+                  <button type="button" class="btn btn-primary col-2" @click="searchFlights">Search Flights</button>
               </div>           
           </div>
       </div>
@@ -169,6 +156,7 @@
       }
 </style>
 <script>
+import axios from 'axios';
   export default {
     async mounted() {
       // Load Bootstrap CSS
@@ -182,14 +170,9 @@
       this.loadCss('path/to/font-awesome/css/font-awesome.min.css');
       this.loadScript('https://kit.fontawesome.com/5ca5b3f212.js');
     },
-    data(){
-      return{
-        form:{
-          departLoc: 'Singapore', 
-          arrLoc:'',
-          classtype:'', 
-          departDate: '03/03/2024',
-        }
+    data: function(){
+      return {
+        flights: ''    
       }
     },
     methods: {
@@ -212,23 +195,18 @@
         script.async = true;
         document.body.appendChild(script);
       },
-      submitForm() {
-      // Navigate to the next page with form data
-        this.$router.push({
-        name: 'flight'
-        // params: { formData: this.formData }
-      });
-      },
-    },
-    // computed: {
-    //   departDate: {
-    //     get() {
-    //       return this.initialDate;
-    //     },
-    //     set(newValue) {
-    //       this.initialDate = newValue;
-    //     },
-    //   },
-    // },
+      searchFlights() {
+        axios.get('http://localhost:5001/flight')
+          .then(response => {
+            // Handle the response data here
+            this.flights = response.data; // flight data
+          })
+          .catch(error => {
+            // Handle errors here
+            this.flights = error;
+            console.error('There was an error fetching flight data:', error);
+        });
+      }
+    }
   };
 </script>

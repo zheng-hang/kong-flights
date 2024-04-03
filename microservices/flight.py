@@ -71,7 +71,19 @@ with app.app_context():
             print(f" - {column.name}")
 
 
-@app.route("/flight")
+with app.app_context():
+    # Reflect the tables and print their column names
+    meta = db.metadata
+    meta.reflect(bind=db.engine)
+
+    for table in meta.sorted_tables:
+        print(f"Table: {table.name}")
+        for column in table.columns:
+            print(f" - {column.name}")
+
+
+
+@app.route("/flight", methods=['GET'])
 def get_all_flights():
     flightlist = db.session.scalars(db.select(Flight)).all()
     if len(flightlist):
@@ -106,7 +118,7 @@ def get_all_flights():
 # }
 
 
-@app.route("/flight",  methods=['POST'])
+@app.route("/flight", methods=['POST'])
 def searchflights():
     DepartureLoc = request.json.get('DepartureLoc', None)
     ArrivalLoc = request.json.get('ArrivalLoc', None)
