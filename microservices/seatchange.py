@@ -15,16 +15,17 @@ app = Flask(__name__)
 CORS(app)
 
 
-seat_URL = environ.get("seat_URL") or "http://localhost:5000/seat"
-passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/booking"
-# payment_url =
-# notification_url = ""
+seatReserve_URL = environ.get("seat_URL") or "http://localhost:5000/reserveseat"
+seatUpdate_URL = environ.get("seat_URL") or "http://localhost:5000/updateseat"
+passengerbooking_URL = environ.get("passengerbooking_URL") or "http://localhost:5000/update"
+# payment_url = "environ.get('payment_URL')"
+# notification_url = environ.get("notification_URL") 
 
 
 
 # exchangename_booking = "booking_topic"
 # exchangename_seat_change =  "seat_change_topic"
-# exchangename_notification = "" not done
+exchangename_notification = "Notif"
 # exchangename_payment = "" not done
 
 exchangetype="topic"
@@ -34,9 +35,9 @@ connection = amqp_connection.create_connection()
 channel = connection.channel()
 
 #if the exchange is not yet created, exit the program ()
-# if not amqp_connection.check_exchange(channel, exchangename_seat_change, exchangetype):
-#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-#     sys.exit(0)  # Exit with a success status
+if not amqp_connection.check_exchange(channel, exchangename_notification, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0)  # Exit with a success status
 
 # if not amqp_connection.check_exchange(channel, exchangename_booking, exchangetype):
 #     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
@@ -79,8 +80,10 @@ def processSeatChange(seat):
 
     # remove 'bid' from the copy
     seat_copy.pop('bid', None)
-    reserve_seat = invoke_http(seat_URL, method='PUT', json=seat_copy)
-    print("Seat reserved" + reserve_seat)
+
+    print("invote_http for reserve_seat")
+    reserve_seat = invoke_http(seatReserve_URL, method='PUT', json=seat_copy)
+    print("Seat reserved" + str(reserve_seat))
 
     code_reserve_seat = reserve_seat['code']
     if code_reserve_seat not in range(200, 300):
@@ -98,17 +101,28 @@ def processSeatChange(seat):
         # if price_result['code'] not in range(200, 300):
         #     this SCENARIO will trigger if any of the above steps have failed but if SCENARIO 2 is successful
         #     SCENARIO 7: If fail, updating old seat availability
-        #     fail_update = invoke_http(seat_URL, method='PUT', json=seat_copy)
+        #     fail_update = invoke_http(seatUpdate_URL, method='PUT', json=seat_copy)
         #     print("Seat reserved" + fail_update)
         #     return {
         #         "code": 500,
         #         "data": "Payment failed"
         #     }
+        print("--------getting pid-------")
+        person_bid = seat['bid']
+  
+        print("person_bid:", str(person_bid))
 
-              
+        original_seat = requests.get(f"http://bookings:5000/booking/{person_bid}")
+        original_seat = original_seat.json()['data']
+        original_seat.pop('bid', None)
+        print("-----------------")
 
 
         #SCENARIO 9: send to notification (NOT DONE) AMQP
+        # channel.basic_publish(exchange=exchangename_notification, routing_key="do.notif", 
+        #     body=json.dumps(seat), properties=pika.BasicProperties(delivery_mode = 2))
+        
+        # print("\n Notification to the RabbitMQ Exchange:", seat)
 
         #SCENARIO 10: update passenger bookings
         # this case is seat change so bid in message 
@@ -119,23 +133,21 @@ def processSeatChange(seat):
         # remove 'bid' from the copy
         seat_copy2.pop('fid', None)
 
-        update_flight_booking = invoke_http(seat_URL, method='PUT', json=seat_copy2)
-        print("Seat reserved" + update_flight_booking)
+        update_flight_booking = invoke_http(passengerbooking_URL, method='PUT', json=seat_copy2)
+        print("Seat reserved" + str(update_flight_booking))
 
         if update_flight_booking['code'] not in range(200, 300):
             return {
                 "code": 500,
                 "data": "Flight booking update failed"
             }
-
+        
+        print("SCENARIO 12")
         #SCENARIO 12: Update old flight seat to available
         # first get the fid,seatcol and seatnum of the old seat
-        person_pid = seat['pid']
-        original_seat = get_original_booking(person_pid)
-        original_seat.pop('bid', None)
 
-        update_old_seat = invoke_http(seat_URL, method='PUT', json=original_seat)
-        print("Seat reserved" + update_old_seat) ## HTTP function for updating the old seat, scenario #
+        update_old_seat = invoke_http(seatUpdate_URL, method='PUT', json=original_seat)
+        print("Seat reserved" + str(update_old_seat)) ## HTTP function for updating the old seat, scenario #
 
         if update_old_seat['code'] not in range(200, 300):
             return {
@@ -154,8 +166,8 @@ def processSeatChange(seat):
         # }
 
 # for retrieving the person's original bid
-def get_original_booking(person_pid):
-    response = requests.get(f"http://localhost:5000/booking/{person_pid}")
+def get_original_booking(person_bid):
+    response = requests.get(f"http://localhost:5000/booking/{person_bid}")
     data = response.json()
     if data['code'] == 200 and data['data']:
         return data['data'][0]

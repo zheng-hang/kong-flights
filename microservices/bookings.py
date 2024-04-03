@@ -89,7 +89,7 @@ def processCreationReq():
 
 
 
-@app.route("/update", methods=['POST'])
+@app.route("/update", methods=['PUT'])
 def processUpdateReq():
     print("bookings: Recording a update:")
 
@@ -109,6 +109,13 @@ def processUpdateReq():
             booking.seatcol = seatcol
             booking.seatnum = seatnum
             db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Updated booking with bid '{bid}' to seat '{seatcol}' '{seatnum}'",
+                    "data": booking.json()
+                }
+            ), 200
         except Exception as e:
             return jsonify(
                 {
@@ -151,7 +158,41 @@ def search_by_email(email):
         }
     ), 404
 
+@app.route("/booking/<int:bid>")
+def search_by_bid(bid):
+    booking = db.session.query(Bookings).filter(Bookings.bid == bid).first()
+    if booking:
+        return jsonify(
+            {
+                "code": 200,
+                "data": booking.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Booking not found for booking ID {}.".format(bid)
+        }
+    ), 404
 
+@app.route("/booking")
+def get_all():
+    bookings = db.session.query(Bookings).all()
+    if bookings:
+        data = [booking.json() for booking in bookings]
+        return jsonify(
+            {
+                "code": 200,
+                "data": data
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no bookings."
+        }
+    ), 404
+    
 
 if __name__ == "__main__":
     print("This is flask for " + path.basename(__file__) + ": manage bookings ...")
