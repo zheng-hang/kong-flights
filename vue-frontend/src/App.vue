@@ -1,10 +1,14 @@
+<script setup>
+  import NavBar from './components/NavBar.vue';
+</script>
+
 <template>
   <!-- Need Logic here -->
    <!-- <main :class="[this.$route.meta.hideNavBar ? 'bg-white' : 'bg-light']" :style="[
     { 'min-height': $route.meta.hideNavBar ? '100vh' : 'calc(100vh - 75px)' },
     { 'margin-top': $route.meta.hideNavBar ? '0' : '74px' },
     ]"/> -->
-  <NavBar v-if="!this.$route.meta.hideNavBar"/>
+  <NavBar/>
   <RouterView />
 </template>
 

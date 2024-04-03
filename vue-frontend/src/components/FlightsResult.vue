@@ -1,7 +1,7 @@
 <script setup>
-import axios from 'axios';
+// import axios from 'axios';
 import {onMounted } from 'vue';
-import AvailableFlights from './AvailableFlights.vue';
+// import AvailableFlights from './AvailableFlights.vue';
 
 const loadCss = (url) => {
   const link = document.createElement('link');
@@ -87,18 +87,18 @@ onMounted(() => {
         {{arrLoc}}
     </div>
     <!-- Display Matched Flights -->
-    <div v-for="(flight, i) in availableFlights.data.flights" :key="i">
+    <!-- <div v-for="(flight, i) in availableFlights.data.flights" :key="i">
         <div id="displayBox" style="padding-right: 25px; padding-left: 25px; padding-top: 20px; height:200px; margin-top:10px">
             <AvailableFlights :departDate="flight.departDate" :departLoc="flight.DepartureLoc" :departTime="flight.DepartureTime"
                                 :arrDate="formatDate(getArrivalDate(flight.Date, flight.Duration))" :arrLoc="flight.ArrivalLoc" 
                                 :arrTime="calculateArrivalTime(flight.DepartureTime, flight.Duration)" :fare="f.fare" :flightDuration="flight.Duration"/>
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script>
 export default {
-    components: {AvailableFlights}, 
+    // components: {AvailableFlights}, 
     props: ['formData'],
     data() {
         return {
@@ -110,68 +110,13 @@ export default {
                 arrTime: "",
                 fare: "",
                 flightDuration: "",
-                availableFlights: '',
+                // availableFlights: '',
+                receivedData: ''
             }
         },
-    methods: {
-        loadAvailableFlights(){
-            axios.post('http://localhost:5001/flight',{
-                DepartureLoc: this.departLoc,
-                ArrivalLoc: this.arrLoc,
-                DepartureDate: this.departDate,
-            })
-            .then(response => {
-                // Handle the response data here
-                this.availableFlights = response.data; // flight data
-            })
-            .catch(error => {
-                // Handle errors here
-                this.availableFlights = error;
-                console.error('There was an error fetching flight data:', error);
-                });
-        },
-        beforeMount() {
-            this.loadAvailableFlights()
-        },
-        formatDate(dateInput) {
-        const dateObject = new Date(dateInput);
-        const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-        return dateObject.toLocaleDateString('en-US', options);
-      },
-      calculateArrivalTime(departureTime, duration){
-        // Split the time string into hours, minutes, and seconds
-        const [hours, minutes, seconds] = departureTime.split(':').map(Number);
-
-        // Calculate total minutes
-        let totalMinutes = hours * 60 + minutes + duration;
-
-        // Calculate new hours and minutes
-        const newHours = Math.floor(totalMinutes / 60) % 24;
-        const newMinutes = totalMinutes % 60;
-
-        // Format the result
-        const formattedResult = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        return formattedResult;
-      },
-      getArrivalDate(departureTime, duration){
-        // Convert the date string to a Date object
-        const date = new Date(departureTime);
-
-        // Add the minutes to the date
-        date.setMinutes(date.getMinutes() + duration);
-
-        // Format the date back into the desired string format
-        const formattedDate = date.toUTCString();
-
-        return formattedDate;
-      },
-    },
     mounted() {
     // Access form data passed from the previous page
-        console.log('Name:', this.$route.params.departDate);
-        console.log('Email:', this.$route.params.arrLoc);
-        console.log('Message:', this.$route.params.departLoc);
+        this.receivedData = this.$route.params.data;
     }
 }
 
