@@ -1,0 +1,20 @@
+version: '3.8'
+
+networks:
+  my-network:
+    name: my-network
+    external: true
+
+services:
+
+  ngrok:
+      image: ngrok/ngrok:alpine
+      volumes:
+        - ./ngrok.yml:/app/ngrok.yml
+      command:
+        - start
+        - --all
+        - --config
+        - /app/ngrok.yml
+      networks:
+        - my-network

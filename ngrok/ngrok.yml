@@ -1,0 +1,7 @@
+version: 2
+authtoken: 2eY4KlanzydIMwUTK3eaZSSImeD_PVRBLBd4oPTi3po581Sa
+tunnels:
+  api:
+    proto: http
+    addr: make_booking:5100 #change to makebooking service & ports
+    domain: just-kiwi-sharply.ngrok-free.app
