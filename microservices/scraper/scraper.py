@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-import schedule
+
 import json
 
 import os, sys
@@ -9,8 +9,7 @@ from os import environ
 
 from invokes import invoke_http
 
-# import schedule
-import time
+
 
 # Init flask app
 app = Flask(__name__)
@@ -33,7 +32,7 @@ seat_URL = environ.get('seat_URL')
 # xinsert_flights_URL = "http://your-api-url/insertflights"
 
 
-
+@app.route("/scrapeAPIs")
 def scrapeAPI():
     # Call lufthansa API
     insert_LH_flight = invoke_http(lufthansa_URL, method='GET')
@@ -87,15 +86,7 @@ def manualcall():
     return results
 
 
-# Run scheduler
 
-# Schedule the job to run at midnight
-schedule.every().day.at("00:00").do(scrapeAPI)
-
-# Run the scheduler
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
 
 # Execute this program if it is run as a main script (not by 'import')
