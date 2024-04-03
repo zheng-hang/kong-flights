@@ -71,17 +71,6 @@ with app.app_context():
             print(f" - {column.name}")
 
 
-with app.app_context():
-    # Reflect the tables and print their column names
-    meta = db.metadata
-    meta.reflect(bind=db.engine)
-
-    for table in meta.sorted_tables:
-        print(f"Table: {table.name}")
-        for column in table.columns:
-            print(f" - {column.name}")
-
-
 
 @app.route("/flight", methods=['GET'])
 def get_all_flights():

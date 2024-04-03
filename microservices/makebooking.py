@@ -29,12 +29,12 @@ payment_URL = environ.get('payment_URL') or "http://payment:5000/"
 
 email_to_booking = {}
 # Instead of hardcoding the values, we can also get them from the environ as shown below
-# exchangename = environ.get('exchangename') #order_topic
-# exchangetype = environ.get('exchangetype') #topic 
+exchangename = environ.get('exchangename') #order_topic
+exchangetype = environ.get('exchangetype') #topic 
 
 #create a connection and a channel to the broker to publish messages to activity_log, error queues
-# connection = amqp_connection.create_connection() 
-# channel = connection.channel()
+connection = amqp_connection.create_connection() 
+channel = connection.channel()
 
 # #if the seat exchange is not yet created, exit the program
 # if not amqp_connection.check_exchange(channel, seat_exchangename, exchangetype):
@@ -127,8 +127,16 @@ def processBookingRequest(booking):
 
     # print('\n\n-----Publishing the (seatupdate) message with routing_key=booking.seat-----')
 
-    # channel.basic_publish(exchange=seat_exchangename, routing_key="booking.seat", 
-    #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    print('\n\n-----Publishing the (payment) message with routing_key=payment.notif-----')
+
+    # Ensuring message structure aligns with what the receiver expects
+    # message = payment  # seatupdate already has 'seatnum' as per the receiver's expectation
+    # message["source"] = "payment"
+    # # Publishing the message to the AMQP exchange with the correct routing key
+    # channel.basic_publish(exchange=exchangename, routing_key="payment.notif", 
+    #     body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    # print("\nPayment request published to the RabbitMQ Exchange:", createBooking)
 
     # print("\nSeat update request published to the RabbitMQ Exchange:", message)
     print("invote_http for reserve_seat")
@@ -142,10 +150,11 @@ def processBookingRequest(booking):
     
     # 6-9. Call payment svc
     print('\n-----Call payment service-----')
-    checkout_url = payment_URL + "/endpoint"
-    obj = {"email": booking["email"], "price": price['data']['Price']}
-    payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
-    print('payment_result:', payment_result)
+    # checkout_url = payment_URL + "/endpoint"
+    # obj = {"email": booking["email"], "price": price['data']['Price']}
+    # payment_result = invoke_http(checkout_url, method='POST', json=str(obj))
+    # print('payment_result:', payment_result)
+
     # print('\n-----Call payment service-----')
     # payment_result = invoke_http(payment_URL, method='POST', json=price)
     # print('payment_result:', payment_result)
@@ -162,8 +171,9 @@ def processBookingRequest(booking):
     #     update_seat = invoke_http(seatUpdate_URL, method='PUT', json=message)
 
     # 10. Send Notif AMQP
-    email = {
+    payment = {
                     'email': booking['email'],
+                    'source': "payment"
                 }
 
     # print('\n\n-----Publishing the (notif) message with routing_key=paymentupdate.notif-----')
@@ -173,6 +183,17 @@ def processBookingRequest(booking):
 
     # print("\nNotif request published to the RabbitMQ Exchange:", message)
 
+    
+    print('\n\n-----Publishing the (payment) message with routing_key=payment.notif-----')
+
+    # Ensuring message structure aligns with what the receiver expects
+    message = payment  # seatupdate already has 'seatnum' as per the receiver's expectation
+    message["source"] = "payment"
+    # Publishing the message to the AMQP exchange with the correct routing key
+    channel.basic_publish(exchange=exchangename, routing_key="payment.notif", 
+        body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    print("\nPayment request published to the RabbitMQ Exchange:", booking)
 
     # 11. Send booking creation req
     # print('\n\n-----Publishing the (booking creation) message with routing_key=paymentupdate.notif-----')
