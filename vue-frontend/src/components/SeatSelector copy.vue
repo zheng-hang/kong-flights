@@ -98,12 +98,23 @@
             this.numSeatsSelected++;
             this.selectedSeat = event.target.id; 
         },
-        sendBooking(){
-            window.location.href=""
-        },
         loadSelectedSeat(){
             if(this.sessionSeat != ""){
                 document.getElementById("checkbox-" + this.sessionSeat).checked = true;
+            }
+        },
+        async sendBooking() {
+            try {
+                const data = { 
+                    "email": "emily.jones987@example.org",
+                    "fid": this.flightId,
+                    "seatnum": this.selectedSeat[0],
+                    "seatcol": this.selectedSeat[1]
+                 };
+                const response = await axios.post('http://localhost:5103', data);
+                console.log(response.data); // Handle response from the microservice
+            } catch (error) {
+                console.error('Error sending data to microservice:', error);
             }
         }
     },
