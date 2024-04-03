@@ -16,7 +16,7 @@
                         <li class="row">
                             <ol class="seats" type="A">
                                 <li v-for="(column, index) in columns" :key="index" class="seat" :id="row + column">
-                                    <input type="checkbox" :id="'checkbox-' + row + column" @click="selectSeat" :disabled="disableSeat"/>
+                                    <input type="checkbox" :id="'checkbox-' + row + column" @click="selectSeat" :disabled="disableSeat(row+column)"/>
                                     <label :for="'checkbox-' + row + column">{{ row }}{{ column }}</label>
                                 </li>
                             </ol>
@@ -34,6 +34,9 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-end">
+        <input class="btn btn-primary me-4 mb-4" type="submit" value="Submit" @click="sendBooking">
+    </div>
 </template>
 
 <script>
@@ -44,32 +47,45 @@
             numSeatsSelected: 0,
             isChecked: false,
             selectedSeat: "",
+            sessionSeat: "", // simulate session['seat']
             isAvailable: false,
             rows: 72,
+            flightId: "SQ 124",
             columns: ["A", "B", "C", "D", "E", "G", "H", "J", "K"],
-            status: "",
-            fid: "SQ 123",
-            seatData: {}
-
+            seatData: ""
             }
+        },
+        beforeMount() {
+            this.getAvailableSeats()
+            // this.loadSelectedSeat()
+        },
+        mounted() {
+            this.loadSelectedSeat()
         },
     
     methods: {
         getAvailableSeats(){
-            axios.get('localhost:5003/seat', {
+            axios.get('http://localhost:5003/seat', {
         })
             .then(response => {
-                this.seatData = response.data
-                console.log(response.data);
+                this.seatData = response.data.data
+                console.log(Array.from(response.data.data));
+                console.log(typeof(Array.from(response.data.data)))
             })
             .catch( error => {
                 console.error(error);
             })
 
         },
-        
-        checkAvailability(){
-            this.seatData
+        disableSeat(seatPosition){
+            for(let seat of this.filteredSeats){
+                let seatId = seat.seatnum + seat.seatcol
+                if(seatId == seatPosition){
+                    // console.log(seatId + ": " + seat.available);
+                    // console.log(seatPosition);
+                    return true
+                }
+            }
         },
         selectSeat(event) {
             if(this.numSeatsSelected == 1){
@@ -82,34 +98,56 @@
             this.numSeatsSelected++;
             this.selectedSeat = event.target.id; 
         },
-
-        
-        
-        
-
-        // toggleSeatColor() {
-        //     this.checkboxColor = this.isChecked ? 'green' : 'black';
-        // }
+        loadSelectedSeat(){
+            if(this.sessionSeat != ""){
+                document.getElementById("checkbox-" + this.sessionSeat).checked = true;
+            }
+        },
+        async sendBooking() {
+            try {
+                const data = { 
+                    "email": "emily.jones987@example.org",
+                    "fid": this.flightId,
+                    "seatnum": this.selectedSeat[0],
+                    "seatcol": this.selectedSeat[1]
+                 };
+                const response = await axios.post('http://localhost:5103', data);
+                console.log(response.data); // Handle response from the microservice
+            } catch (error) {
+                console.error('Error sending data to microservice:', error);
+            }
+        }
     },
-    beforeMount() {
-        this.getAvailableSeats()
+    computed: {
+        filteredSeats() {
+            var flightSeats = [];
+            for(let seat of this.seatData){
+                if(seat.fid == this.flightId){
+                    flightSeats.push(seat)
+                    console.log(flightSeats);
+                }
+            }
+            return flightSeats;
+        }
     }
-    // computed: {
-    //     getSeatData() {
-    //         for(seat in this.seatData) {
-    //             if(this.fid === seat.fid) {
-    //                 return seat;
-    //             }
-    //         }
-    //     },
     // 
+        // filteredSeats() {
+        //     const filtered = {};
+        //     for (const key in this.seatData) {
+        //         if (Object.prototype.hasOwnProperty.call(this.seatData, key) && this.seatData[key].fid === this.flightId) {
+        //             filtered[key] = this.seatData[key];
+        //         }
+        //     }
+        //     return filtered;
+        // }
+
         // checkAvailability() {
             
         //     var seat = this.getSeatData();
         //     seat.availability
         // }
     // }
-}
+    }
 </script>
 
 <style scoped>

@@ -475,6 +475,7 @@ services:
       - "5105:5105"
     networks:
       - my-network
+      - my-network
 
 # Notifications
   # notification:
